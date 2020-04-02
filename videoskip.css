@@ -1,0 +1,65 @@
+video {
+    display: block;
+}
+input[type=checkbox] {
+	-moz-transform: scale(1.7); /* FF */
+	-webkit-transform: scale(1.7); /* Safari and Chrome */
+	-o-transform: scale(1.7); /* Opera */
+	padding: 0px;
+	cursor: pointer;
+	border: 1px solid #dedede;
+}
+.info {
+    background-color: palegreen;            
+}
+.error {
+    background-color: red;
+    color: white;
+}
+.hspacer {
+	width: 242px;
+	height: auto;
+	display:inline-block;
+}
+#skipBox {
+	height: 250px;
+	width: 340px;
+	background: #fffffc;
+}
+#boxMsg {
+	color: blue;
+}
+#skipFile {
+	display: none;
+}
+#shotFile {
+	display: none;
+}
+.cssbutton {
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	font-family: Arial;
+	font-size: 18px;
+	padding: 12px;
+	text-decoration: none;
+	border: 0px;
+	color: #555555;
+	background: #e6e6e6;
+}
+.cssbutton:hover {
+	text-decoration: none;
+	cursor: pointer;
+	background: #c4c4c4;
+}
+.small {
+	font-size: 12px;
+	padding: 9px;
+}
+.fineText {
+	font-size: small;
+	color: gray;
+}
+#credits {
+	font-size: xx-small;
+}
