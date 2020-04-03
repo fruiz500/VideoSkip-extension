@@ -1,12 +1,5 @@
 // this script executes as soon as a page is loaded
-var myVideo = null, cuts = [], categories = [], isFF = false, subsClass = '';
-
-var ua = navigator.userAgent.toLowerCase(); 		//to add a fix for Safari and choose fastest filter method, per https://jsben.ch/5qRcU
-if (ua.indexOf('safari') != -1) { 
-  if (ua.indexOf('chrome') == -1){ var isSafari = true
-  }else{ var isChrome = true
-  }
-}else if(typeof InstallTrigger !== 'undefined'){var isFirefox = true}
+var myVideo = null, cuts = [], isFF = false, subsClass = '';
 
 //this because different services do captions differently. Will add more as I get test accounts
 var serviceName = window.location.hostname;
@@ -32,7 +25,7 @@ if(serviceName.includes('youtube')){ subsClass = '.caption-window'
 function blankSubs(isBlank){
 	if(subsClass){
 		var subs = document.querySelector(subsClass);			//special cases
-		subs.style.opacity = isBlank ? 0 : ''
+		if(subs) subs.style.opacity = isBlank ? 0 : ''
 
 	}else if(myVideo.textTracks.length > 0){						//HTML5 general case
 		myVideo.textTracks[0].mode = isBlank ? 'disabled' : 'showing'
@@ -113,41 +106,7 @@ function isVisible (ele) {
 	return (ele.offsetWidth > 0 && ele.offsetHeight > 0) && (ele.style.visibility != 'hidden')
 }
 
-//faster way to check for content depanding on browser; returns a Boolean; regex and stringArray content should match
-function isContained(containerStr, stringArray, regex){
-	var result = false;
-	if(isChrome){
-		for(var i = 0; i < stringArray.length; i++){
-		result = result || containerStr.indexOf(stringArray[i]) != -1
-		}
-	}else if(isFirefox){
-		result = containerStr.search(regex) != -1
-	}else if(isSafari){								//below this won't be used in the extension, but left to see
-		result = regex.test(containerStr)
-	}else{
-		result = !!containerStr.match(regex)
-	}
-	return result
-}
-
-//function to decide whether a particular content is to be skipped. Allows alternative and incomplete keywords
-function isSkipped(label){
-	if(isContained(label,['sex','nud'],/sex|nud/) && categories[0]){
-		return true
-	}else if(isContained(label,['vio','gor'],/vio|gor/) && categories[1]){
-		return true
-	}else if(isContained(label,['pro','cur','hat'],/pro|cur|hat/) && categories[2]){
-		return true
-	}else if(isContained(label,['alc','dru','smo'],/alc|dru|smo/) && categories[3]){
-		return true
-	}else if(isContained(label,['fri','sca','int'],/fri|sca|int/) && categories[4]){
-		return true
-	}else if(isContained(label,['oth','bor'],/oth|bor/) && categories[5]){
-		return true
-	}else{
-		return false
-	}
-}
+var prevAction = '';
 
 //for interaction with the popup window
 chrome.runtime.onMessage.addListener(
@@ -170,27 +129,36 @@ chrome.runtime.onMessage.addListener(
 		chrome.runtime.sendMessage({message: "start_info", hasVideo: !!myVideo})		//just a Boolean confirming there's a video, so the popup loads
 		
 		myVideo.ontimeupdate = function(){							//apply skips to video when it gets to them
+			var action = '', startTime, endTime;
 			for(var i = 0; i < cuts.length; i++){
-				var startTime = cuts[i].startTime,					//times in seconds
-					endTime = cuts[i].endTime,
-					label = cuts[i].text.toLowerCase(),
-					isAudio = isContained(label,['aud','sou','spe','wor'],/aud|sou|spe|wor/),
-					isVideo = isContained(label,['vid','ima','img'],/vid|ima|img/);
-				if(!isAudio && !isVideo){
-					if(myVideo.currentTime > startTime && myVideo.currentTime < endTime && isSkipped(label)) goToTime(endTime)							//skip range
-				}else if(isAudio){
-					myVideo.muted = myVideo.currentTime > startTime && myVideo.currentTime < endTime && isSkipped(label);								//mute range
-		
-					blankSubs(myVideo.muted)																													//blank subs
+				startTime = cuts[i].startTime;						//times in seconds
+				endTime = cuts[i].endTime;
+				if(myVideo.currentTime > startTime && myVideo.currentTime < endTime){
+					action = cuts[i].action;
+					break
 				}else{
-					myVideo.style.opacity = (myVideo.currentTime > startTime && myVideo.currentTime < endTime && isSkipped(label)) ? "0" : ""			//blank range
+					action = ''
 				}
 			}
+			if(action == prevAction){					//apply action to the DOM if there's a change
+				return
+			}else if(action == 'skip'){				//skip range
+				goToTime(endTime)
+			}else if(action == 'blank'){				//blank screeen
+				myVideo.style.opacity =  0
+			}else if(action == 'mute'){				//mute sound & subs
+				myVideo.muted = true;
+				blankSubs(myVideo.muted)
+			}else{										//back to normal
+				myVideo.style.opacity =  '';
+				myVideo.muted = false;
+				blankSubs(myVideo.muted)
+			}
+			prevAction = action
 		}
 		
     }else if(request.message == "skip_data"){		//got skip data from the popup, so put it in cuts and categories arrays
-		cuts = request.cuts;
-		categories = request.categories
+		cuts = request.cuts
 
 	}else if(request.message == "need_time"){						//answer a request for time in the video
 		if(myVideo) chrome.runtime.sendMessage({message: "video_time", time: myVideo.currentTime})

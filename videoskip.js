@@ -26,7 +26,17 @@
         */
 
 var name = '';								//global variable with name of skip file, minus extension
+var cuts = [];				//global variable containing the cuts, each array element is an object with this format {startTime,endTime,text,action}
 var activeTabId = parseInt(window.location.hash.slice(1));		//sent with this page's name as the window opens
+
+var ua = navigator.userAgent.toLowerCase(); 		//to choose fastest filter method, per https://jsben.ch/5qRcU
+if (ua.indexOf('safari') != -1) { 
+  if (ua.indexOf('chrome') == -1){ var isSafari = true
+  }else{ var isChrome = true
+  }
+}else if(typeof InstallTrigger !== 'undefined'){var isFirefox = true
+}else if (document.documentMode || /Edge/.test(navigator.userAgent)){var isEdge = true
+}
 
 //loads the skips file
 function loadFileAsURL(){
@@ -46,7 +56,7 @@ function loadFileAsURL(){
 	};
 	fileReader.readAsText(fileToLoad);
 	boxMsg.textContent = 'This is the content of file: ' + fileToLoad.name;
-	setTimeout(function(){cuts = PF_SRT.parse(skipBox.value);makeTimeLabels()},1000)				//give it a whole second to load before data is extracted to memory
+	setTimeout(function(){cuts = PF_SRT.parse(skipBox.value); setActions(); makeTimeLabels()},1000)	//give it a whole second to load before data is extracted to memory
 }
 
 //loads the screen shot from file, if the direct take didn't work
@@ -139,7 +149,8 @@ var PF_SRT = function() {
     return {
       startTime: fromHMS(group[1]),			//load timings in seconds
       endTime: fromHMS(group[2]),
-      text: group[3]
+      text: group[3],
+	  action: ''				//no action by default, to be filled later
     };
   }
   init();
@@ -202,7 +213,7 @@ function shiftTimes(){
 	}else{
 		boxMsg.textContent = "Skips advanced by " + Math.floor(- seconds*100)/100 + " seconds"
 	}
-	setTimeout(function(){makeTimeLabels();if(isSuper) toggleTopShot()},100)
+	setTimeout(function(){makeTimeLabels(); if(isSuper) toggleTopShot()},100)
 }
 
 isSync = false;
@@ -236,7 +247,7 @@ function writeIn(string){
 	}else{
 		skipBox.setSelectionRange(newEnd,newEnd);
 	}
-	setTimeout(function(){cuts = PF_SRT.parse(skipBox.value); makeTimeLabels()},100);
+	setTimeout(function(){cuts = PF_SRT.parse(skipBox.value); setActions(); makeTimeLabels()},100);
 	skipBox.focus()
 }
 
@@ -358,6 +369,7 @@ function makeTimeLabels(){
 			timeLabels[2][i] = end
 		}
 	}
+	if(isSuper) toggleTopShot()
 }
 
 //gets index of a particular HMS time in the box
@@ -372,22 +384,12 @@ function takeShot(){
 	chrome.tabs.sendMessage(activeTabId, {message: "need_shot", needTime: true})
 }
 
-//makes array with the checkbox positions
-function updateCategories(){
-	categories[0] = sexMode.checked;
-	categories[1] = violenceMode.checked;
-	categories[2] = curseMode.checked;
-	categories[3] = boozeMode.checked;
-	categories[4] = scareMode.checked;
-	categories[5] = otherMode.checked
-}
-
 //send settings to the content script
 function sendData(){
 	cuts = PF_SRT.parse(skipBox.value);
-	makeTimeLabels();
-	updateCategories();
-	chrome.tabs.sendMessage(activeTabId, {message: "skip_data", cuts: cuts, categories: categories})
+	setActions();
+	chrome.tabs.sendMessage(activeTabId, {message: "skip_data", cuts: cuts});
+	makeTimeLabels()
 }
 
 //toggles instructions on and off
@@ -444,9 +446,6 @@ saveFile.addEventListener('click', function(){
 	boxMsg.textContent = 'File saved with name ' + name + '.skp'
 })
 
-var cuts = [],				//global variable containing the cuts, each array element is an object with this format {startTime,endTime,text}
-	categories = [false,false,false,false,false,false];		//array with positions of the filter checkboxes
-
 skipBox.addEventListener('change', sendData);
 
 checkBoxes.addEventListener('change', sendData);
@@ -466,6 +465,58 @@ shotTimeBtn.addEventListener('click',move2shot);
 moveBtn.addEventListener('click',toggleTopShot);
 
 syncBtn.addEventListener('click',syncTimes);
+
+//faster way to check for content depanding on browser; returns a Boolean; regex and stringArray content should match
+function isContained(containerStr, stringArray, regex){
+	var result = false;
+	if(isChrome){
+		for(var i = 0; i < stringArray.length; i++){
+		result = result || containerStr.indexOf(stringArray[i]) != -1
+		}
+	}else if(isFirefox){
+		result = containerStr.search(regex) != -1
+	}else if(isSafari || isEdge){								//below this won't be used in the extension, but left to see
+		result = regex.test(containerStr)
+	}else{
+		result = !!containerStr.match(regex)
+	}
+	return result
+}
+
+//to decide whether a particular content is to be skipped, according to check boxes. Allows alternative and incomplete keywords
+function isSkipped(label){
+	if(isContained(label,['sex','nud'],/sex|nud/) && sexMode.checked){
+		return true
+	}else if(isContained(label,['vio','gor'],/vio|gor/) && violenceMode.checked){
+		return true
+	}else if(isContained(label,['pro','cur','hat'],/pro|cur|hat/) && curseMode.checked){
+		return true
+	}else if(isContained(label,['alc','dru','smo'],/alc|dru|smo/) && boozeMode.checked){
+		return true
+	}else if(isContained(label,['fri','sca','int'],/fri|sca|int/) && scareMode.checked){
+		return true
+	}else if(isContained(label,['oth','bor'],/oth|bor/) && otherMode.checked){
+		return true
+	}else{
+		return false
+	}
+}
+
+//fills the action field in object cuts, according to the position of the check boxes and the text at each time
+function setActions(){
+	for(var i = 0; i < cuts.length; i++){
+		var label = cuts[i].text.toLowerCase(),
+			isAudio = isContained(label,['aud','sou','spe','wor'],/aud|sou|spe|wor/),
+			isVideo = isContained(label,['vid','ima','img'],/vid|ima|img/);
+		if(!isAudio && !isVideo){
+			cuts[i].action = isSkipped(label) ? 'skip' : ''	
+		}else if(isAudio){
+			cuts[i].action = isSkipped(label) ? 'mute' : ''
+		}else{
+			cuts[i].action = isSkipped(label) ? 'blank' : ''
+		}
+	}
+}
 
 //to get the time from the content script
 chrome.runtime.onMessage.addListener(
