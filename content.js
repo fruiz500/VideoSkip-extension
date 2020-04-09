@@ -202,7 +202,10 @@ chrome.runtime.onMessage.addListener(
 		}
 	
 	}else if(request.message == "fast_toggle"){
-		if(myVideo.paused){							//if paused, restart, no speed change
+		if(myVideo.paused){							//if paused, restart at normal speed
+			isFF = false;
+			myVideo.muted = false;
+			myVideo.playbackRate = 1
 			myVideo.play()
 		}else{											//if playing, toggle speed
 			if(isFF){

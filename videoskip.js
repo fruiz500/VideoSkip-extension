@@ -311,19 +311,6 @@ function backSkip(){
 	}
 }
 
-var isFF = false;
-
-//toggles normal and max speeds
-function toggleFF(){
-	if(isFF){
-		isFF = false;
-		chrome.tabs.sendMessage(activeTabId, {message: "fast_speed", isFF: false})
-	}else{
-		isFF = true;
-		chrome.tabs.sendMessage(activeTabId, {message: "fast_speed", isFF: true})
-	}
-}
-
 //move playhead to first time in the box, unless a time is selected
 function move2shot(){
 	var selection = skipBox.value.slice(skipBox.selectionStart,skipBox.selectionEnd).trim();
