@@ -2,7 +2,7 @@
   "name": "VideoSkip",
   "short_name": "VideoSkip",
   "description": "Skips/mutes/blanks selected parts of streaming videos",
-  "version": "0.1.3",
+  "version": "0.1.4.1",
   "manifest_version": 2,
   "icons": {
     "16": "img/icon24.png",
@@ -10,18 +10,11 @@
     "48": "img/icon64.png",
     "128": "img/icon128.png"
   },
+  "permissions": [
+	"activeTab"
+  ],
   "browser_action": {
     "default_icon": "img/icon64.png",
     "default_popup": "popup.html"
-  },
-  "content_scripts": [
-    {
-      "all_frames": true,
-       "js": ["content.js"],
-       "matches": [
-          "http://*/*",
-          "https://*/*"
-       ]
-     }
-  ]
+  }
 }

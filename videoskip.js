@@ -415,6 +415,8 @@ function checkKey(e) {
 
 skipFile.addEventListener('change', loadFileAsURL);
 
+exchangeBtn.addEventListener('click', function(){window.open('https://prgomez.com/videoskip/exchange')});
+
 shotFile.addEventListener('change', loadShot);
 
 shiftBtn.addEventListener('click', shiftTimes);
@@ -454,15 +456,11 @@ moveBtn.addEventListener('click',toggleTopShot);
 syncBtn.addEventListener('click',syncTimes);
 
 //faster way to check for content depanding on browser; returns a Boolean; regex and stringArray content should match
-function isContained(containerStr, stringArray, regex){
+function isContained(containerStr, regex){
 	var result = false;
-	if(isChrome){
-		for(var i = 0; i < stringArray.length; i++){
-		result = result || containerStr.indexOf(stringArray[i]) != -1
-		}
-	}else if(isFirefox){
+	if(isFirefox){
 		result = containerStr.search(regex) != -1
-	}else if(isSafari || isEdge){								//below this won't be used in the extension, but left to see
+	}else if(isSafari || isEdge || isChrome){								//below this won't be used in the extension, but left to see
 		result = regex.test(containerStr)
 	}else{
 		result = !!containerStr.match(regex)
@@ -472,17 +470,17 @@ function isContained(containerStr, stringArray, regex){
 
 //to decide whether a particular content is to be skipped, according to check boxes. Allows alternative and incomplete keywords
 function isSkipped(label){
-	if(isContained(label,['sex','nud'],/sex|nud/) && sexMode.checked){
+	if(isContained(label,/sex|nud/) && sexMode.checked){
 		return true
-	}else if(isContained(label,['vio','gor'],/vio|gor/) && violenceMode.checked){
+	}else if(isContained(label,/vio|gor/) && violenceMode.checked){
 		return true
-	}else if(isContained(label,['pro','cur','hat'],/pro|cur|hat/) && curseMode.checked){
+	}else if(isContained(label,/pro|cur|hat/) && curseMode.checked){
 		return true
-	}else if(isContained(label,['alc','dru','smo'],/alc|dru|smo/) && boozeMode.checked){
+	}else if(isContained(label,/alc|dru|smo/) && boozeMode.checked){
 		return true
-	}else if(isContained(label,['fri','sca','int'],/fri|sca|int/) && scareMode.checked){
+	}else if(isContained(label,/fri|sca|int/) && scareMode.checked){
 		return true
-	}else if(isContained(label,['oth','bor'],/oth|bor/) && otherMode.checked){
+	}else if(isContained(label,/oth|bor/) && otherMode.checked){
 		return true
 	}else{
 		return false
@@ -492,9 +490,9 @@ function isSkipped(label){
 //fills the action field in object cuts, according to the position of the check boxes and the text at each time
 function setActions(){
 	for(var i = 0; i < cuts.length; i++){
-		var label = cuts[i].text.toLowerCase(),
-			isAudio = isContained(label,['aud','sou','spe','wor'],/aud|sou|spe|wor/),
-			isVideo = isContained(label,['vid','ima','img'],/vid|ima|img/);
+		var label = cuts[i].text.toLowerCase().replace(/\(.*\)/g,''),						//ignore text in parentheses
+			isAudio = isContained(label,/aud|sou|spe|wor/),
+			isVideo = isContained(label,/vid|ima|img/);
 		if(!isAudio && !isVideo){
 			cuts[i].action = isSkipped(label) ? 'skip' : ''	
 		}else if(isAudio){

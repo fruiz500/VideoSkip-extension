@@ -13,7 +13,7 @@
 
 <body>                    
 	<h2>Video Skip</h2>
-    <p>v 0.1.3 &nbsp;&#169; F. Ruiz 2020&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <p>v 0.1.4 &nbsp;&#169; F. Ruiz 2020&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
       <button id="help" class="cssbutton" title="toggle instructions">Help</button></p>
     <br>
     Select the content to skip:
@@ -32,6 +32,7 @@
     <br>
     <label for="skipFile"><span class="cssbutton" id="skipFileBtn" title="load .skp file">Load skip file</span></label>
 	<input type="file" id="skipFile"/>
+    <button id="exchangeBtn"class="cssbutton small" title="open the VideoSkip Exchange in a separate tab">VideoSkip Exchange</button>
     <span class="hspacer"></span>
     <label for="shotFile" title="load screenshot"><span class="cssbutton" id="shotFileBtn" title="load screenshot">Load screenshot</span></label>
 	<input type="file" id="shotFile"/>
@@ -46,7 +47,7 @@
     <input type="checkbox" id="fineMode"/ title="frame by frame">&nbsp;<span class="fineText">Fine</span>&nbsp;
     <input type="checkbox" id="shiftMode" title="shift selected time with arrows"/>&nbsp;<span class="fineText">Shift</span>
     <button id="fwdBtn"class="cssbutton small" title="step advance / go to next time">&#9658;</button>
-    <button id="fFwdBtn"class="cssbutton small" title="toggle Fast Forward / resume">&#9658;&#9658;</button>
+    <button id="fFwdBtn"class="cssbutton small" title="toggle play / fast forward / stop">&#9658;&#9658;</button>
     <button id="shotTimeBtn"class="cssbutton small" title="go to selected time / screenshot time">Go to time</button>
     <button id="moveBtn" class="cssbutton small" title="overlay shot on video">Superimpose</button>
     <button id="syncBtn"class="cssbutton small" title="change all times when video and shot match">Sync times</button>
@@ -78,7 +79,7 @@
 <ul>
   <li>As mentioned above, inserting new skips is as easy as scrubbing to the point where the skip/mute/blank is supposed to begin, clicking the &quot;Insert time&quot; button on a new line, then the &quot;Insert arrow&quot; button, scrubbing to the point where the skip is to end, clicking the &quot;Insert time&quot; button once more, and then going to the next line and writing a content and (optionally) handling label. If you are initially unsure of where the skips should be inserted, there is a &quot;Fast Forward&quot; button that scrubs the video at high speed. Click it again to return to normal speed. The button to its left stops the video when it's running.</li>
   <li>Content labels are case-insensitive. They consist of any word (actually, the first three letters are enough) of the IMDB categories, which are displayed next to the checkboxes, such as &quot;sex&quot;, &quot;nudity&quot;, &quot;gore&quot;, &quot;drugs&quot;, etc. Handling labels are these words: &quot;audio&quot;, &quot;sound&quot;, &quot;video&quot;, &quot;image&quot; (or the first three letters of each, including &quot;img&quot;) also case-insensitive.</li>
-  <li>The &quot;audio&quot; or &quot;sound&quot; keywords will cause the sound to be muted during the given interval while the video is still shown, rather than skipping the section entirely, which might be useful for removing profanity. The &quot;video&quot; and &quot;image&quot; keywords cause the image to blank out while the sound still plays, which might be useful for instances of nudity, etc. No handling keyword means that the section will be completely skipped.</li>
+  <li>The &quot;audio&quot; or &quot;sound&quot; keywords will cause the sound to be muted during the given interval while the video is still shown, rather than skipping the section entirely, which might be useful for removing profanity. The &quot;video&quot; and &quot;image&quot; keywords cause the image to blank out while the sound still plays, which might be useful for instances of nudity, etc. No handling keyword means that the section will be completely skipped. You can add explanatory text in parentheses, which won't trigger the filters.</li>
   <li>Everything is editable in the box. Use this to fine-tune timings. For instance, words to be muted typically take a lot less than a second. You can review each timing by selecting on the list and clicking &quot;Go to time&quot;, or by clicking the forward and back buttons when a time is selected on the list. If the &quot;Shift&quot; box is checked, the selected timing will shift with the arrows, rather than moving to another timing.</li>
   <li>The &quot;Insert&quot; buttons put things always at the current cursor position. In any case, skips will be made at the right times even though they may not be in sequence on the list.</li>
   <li>The &quot;Shift skips&quot; button opens a dialog where you can enter a number of seconds to delay all skips, or advance them if you enter a negative number, including the screenshot time at the top, if any. Clicking OK with nothing entered sorts the skips in ascending order of start times leaving the screenshot time at the top, if any, unchanged.</li>
@@ -88,6 +89,17 @@
 <p>Sample skip, which will cause the screen to blank out from 14 minutes, 8.27 seconds from the start of the movie until 14 minutes, 14 seconds, while the sound still plays, if &quot;Sex and Nudity&quot; is checked:</p>
 <p>0:14:08.27 --&gt; 0:14:14<br>
   nude image</p>
+<p>Here are some videos that show how to make and use skip files:</p>
+<p>VideoSkip developer plays ukulele with a pick, Egad! (WARNING, this video might be offensive to sensitive ukulele players):<br>
+  <a href="https://www.youtube.com/watch?v=uDZfW9SLb_4" target="_blank">https://www.youtube.com/watch?v=uDZfW9SLb_4</a></p>
+<p>Obtaining the skip file for the uke video from the VideoSkip Exchange:<br>
+  <a href="https://www.youtube.com/watch?v=vyQKZVHa898" target="_blank">https://www.youtube.com/watch?v=vyQKZVHa898</a></p>
+<p>Using VideoSkip to edit the playback of the uke video:<br>
+  <a href="https://www.youtube.com/watch?v=QhYIXEbYfnY" target="_blank">https://www.youtube.com/watch?v=QhYIXEbYfnY</a></p>
+<p>Making a VideoSkip file for the uke video:<br>
+  <a href="https://www.youtube.com/watch?v=Fx04SVgUKO0" target="_blank">https://www.youtube.com/watch?v=Fx04SVgUKO0</a></p>
+<p>Posting a skip file to the VideoSkip Exchange:<br>
+  <a href="https://www.youtube.com/watch?v=Tv5wXTkXhcs" target="_blank">https://www.youtube.com/watch?v=Tv5wXTkXhcs</a></p>
 <p>Legal Notice: Content copyright owners and distributors are hereby informed that users and developers of this software are exercising their right of free speech, guaranteed by law in many nations, by voluntarily refraining from seeing or hearing content without modifying said content in any way. Legal action that ignores this notice will be considered harassment and infringement of basic rights, and prosecuted according to the law.</p>
 <div id='credits'>
 <div>Favicon made by <a href="https://www.flaticon.com/authors/smashicons" title="Smashicons">Smashicons</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>

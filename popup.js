@@ -12,6 +12,7 @@ function openPopup(){
 	}else{
 		popup = window.open('videoskip.html#' + activeTab.id,'controlPanel',popupParams)
 	}
+	popup.focus()
 }
 
 chrome.runtime.onMessage.addListener(
@@ -19,7 +20,12 @@ chrome.runtime.onMessage.addListener(
 	if(request.message == "start_info"){				//reply from the content script
 		var hasVideo = request.hasVideo;
 		if(hasVideo){
-			openPopup();							//opens separate window if there's a video 
+			openPopup();							//opens separate window if there's a video
+//load 2nd content script programmatically (needs activeTab permission)
+			if(!request.isLoaded) chrome.tabs.executeScript({
+				file: 'content2.js',
+				allFrames: true
+			})
 			window.close()
 		}else{
 			noVideo.style.display = ''
@@ -31,6 +37,10 @@ chrome.runtime.onMessage.addListener(
 window.onload = function() {
 	chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
     	activeTab = tabs[0];
-		chrome.tabs.sendMessage(activeTab.id, {message: "start"})		//tell content script to look for videos and report
+//load 1st content script programmatically (needs activeTab permission)
+		chrome.tabs.executeScript({
+			file: 'content1.js',
+			allFrames: true
+		})
 	})
 }
