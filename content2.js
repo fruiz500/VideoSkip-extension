@@ -1,5 +1,5 @@
 //load this after a video is found
-var prevAction = '', cuts = [], speedMode = 1, subsClass = '';
+var prevAction = '', cuts = [], speedMode = 1, subsClass = '', switches = [];
 	
 //this because different services do captions differently. Will add more as I get test accounts
 var serviceName = window.location.hostname;
@@ -87,7 +87,7 @@ function executeOnPageSpace(code){
   return result
 }
 
-myVideo.ontimeupdate = function(){							//apply skips to video when it gets to them
+if(myVideo) myVideo.ontimeupdate = function(){							//apply skips to video when it gets to them
 	var action = '', startTime, endTime;
 	for(var i = 0; i < cuts.length; i++){
 		startTime = cuts[i].startTime;						//times in seconds
@@ -121,7 +121,8 @@ chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
 	
     if(request.message == "skip_data"){		//got skip data from the popup, so put it in cuts and categories arrays
-		cuts = request.cuts
+		cuts = request.cuts;
+		switches = request.switches
 
 	}else if(request.message == "need_time"){						//answer a request for time in the video
 		if(myVideo) chrome.runtime.sendMessage({message: "video_time", time: myVideo.currentTime})
@@ -211,4 +212,64 @@ chrome.runtime.onMessage.addListener(
 		}		
 	}
   }
-)	
+)
+
+//whow filter settings as soon as the video goes full screen, and when the mouse is moved on fullscreen
+window.onresize = function(){
+	if(((screen.availWidth || screen.width-30) <= window.innerWidth) && VideoSkipControl){		//it's fullscreen now
+		showSettings()
+		var fadeTimer = setTimeout(function(){
+			VideoSkipControl.style.display = 'none'
+		},3300)
+	}else if(VideoSkipControl){									//no longer fullscreen
+		VideoSkipControl.style.display = 'none'
+	}
+}
+
+window.onmousemove = function(){
+	if(((screen.availWidth || screen.width-30) <= window.innerWidth) && VideoSkipControl){
+		delete fadeTimer;
+		showSettings();
+		var fadeTimer = setTimeout(function(){
+			VideoSkipControl.style.display = 'none'
+		},3300)
+	}
+}
+
+//this displays the filter settings on the full screen video
+function showSettings(){
+	VideoSkipControl.textContent = '';
+	var spacer = document.createTextNode("\u00A0\u00A0");		//two non-breaking spaces
+	if(cuts.length == 0){
+		VideoSkipControl.appendChild(spacer);
+		var text = document.createTextNode("VideoSkip: no edits loaded");
+		VideoSkipControl.appendChild(text);
+		VideoSkipControl.appendChild(spacer);
+	}else{
+		var	keyWords = ['sex','violence','profanity','substance','intense','other'],
+			output = [];
+		for(var i = 0; i < keyWords.length; i++){
+			if(switches[i]) output.push(keyWords[i])
+		}
+		if(output.length == 0){
+			VideoSkipControl.appendChild(spacer);
+			var text = document.createTextNode("VideoSkip: no filters engaged");
+			VideoSkipControl.appendChild(text);
+			VideoSkipControl.appendChild(spacer);
+		}else{
+			VideoSkipControl.appendChild(spacer);
+			var text = document.createTextNode("VideoSkip on: ");
+			VideoSkipControl.appendChild(text);
+			VideoSkipControl.appendChild(spacer);
+			var filters = document.createElement('b');
+			filters.textContent = output.join(', ');
+			VideoSkipControl.appendChild(filters);
+			VideoSkipControl.appendChild(spacer);
+		}
+	}
+	if(VideoSkipControl.style.top == '' || VideoSkipControl.style.top.includes('-')){
+		VideoSkipControl.style.top = '100px';
+		VideoSkipControl.style.left = '100px'
+	}
+	VideoSkipControl.style.display = ''
+}

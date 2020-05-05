@@ -2,7 +2,7 @@
 var	isChrome = navigator.userAgent.toLowerCase().indexOf('chrome') > -1,
 	isFirefox = typeof InstallTrigger !== 'undefined';
 
-var popupParams = "scrollbars=yes,resizable=yes,status=no,location=no,toolbar=no,menubar=no,width=960,height=600,top=150,left=1000";
+var popupParams = "scrollbars=yes,resizable=yes,status=no,location=no,toolbar=no,menubar=no,width=960,height=600,top=150,left=1200";
 var popup, activeTab;
 	
 //opens permanent popup on icon click
@@ -10,9 +10,8 @@ function openPopup(){
 	if(isFirefox){
 		popup = chrome.windows.create({url:'videoskip.html#' + activeTab.id, width:980, height:670, type:'popup'})
 	}else{
-		popup = window.open('videoskip.html#' + activeTab.id,'controlPanel',popupParams)
+		popup = window.open('videoskip.html#' + activeTab.id,'popup',popupParams).focus()
 	}
-	popup.focus()
 }
 
 chrome.runtime.onMessage.addListener(

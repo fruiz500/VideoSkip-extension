@@ -56,7 +56,7 @@ function loadFileAsURL(){
 	};
 	fileReader.readAsText(fileToLoad);
 	boxMsg.textContent = 'This is the content of file: ' + fileToLoad.name;
-	setTimeout(function(){cuts = PF_SRT.parse(skipBox.value); setActions(); makeTimeLabels()},1000)	//give it a whole second to load before data is extracted to memory
+	setTimeout(sendData,1000)							//give it a whole second to load before data is extracted to memory and sent
 }
 
 //loads the screen shot from file, if the direct take didn't work
@@ -124,7 +124,7 @@ function download(data, filename, type) {
 //to parse the content of the skip box in something close to .srt format, from StackOverflow
 var PF_SRT = function() {
   //SRT format
-  var pattern = /([\d:,.]+)\s+-{2}\>\s+([\d:,.]+)\n([\s\S]*?(?=\n{2}|$))?/gm;		//no item number, can use decimal dot instead of comma
+  var pattern = /([\d:,.]+)\s*-+\>\s*([\d:,.]+)\n([\s\S]*?(?=\n{2}|$))?/gm;		//no item number, can use decimal dot instead of comma, malformed arrows
   var _regExp;
 
   var init = function() {
@@ -359,6 +359,16 @@ function makeTimeLabels(){
 	if(isSuper) toggleTopShot()
 }
 
+var switches = [false,false,false,false,false,false];
+
+//record position of content switches
+function recordSwitches(){
+	var boxes = checkBoxes.querySelectorAll('input');
+	for(var i = 0; i < boxes.length; i++){
+		switches[i] = boxes[i].checked
+	}
+}
+
 //gets index of a particular HMS time in the box
 function getTimeIndex(string){
 	for(var i = 0; i < timeLabels[0].length; i++){
@@ -375,17 +385,9 @@ function takeShot(){
 function sendData(){
 	cuts = PF_SRT.parse(skipBox.value);
 	setActions();
-	chrome.tabs.sendMessage(activeTabId, {message: "skip_data", cuts: cuts});
+	recordSwitches();
+	chrome.tabs.sendMessage(activeTabId, {message: "skip_data", cuts: cuts, switches: switches});
 	makeTimeLabels()
-}
-
-//toggles instructions on and off
-function toggleHelp(){
-	if(instructions.style.display == 'none'){
-		instructions.style.display = 'block'
-	}else{
-		instructions.style.display = 'none'
-	}
 }
 
 //to move and resize superimposed shot
@@ -425,9 +427,7 @@ timeBtn.addEventListener('click', writeTime);
 
 arrowBtn.addEventListener('click', function(){writeIn(' --> ')});
 
-instructions.style.display = 'none';
-
-help.addEventListener('click', toggleHelp);
+help.addEventListener('click', function(){window.open('help.html')});
 
 saveFile.addEventListener('click', function(){
 	if(!name) name = prompt('Enter the file name. Extension .skp wil be added');

@@ -50,7 +50,13 @@ input[type=checkbox] {
 .cssbutton:hover {
 	text-decoration: none;
 	cursor: pointer;
-	background: #c4c4c4;
+	background: #cfcfcf;
+}
+.imptButton {
+	background: #e8eef3;
+}
+.imptButton:hover {
+	background: #c1dfff;
 }
 .small {
 	font-size: 12px;
@@ -59,7 +65,4 @@ input[type=checkbox] {
 .fineText {
 	font-size: small;
 	color: gray;
-}
-#credits {
-	font-size: xx-small;
 }

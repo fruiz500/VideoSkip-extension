@@ -26,7 +26,21 @@ if(!!myVideo){													//add overlay image for superimpose function
 	VideoSkipShot.style.top = myVideo.style.top | 0;
 	VideoSkipShot.style.left = myVideo.style.left | 0;
 	VideoSkipShot.style.opacity = '50%';
-	VideoSkipShot.style.zIndex = myVideo.style.zIndex + 1 | 1
+	VideoSkipShot.style.zIndex = myVideo.style.zIndex + 1 | 1;
 	VideoSkipShot.style.display = 'none';
-	myVideo.parentNode.insertBefore(VideoSkipShot,myVideo)
+	myVideo.parentNode.insertBefore(VideoSkipShot,myVideo);
+	
+	var VideoSkipControl = document.createElement('span');			//to display filter settings on fullscreen
+	VideoSkipControl.style.position = 'absolute';
+	VideoSkipControl.style.top = (parseInt(myVideo.style.top.slice(0,-2)) + 100) + 'px';
+	VideoSkipControl.style.left = (parseInt(myVideo.style.left.slice(0,-2)) + 100) + 'px';
+	VideoSkipControl.style.zIndex = myVideo.style.zIndex + 1 | 1;
+	VideoSkipControl.style.display = 'none';
+	VideoSkipControl.textContent = "This is the control";
+	VideoSkipControl.style.fontSize = "xx-large";
+	VideoSkipControl.style.color = "white";
+	VideoSkipControl.style.fontFamily = "sans-serif";
+	VideoSkipControl.style.backgroundColor = "rgba(0, 0, 0, 0.33)";
+	VideoSkipControl.style.zIndex = "999";
+	myVideo.parentNode.insertBefore(VideoSkipControl,myVideo);
 }
