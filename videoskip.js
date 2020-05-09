@@ -124,7 +124,7 @@ function download(data, filename, type) {
 //to parse the content of the skip box in something close to .srt format, from StackOverflow
 var PF_SRT = function() {
   //SRT format
-  var pattern = /([\d:,.]+)\s*-+\>\s*([\d:,.]+)\n([\s\S]*?(?=\n{2}|$))?/gm;		//no item number, can use decimal dot instead of comma, malformed arrows
+  var pattern = /([\d:,.]+)\s*-+\>\s*([\d:,.]+)\s*\n([\s\S]*?(?=\n{2}|$))?/gm;		//no item number, can use decimal dot instead of comma, malformed arrows
   var _regExp;
 
   var init = function() {
@@ -345,7 +345,7 @@ function makeTimeLabels(){
 	timeLabels = [[],[],[]];						//string, startPosition, endPosition
 	var	text = skipBox.value,
 		string, start, end = 0;
-	var matches = text.match(/([\d:.]+)/g);
+	var matches = text.match(/\d+[\d:.]+/g);
 	if(matches){
 		for(var i = 0; i < matches.length; i++){
 			string = matches[i];
@@ -445,7 +445,11 @@ shotFileBtn.style.display = 'none';
 
 fwdBtn.addEventListener('click',fwdSkip);
 
-fFwdBtn.addEventListener('click',function(){chrome.tabs.sendMessage(activeTabId, {message: "fast_toggle"})});
+fFwdBtn.addEventListener('click',function(){
+	skipBox.selectionStart = skipBox.selectionEnd;		//clear selection, if any
+	skipBox.focus();
+	chrome.tabs.sendMessage(activeTabId, {message: "fast_toggle"})
+});
 
 backBtn.addEventListener('click',backSkip);
 

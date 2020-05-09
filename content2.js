@@ -69,7 +69,7 @@ function makeShot(){
 //moves play to requested time
 function goToTime(time){
 	if(serviceName == 'netflix'){		//Netflix will crash with the normal seek instruction. By Dmitry Paloskin at StackOverflow. Must be executed in page context
-		executeOnPageSpace('videoPlayer = netflix.appContext.state.playerApp.getAPI().videoPlayer;player = videoPlayer.getVideoPlayerBySessionId(videoPlayer.getAllPlayerSessionIds()[0]);player.seek(' + time*1000 + ')')
+		executeOnPageSpace('videoPlayer = netflix.appContext.state.playerApp.getAPI().videoPlayer;sessions = videoPlayer.getAllPlayerSessionIds();player = videoPlayer.getVideoPlayerBySessionId(sessions[sessions.length-1]);player.seek(' + time*1000 + ')')
 	}else{								//everyone else is HTML5 compliant
 		myVideo.currentTime = time
 	}
