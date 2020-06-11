@@ -21,6 +21,11 @@ input[type=checkbox] {
 	height: auto;
 	display:inline-block;
 }
+.hspacer2 {
+	width: 90px;
+	height: auto;
+	display:inline-block;
+}
 #skipBox {
 	height: 250px;
 	width: 340px;

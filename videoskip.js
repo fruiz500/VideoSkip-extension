@@ -183,45 +183,12 @@ function fromHMS(timeString){
 	}
 }
 
-//shift all times by a number of seconds entered in prompt
-function shiftTimes(){
-	var reply = prompt('Click OK to sync w/ screenshot, or enter seconds to delay skips (negative for advance)');
-	if(reply == null){boxMsg.textContent = 'Time shift canceled'; return};
-	
-	var	initialData = skipBox.value.trim().split('\n').slice(0,2);					//first two lines
-	var shotTime = fromHMS(initialData[0]);
-
-	if(reply){												//number entered, so apply the given shift
-		var seconds = parseFloat(reply);
-		for(var i = 0; i < cuts.length; i++){
-			cuts[i].startTime += seconds;
-			cuts[i].endTime += seconds
-		}
-	}else{													//nothing entered, so sort the times in ascending order
-		cuts.sort(function(a, b){return a.startTime - b.startTime;})
-	}
-	times2box();											//put shifted times in the box
-	
-	if(shotTime){										//reconstruct initial data, if present
-		initialData[0] = toHMS(shotTime + seconds);
-		skipBox.value = initialData.join('\n') + '\n\n' + skipBox.value
-	}
-	if(!seconds){
-		boxMsg.textContent = "Skips sorted by start time"
-	}else if(seconds >= 0){
-		boxMsg.textContent = "Skips delayed by " + Math.floor(seconds*100)/100 + " seconds"
-	}else{
-		boxMsg.textContent = "Skips advanced by " + Math.floor(- seconds*100)/100 + " seconds"
-	}
-	setTimeout(function(){makeTimeLabels(); if(isSuper) toggleTopShot()},100)
-}
-
 isSync = false;
 
-//shift all times so the screenshot has correct timing in the video. ShiftTimes also has this functionality, with empty input
+//shift all times so the screenshot has correct timing in the video
 function syncTimes(){
 	isSync = true;
-	chrome.tabs.sendMessage(activeTabId, {message: "need_time"});
+	chrome.tabs.sendMessage(activeTabId, {message: "need_time"});		//to be continued when the current time is received
 	setTimeout(function(){makeTimeLabels()},100)
 }
 
@@ -259,24 +226,17 @@ function writeTime(){
 
 //called by forward button
 function fwdSkip(){
-	var selection = skipBox.value.slice(skipBox.selectionStart,skipBox.selectionEnd);
-	if(selection != '' && !selection.match(/[^\d:.]/)){				//valid time selected, so scrub to next time
-		var index = getTimeIndex(selection);
+	if(skipBox.selectionStart != skipBox.selectionEnd){							//there is a selection
+		var index = getTimeIndex(),
+			tol = 0.02;
 		if(index != null){
-			if(shiftMode.checked){
-				var timeShift = fineMode.checked ? 0.0417 : 0.417;
-				chrome.tabs.sendMessage(activeTabId, {message: "shift_time", timeShift: timeShift, isSuper: isSuper});
-				isScrub = true;
-				chrome.tabs.sendMessage(activeTabId, {message: "need_time"});
-				skipBox.focus()
-			}else{
-				var nextIndex = index + 1;
-				if(nextIndex >= timeLabels[0].length) nextIndex = 0;
-				chrome.tabs.sendMessage(activeTabId, {message: "change_time", time: fromHMS(timeLabels[0][nextIndex]), isSuper: isSuper})
-				skipBox.selectionStart = timeLabels[1][nextIndex];
-				skipBox.selectionEnd = timeLabels[2][nextIndex];
-				skipBox.focus()
-			}
+			skipBox.setSelectionRange(timeLabels[1][index],timeLabels[2][index]);
+			var selectedTime = fromHMS(timeLabels[0][index]);
+			var timeShift = fineMode.checked ? 0.0417 : 0.417;
+			chrome.tabs.sendMessage(activeTabId, {message: "shift_time", timeShift: timeShift, isSuper: isSuper});
+			isScrub = true;
+			chrome.tabs.sendMessage(activeTabId, {message: "need_time"});		
+			skipBox.focus()
 		}
 	}else{											//scrub by a small amount
 		var timeShift = fineMode.checked ? 0.0417 : 0.417;
@@ -286,24 +246,17 @@ function fwdSkip(){
 
 //called by back button
 function backSkip(){
-	var selection = skipBox.value.slice(skipBox.selectionStart,skipBox.selectionEnd);
-	if(selection != '' && !selection.match(/[^\d:.]/)){				//valid time selected, so scrub to next time
-		var index = getTimeIndex(selection);
+	if(skipBox.selectionStart != skipBox.selectionEnd){							//there is a selection
+		var index = getTimeIndex(),
+			tol = 0.02;
 		if(index != null){
-			if(shiftMode.checked){
-				var timeShift = fineMode.checked ? 0.0417 : 0.417;
-				chrome.tabs.sendMessage(activeTabId, {message: "shift_time", timeShift: -timeShift, isSuper: isSuper});
-				isScrub = true;
-				chrome.tabs.sendMessage(activeTabId, {message: "need_time"});
-				skipBox.focus()
-			}else{
-				var nextIndex = index - 1;
-				if(nextIndex < 0) nextIndex = timeLabels[0].length - 1;
-				chrome.tabs.sendMessage(activeTabId, {message: "change_time", time: fromHMS(timeLabels[0][nextIndex]), isSuper: isSuper})
-				skipBox.selectionStart = timeLabels[1][nextIndex];
-				skipBox.selectionEnd = timeLabels[2][nextIndex];
-				skipBox.focus()
-			}
+			skipBox.setSelectionRange(timeLabels[1][index],timeLabels[2][index]);
+			var selectedTime = fromHMS(timeLabels[0][index]);
+			var timeShift = fineMode.checked ? 0.0417 : 0.417;
+			chrome.tabs.sendMessage(activeTabId, {message: "shift_time", timeShift: - timeShift, isSuper: isSuper});
+			isScrub = true;
+			chrome.tabs.sendMessage(activeTabId, {message: "need_time"});
+			skipBox.focus()
 		}
 	}else{											//scrub by a small amount
 		var timeShift = fineMode.checked ? 0.0417 : 0.417;
@@ -311,17 +264,15 @@ function backSkip(){
 	}
 }
 
-//move playhead to first time in the box, unless a time is selected
-function move2shot(){
-	var selection = skipBox.value.slice(skipBox.selectionStart,skipBox.selectionEnd).trim();
-	if(selection != '' && !selection.match(/[^\d:.]/)){				//valid time selected, so scrub to it
-		var index = getTimeIndex(selection);
-		if(index != null){
-			chrome.tabs.sendMessage(activeTabId, {message: "change_time", time: fromHMS(timeLabels[0][index]), isSuper: isSuper})
-			skipBox.focus()
-		}
-	}else{																//scrub to 1st time
-		chrome.tabs.sendMessage(activeTabId, {message: "change_time", time: fromHMS(timeLabels[0][0]), isSuper: isSuper})		
+//scrub to first time in the box, unless a time is selected
+function scrub2shot(){
+	var index = getTimeIndex();
+	if(index != null){
+		skipBox.setSelectionRange(timeLabels[1][index],timeLabels[2][index]);
+		chrome.tabs.sendMessage(activeTabId, {message: "change_time", time: fromHMS(timeLabels[0][index]), isSuper: isSuper})
+		skipBox.focus()
+	}else{											//scrub to 1st time
+		chrome.tabs.sendMessage(activeTabId, {message: "change_time", time: fromHMS(timeLabels[0][0]), isSuper: isSuper})	
 	}
 }
 
@@ -369,10 +320,12 @@ function recordSwitches(){
 	}
 }
 
-//gets index of a particular HMS time in the box
-function getTimeIndex(string){
+//gets index of a particular HMS time in the box, by location; returns null if the cursor is not on a time label
+function getTimeIndex(){
+	var start = skipBox.selectionStart,
+		end = skipBox.selectionEnd;
 	for(var i = 0; i < timeLabels[0].length; i++){
-		if(timeLabels[0][i].includes(string)) return i
+		if(timeLabels[1][i] <= start && timeLabels[2][i] >= end) return i
 	}
 }
 
@@ -417,11 +370,9 @@ function checkKey(e) {
 
 skipFile.addEventListener('change', loadFileAsURL);
 
-exchangeBtn.addEventListener('click', function(){window.open('https://prgomez.com/videoskip/exchange')});
+exchangeBtn.addEventListener('click', function(){window.open('https://videoskip.org/exchange')});
 
 shotFile.addEventListener('change', loadShot);
-
-shiftBtn.addEventListener('click', shiftTimes);
 
 timeBtn.addEventListener('click', writeTime);
 
@@ -453,7 +404,7 @@ fFwdBtn.addEventListener('click',function(){
 
 backBtn.addEventListener('click',backSkip);
 
-shotTimeBtn.addEventListener('click',move2shot);
+shotTimeBtn.addEventListener('click',scrub2shot);
 
 moveBtn.addEventListener('click',toggleTopShot);
 
