@@ -1,5 +1,5 @@
         /*
-		@source: https://github.com/fruiz500/VideoSkip
+		@source: https://github.com/fruiz500/VideoSkip-extension
 
         @licstart  The following is the entire license notice for the
         JavaScript code in this page.
@@ -56,7 +56,7 @@ function loadFileAsURL(){
 	};
 	fileReader.readAsText(fileToLoad);
 	boxMsg.textContent = 'This is the content of file: ' + fileToLoad.name;
-	setTimeout(sendData,1000)							//give it a whole second to load before data is extracted to memory and sent
+	setTimeout(function(){justLoaded = true;sendData();},1000)							//give it a whole second to load before data is extracted to memory and sent; also set switches
 }
 
 //loads the screen shot from file, if the direct take didn't work
@@ -334,9 +334,13 @@ function takeShot(){
 	chrome.tabs.sendMessage(activeTabId, {message: "need_shot", needTime: true})
 }
 
+var justLoaded = false;		//for setting switches on file load
+
 //send settings to the content script
 function sendData(){
 	cuts = PF_SRT.parse(skipBox.value);
+	if(justLoaded) setSwitches();
+	justLoaded = false;
 	setActions();
 	recordSwitches();
 	chrome.tabs.sendMessage(activeTabId, {message: "skip_data", cuts: cuts, switches: switches});
@@ -410,7 +414,7 @@ moveBtn.addEventListener('click',toggleTopShot);
 
 syncBtn.addEventListener('click',syncTimes);
 
-//faster way to check for content depanding on browser; returns a Boolean; regex and stringArray content should match
+//faster way to check for content depending on browser; returns a Boolean; regex and stringArray content should match
 function isContained(containerStr, regex){
 	var result = false;
 	if(isFirefox){
@@ -439,6 +443,21 @@ function isSkipped(label){
 		return true
 	}else{
 		return false
+	}
+}
+
+//set switches for edits present in skip file; used only when a file is loaded
+function setSwitches(){
+	var boxes = checkBoxes.querySelectorAll('input');
+	for(var i = 0; i < 6; i++) boxes[i].checked = false;
+	for(var i = 0; i < cuts.length; i++){
+		var label = cuts[i].text.toLowerCase().replace(/\(.*\)/g,'');						//ignore text in parentheses
+		sexMode.checked = sexMode.checked || isContained(label,/sex|nud/);
+		violenceMode.checked = violenceMode.checked || isContained(label,/vio|gor/);
+		curseMode.checked = curseMode.checked || isContained(label,/pro|cur|hat/);
+		boozeMode.checked = boozeMode.checked || isContained(label,/alc|dru|smo/);
+		scareMode.checked = scareMode.checked || isContained(label,/fri|sca|int/);
+		otherMode.checked = otherMode.checked || isContained(label,/oth|bor/)
 	}
 }
 
@@ -476,7 +495,7 @@ chrome.runtime.onMessage.addListener(
 			}
 			times2box();										//put shifted times in the box
 	
-			if(shotTime){										//reconstruct initial data, if present
+			if(shotTime != null){										//reconstruct initial data, if present
 				initialData[0] = toHMS(shotTime + seconds);
 				skipBox.value = initialData.join('\n') + '\n\n' + skipBox.value
 			}
@@ -495,7 +514,7 @@ chrome.runtime.onMessage.addListener(
 			boxMsg.textContent = "This service does not allow taking screenshots. Take it from the OS and load it with the button";
 			shotFileBtn.style.display = ''
 		}
-		skipBox.value += toHMS(request.time) + '\n';			//insert time regardless
+		writeIn(toHMS(request.time));						//insert time regardless
 		setTimeout(function(){makeTimeLabels()},100)
 	}
   }
