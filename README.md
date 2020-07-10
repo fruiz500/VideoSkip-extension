@@ -15,4 +15,4 @@ There's also a promotional page at https://videoskip.weebly.com
 
 The VideoSkip Exchange, where users can get and contribute skip files for popular feature films, is live at https://videoskip.org/exchange
 
-Beginning with version 0.2, VideoSkip uses localization to support multiple languages. We begin with English and Spanish, but we need your help to add other languages. Just do it and send me a pull request.
+Beginning with version 0.2, VideoSkip uses localization to support multiple languages. We begin with English and Spanish, but we need your help to add other languages. Just do it and send us a pull request.
