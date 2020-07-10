@@ -1,0 +1,39 @@
+//English strings
+{
+	"manifest_descr": {
+		"message": "Skips/mutes/blanks selected parts of streaming videos"
+	},
+	"directory":{
+		"message": "en"
+	},
+	"noVideoMsg": {
+		"message": "I can't find a video on this page"
+	},
+	"wrongFile": {
+		"message": "Wrong file type"
+	},
+	"contentOfFile": {
+		"message": "This is the content of file: "
+	},
+	"shotLoaded": {
+		"message": "Screenshot loaded"
+	},
+	"shotCanceled": {
+		"message": "Screenshot canceled"
+	},
+	"fileSaved": {
+		"message": "File saved with name "
+	},
+	"seconds": {
+		"message": " seconds"
+	},
+	"delayed": {
+		"message": "Skips delayed by "
+	},
+	"advanced": {
+		"message": "Skips advanced by "
+	},
+	"badService": {
+		"message": "This service does not allow taking screenshots. Take it from the OS and load it with the button"
+	}
+}

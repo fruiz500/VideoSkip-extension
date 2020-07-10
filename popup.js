@@ -8,9 +8,9 @@ var popup, activeTab;
 //opens permanent popup on icon click
 function openPopup(){
 	if(isFirefox){
-		popup = chrome.windows.create({url:'videoskip.html#' + activeTab.id, width:980, height:670, type:'popup'})
+		popup = chrome.windows.create({url:'/_locales/' +  chrome.i18n.getMessage('directory') + '/videoskip.html#' + activeTab.id, width:980, height:670, type:'popup'})
 	}else{
-		popup = window.open('videoskip.html#' + activeTab.id,'popup',popupParams).focus()
+		popup = window.open('/_locales/' + chrome.i18n.getMessage('directory') + '/videoskip.html#' + activeTab.id,'popup',popupParams).focus()
 	}
 }
 

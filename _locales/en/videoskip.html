@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml" manifest="videoskip.appcache">
+<head>
+<meta charset="UTF-8">
+<title>VideoSkip extension</title>
+<meta name="Description" content="VideoSkip extension">
+<meta name="author" content="F. Ruiz">
+<meta name="robots" content="index">
+
+<link href="/videoskip.css" rel="stylesheet">
+
+</head>
+
+<body>                    
+	<h2>VideoSkip</h2>
+    <p>v 0.2 &nbsp;&#169; F. Ruiz 2020&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <button id="help" class="cssbutton" title="show instructions on new tab">Help</button></p>
+    <br>
+    Select the content to skip:
+    <br><br>
+    <div id="checkBoxes">
+    &nbsp;&nbsp;
+    <input type="checkbox" id="sexMode"/>&nbsp;Sex and Nudity&nbsp;&nbsp;
+    <input type="checkbox" id="violenceMode"/>&nbsp;Violence and Gore&nbsp;&nbsp;
+    <input type="checkbox" id="curseMode"/>&nbsp;Profanity and Hate&nbsp;&nbsp;
+    <input type="checkbox" id="boozeMode"/>&nbsp;Alcohol, Drugs and Smoking&nbsp;&nbsp;
+    <input type="checkbox" id="scareMode"/>&nbsp;Frightening and Intense&nbsp;&nbsp;
+    <input type="checkbox" id="otherMode"/>&nbsp;Other
+    </div>
+    <br>
+    <div id="boxMsg">Load here the .skp file containing the skips:</div>
+    <br>
+    <label for="skipFile"><span class="cssbutton imptButton" id="skipFileBtn" title="load .skp file">Load skip file</span></label>
+	<input type="file" id="skipFile"/>
+    <button id="exchangeBtn"class="cssbutton small" title="open the VideoSkip Exchange in a separate tab">VideoSkip Exchange</button>
+    <span class="hspacer"></span>
+    <label for="shotFile" title="load screenshot"><span class="cssbutton" id="shotFileBtn" title="load screenshot">Load screenshot</span></label>
+	<input type="file" id="shotFile"/>
+    <br><br>
+    Edit &nbsp;&nbsp;&nbsp;
+    <button id="timeBtn" class="cssbutton small" title="insert current time">Insert time</button>
+    <button id="arrowBtn" class="cssbutton small" title="insert a correctly formatted arrow">Insert arrow</button>
+    <button id="beepBtn" class="cssbutton small" title="insert a quick word mute">Insert silence</button>
+    <button id="saveFile" class="cssbutton imptButton small" title="save .skp file to Downloads">Save</button>
+    &nbsp;&nbsp;
+    <button id="backBtn"class="cssbutton small" title="step rewind">&#9668;</button>
+    <input type="checkbox" id="fineMode"/ title="frame by frame">&nbsp;<span class="fineText">Fine</span>&nbsp;
+    <button id="fwdBtn"class="cssbutton small" title="step advance">&#9658;</button>
+    <button id="fFwdBtn"class="cssbutton small" title="toggle play / fast forward / stop">&#9658;&#9658;</button>
+    <button id="shotTimeBtn"class="cssbutton small" title="go to selected time / screenshot time">Go to time</button>
+    <button id="moveBtn" class="cssbutton small" title="overlay shot on video">Superimpose</button>
+    <button id="syncBtn"class="cssbutton imptButton small" title="change all times when video and shot match">Sync times</button>
+    <button id="shotBtn"class="cssbutton small" title="take screenshot">Take screenshot</button>
+    <br>
+	<textarea id="skipBox" rows="10" placeholder="Skips appear here"></textarea>
+    &nbsp;&nbsp;&nbsp;<img id="screenShot">
+
+<script src="/videoskip.js"></script>
+
+</body>
+</html>

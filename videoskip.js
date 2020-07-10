@@ -51,11 +51,11 @@ function loadFileAsURL(){
 			skipBox.value = data[0].trim();
 			if(data[1]) screenShot.src = 'data:image/jpeg;base64,' + data[1];
 		}else{
-			boxMsg.textContent = "wrong file type"
+			boxMsg.textContent = chrome.i18n.getMessage('wrongFile')
 		}
 	};
 	fileReader.readAsText(fileToLoad);
-	boxMsg.textContent = 'This is the content of file: ' + fileToLoad.name;
+	boxMsg.textContent = chrome.i18n.getMessage('contentOfFile') + fileToLoad.name;
 	setTimeout(function(){justLoaded = true;sendData();},1000)							//give it a whole second to load before data is extracted to memory and sent; also set switches
 }
 
@@ -69,9 +69,9 @@ function loadShot(){
 	};
 	if(fileToLoad){
 		fileReader.readAsDataURL(fileToLoad);
-		boxMsg.textContent = 'Screenshot loaded'
+		boxMsg.textContent = chrome.i18n.getMessage('shotLoaded')
 	}else{
-		boxMsg.textContent = 'Screenshot canceled'
+		boxMsg.textContent = chrome.i18n.getMessage('shotCanceled')
 	}
 }
 
@@ -222,6 +222,14 @@ function writeIn(string){
 function writeTime(){
 	isSync = false;
 	chrome.tabs.sendMessage(activeTabId, {message: "need_time"})	
+}
+
+var isSilence = false;
+
+//insert quick silence
+function writeSilence(){
+	isSilence = true;
+	chrome.tabs.sendMessage(activeTabId, {message: "need_time"})
 }
 
 //called by forward button
@@ -382,12 +390,14 @@ timeBtn.addEventListener('click', writeTime);
 
 arrowBtn.addEventListener('click', function(){writeIn(' --> ')});
 
+beepBtn.addEventListener('click', writeSilence);
+
 help.addEventListener('click', function(){window.open('help.html')});
 
 saveFile.addEventListener('click', function(){
 	if(!name) name = prompt('Enter the file name. Extension .skp wil be added');
 	download(skipBox.value + '\n' + screenShot.src, name + '.skp', "text/plain");	
-	boxMsg.textContent = 'File saved with name ' + name + '.skp'
+	boxMsg.textContent = chrome.i18n.getMessage('fileSaved') + name + '.skp'
 })
 
 skipBox.addEventListener('change', sendData);
@@ -482,10 +492,7 @@ chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
 	 
     if(request.message == "video_time") {
-		if(!isSync){																			//just put it in box
-			writeIn(toHMS(request.time))
-
-		}else{																					//re-sync all times
+		if(isSync){																						//re-sync all times
 			var	initialData = skipBox.value.trim().split('\n').slice(0,2),					//first two lines
 				shotTime = fromHMS(initialData[0]),
 				seconds = shotTime ? request.time - shotTime : 0;
@@ -500,18 +507,25 @@ chrome.runtime.onMessage.addListener(
 				skipBox.value = initialData.join('\n') + '\n\n' + skipBox.value
 			}
 			if(seconds >= 0){
-				boxMsg.textContent = "Skips delayed by " + Math.floor(seconds*100)/100 + " seconds"
+				boxMsg.textContent = chrome.i18n.getMessage('delayed') + Math.floor(seconds*100)/100 + chrome.i18n.getMessage('seconds')
 			}else{
-				boxMsg.textContent = "Skips advanced by " + Math.floor(- seconds*100)/100 + " seconds"
+				boxMsg.textContent = chrome.i18n.getMessage('advanced') + Math.floor(- seconds*100)/100 + chrome.i18n.getMessage('seconds')
 			}
 			setTimeout(function(){makeTimeLabels()},100)
+			
+		}else if(isSilence){																	//insert single-word silence
+			writeIn(toHMS(request.time - 0.7) + ' --> ' + toHMS(request.time) + '\nprofane word\n\n');
+			isSilence = false
+
+		}else{																		//just put it in box
+			writeIn(toHMS(request.time))
 		}
 		
 	}else if(request.message == "video_shot"){
 		if(request.dataURI){
 			screenShot.src = request.dataURI
 		}else{
-			boxMsg.textContent = "This service does not allow taking screenshots. Take it from the OS and load it with the button";
+			boxMsg.textContent = chrome.i18n.getMessage('badService');
 			shotFileBtn.style.display = ''
 		}
 		writeIn(toHMS(request.time));						//insert time regardless

@@ -1,0 +1,39 @@
+//Spanish strings
+{
+	"manifest_descr": {
+		"message": "Filtra contenidos de vídeos previamente seleccionados"
+	},
+	"directory":{
+		"message": "es"
+	},
+	"noVideoMsg": {
+		"message": "No encuentro vídeos en esta página"
+	},
+	"wrongFile": {
+		"message": "Tipo de archivo erróneo"
+	},
+	"contentOfFile": {
+		"message": "Esto es el contenido del archivo: "
+	},
+	"shotLoaded": {
+		"message": "Captura cargada"
+	},
+	"shotCanceled": {
+		"message": "Captura cancelada"
+	},
+	"fileSaved": {
+		"message": "Archivo guardado bajo nombre "
+	},
+	"seconds": {
+		"message": " segundos"
+	},
+	"delayed": {
+		"message": "Correcciones retrasadas "
+	},
+	"advanced": {
+		"message": "Correcciones adelantadas "
+	},
+	"badService": {
+		"message": "Este servicio no permite capturas de pantalla. Captúrela fuera del navegador y cárguelo con el botón"
+	}
+}

@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en" xml:lang="es" xmlns="http://www.w3.org/1999/xhtml" manifest="videoskip.appcache">
+<head>
+<meta charset="UTF-8">
+<title>VideoSkip extensión</title>
+<meta name="Description" content="VideoSkip extension">
+<meta name="author" content="F. Ruiz">
+<meta name="robots" content="index">
+
+<link href="/videoskip.css" rel="stylesheet">
+
+</head>
+
+<body>                    
+	<h2>VideoSkip</h2>
+    <p>v 0.2 &nbsp;&#169; F. Ruiz 2020&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <button id="help" class="cssbutton" title="mostrar instrucciones en nueva pestaña">Ayuda</button></p>
+    <br>
+    Seleccione el contenido a filtrar:
+    <br><br>
+    <div id="checkBoxes">
+    &nbsp;&nbsp;
+    <input type="checkbox" id="sexMode"/>&nbsp;Sexo y Desnudez&nbsp;&nbsp;
+    <input type="checkbox" id="violenceMode"/>&nbsp;Violencia y Sangre&nbsp;&nbsp;
+    <input type="checkbox" id="curseMode"/>&nbsp;Profanidad y Odio&nbsp;&nbsp;
+    <input type="checkbox" id="boozeMode"/>&nbsp;Alcohol, Drogas, y Tabaco&nbsp;&nbsp;
+    <input type="checkbox" id="scareMode"/>&nbsp;Aterrador o Intenso&nbsp;&nbsp;
+    <input type="checkbox" id="otherMode"/>&nbsp;Otro
+    </div>
+    <br>
+    <div id="boxMsg">Cargue aquí el archivo .skp que contiene el material a filtrar</div>
+    <br>
+    <label for="skipFile"><span class="cssbutton imptButton" id="skipFileBtn" title="cargar archivo .skp">Cargar archivo de filtros</span></label>
+	<input type="file" id="skipFile"/>
+    <button id="exchangeBtn"class="cssbutton small" title="abrir el VideoSkip Exchange en nueva pestaña">VideoSkip Exchange</button>
+    <span class="hspacer"></span>
+    <label for="shotFile" title="cargar captura de pantalla"><span class="cssbutton" id="shotFileBtn" title="cargar captura">Cargar captura</span></label>
+	<input type="file" id="shotFile"/>
+    <br><br>
+    Editar &nbsp;&nbsp;&nbsp;
+    <button id="timeBtn" class="cssbutton small" title="insertar tiempo actual">Insertar tiempo</button>
+    <button id="arrowBtn" class="cssbutton small" title="insertar flecha formateada">Insertar flecha</button>
+    <button id="beepBtn" class="cssbutton small" title="insertar corto silencio">Insertar silencio</button>
+    <button id="saveFile" class="cssbutton imptButton small" title="guardar archivo .skp en Descargas">Guardar</button>
+    &nbsp;&nbsp;
+    <button id="backBtn"class="cssbutton small" title="retrasar un paso">&#9668;</button>
+    <input type="checkbox" id="fineMode"/ title="paso fino">&nbsp;<span class="fineText">Fino</span>&nbsp;
+    <button id="fwdBtn"class="cssbutton small" title="avanzar un paso">&#9658;</button>
+    <button id="fFwdBtn"class="cssbutton small" title="velocidad normal / acelerada / parar">&#9658;&#9658;</button>
+    <button id="shotTimeBtn"class="cssbutton small" title="avanzar al tiempo seleccionado o a la captura">Ir al tiempo</button>
+    <button id="moveBtn" class="cssbutton small" title="poner la captura sobre el vídeo">Superponer</button>
+    <button id="syncBtn"class="cssbutton imptButton small" title="cambiar todos los tiempos cuando el vídeo corresponde a la captura">Sincronizar</button>
+    <button id="shotBtn"class="cssbutton small" title="captura de pantalla">Capturar</button>
+    <br>
+	<textarea id="skipBox" rows="10" placeholder="Los filtros aparecen aquí"></textarea>
+    &nbsp;&nbsp;&nbsp;<img id="screenShot">
+
+<script src="/videoskip.js"></script>
+
+</body>
+</html>
