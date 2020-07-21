@@ -232,6 +232,8 @@ function writeSilence(){
 	chrome.tabs.sendMessage(activeTabId, {message: "need_time"})
 }
 
+var	deltaT = 0.0417;				//seconds for each frame at 24 fps
+
 //called by forward button
 function fwdSkip(){
 	if(skipBox.selectionStart != skipBox.selectionEnd){							//there is a selection
@@ -240,14 +242,14 @@ function fwdSkip(){
 		if(index != null){
 			skipBox.setSelectionRange(timeLabels[1][index],timeLabels[2][index]);
 			var selectedTime = fromHMS(timeLabels[0][index]);
-			var timeShift = fineMode.checked ? 0.0417 : 0.417;
+			var timeShift = fineMode.checked ? deltaT : deltaT*10;
 			chrome.tabs.sendMessage(activeTabId, {message: "shift_time", timeShift: timeShift, isSuper: isSuper});
 			isScrub = true;
 			chrome.tabs.sendMessage(activeTabId, {message: "need_time"});		
 			skipBox.focus()
 		}
 	}else{											//scrub by a small amount
-		var timeShift = fineMode.checked ? 0.0417 : 0.417;
+		var timeShift = fineMode.checked ? deltaT : deltaT*10;
 		chrome.tabs.sendMessage(activeTabId, {message: "shift_time", timeShift: timeShift, isSuper: isSuper})
 	}
 }
@@ -260,14 +262,14 @@ function backSkip(){
 		if(index != null){
 			skipBox.setSelectionRange(timeLabels[1][index],timeLabels[2][index]);
 			var selectedTime = fromHMS(timeLabels[0][index]);
-			var timeShift = fineMode.checked ? 0.0417 : 0.417;
+			var timeShift = fineMode.checked ? deltaT : deltaT*10;
 			chrome.tabs.sendMessage(activeTabId, {message: "shift_time", timeShift: - timeShift, isSuper: isSuper});
 			isScrub = true;
 			chrome.tabs.sendMessage(activeTabId, {message: "need_time"});
 			skipBox.focus()
 		}
 	}else{											//scrub by a small amount
-		var timeShift = fineMode.checked ? 0.0417 : 0.417;
+		var timeShift = fineMode.checked ? deltaT : deltaT*10;
 		chrome.tabs.sendMessage(activeTabId, {message: "shift_time", timeShift: - timeShift, isSuper: isSuper})
 	}
 }
@@ -293,7 +295,7 @@ function toggleTopShot(){
 		chrome.tabs.sendMessage(activeTabId, {message: "superimpose", status: false})
 	}else{
 		isSuper = true;
-		chrome.tabs.sendMessage(activeTabId, {message: "superimpose", status: true, dataURI: screenShot.src})		
+		chrome.tabs.sendMessage(activeTabId, {message: "superimpose", status: true, dataURI: screenShot.src, ratio: screenShot.width/screenShot.height})		
 	}
 }
 
@@ -420,6 +422,11 @@ backBtn.addEventListener('click',backSkip);
 
 shotTimeBtn.addEventListener('click',scrub2shot);
 
+autoBtn.addEventListener('click',function(){
+	if(!isSuper) toggleTopShot();
+	chrome.tabs.sendMessage(activeTabId, {message: "auto_find"})
+});
+
 moveBtn.addEventListener('click',toggleTopShot);
 
 syncBtn.addEventListener('click',syncTimes);
@@ -487,7 +494,7 @@ function setActions(){
 	}
 }
 
-//to get the time from the content script
+//to get the time, screenshot, or other info from the content script
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
 	 
@@ -530,6 +537,14 @@ chrome.runtime.onMessage.addListener(
 		}
 		writeIn(toHMS(request.time));						//insert time regardless
 		setTimeout(function(){makeTimeLabels()},100)
+		
+	}else if(request.message == "autosync_done"){
+		fineMode.checked = true;
+		boxMsg.textContent = chrome.i18n.getMessage('autosync_done')
+
+	}else if(request.message == "autosync_fail"){
+		autoBtn.disabled = true;
+		boxMsg.textContent = chrome.i18n.getMessage('autosync_fail')
 	}
   }
 )

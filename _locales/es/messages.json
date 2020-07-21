@@ -34,6 +34,12 @@
 		"message": "Correcciones adelantadas "
 	},
 	"badService": {
-		"message": "Este servicio no permite capturas de pantalla. Captúrela fuera del navegador y cárguelo con el botón"
+		"message": "Este servicio no permite capturas de pantalla. Captúrela fuera del navegador y cárguela con el botón"
+	},
+	"autosync_done": {
+		"message": "Búsqueda de captura terminada. Puede que tenga que repetirla o ajustar el tiempo con las flechas. Luego haga click en Sincronizar"
+	},
+	"autosync_fail": {
+		"message": "Este servicio no permite capturas de pantalla, de modo que no es posible buscar la captura de forma automática"
 	}
 }

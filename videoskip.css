@@ -52,6 +52,9 @@ input[type=checkbox] {
 	cursor: pointer;
 	background: #cfcfcf;
 }
+.cssbutton:disabled {
+  color: #a9a9a9;
+}
 .imptButton {
 	background: #e8eef3;
 }

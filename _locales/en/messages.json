@@ -35,5 +35,11 @@
 	},
 	"badService": {
 		"message": "This service does not allow taking screenshots. Take it from the OS and load it with the button"
+	},
+	"autosync_done": {
+		"message": "Auto shot finding done. You may need to repeat it or adjust with time arrows. Then click Sync times"
+	},
+	"autosync_fail": {
+		"message": "This service does not allow screenshots, so auto shot finding is not possible"
 	}
 }

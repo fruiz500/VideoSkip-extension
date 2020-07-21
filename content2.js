@@ -39,6 +39,8 @@ canvas.width = 320;
 canvas.height = 240;
 var ctx = canvas.getContext('2d');
 
+var allowShots = '';		//to avoid checking for tainted over and over
+
 //to check when canvas is tainted, from Duncan @ StackOverflow	
 function isTainted(ctx) {
     try {
@@ -55,15 +57,96 @@ function isTainted(ctx) {
 
 //to send a shot out
 function makeShot(){
+	if(allowShots == 'no') return false;			//skip whole process if not allowed
 	myVideo.pause();
 	canvas.width = myVideo.videoWidth / myVideo.videoHeight * canvas.height;
 	ctx.drawImage(myVideo, 0, 0, canvas.width, canvas.height);
+	if(allowShots == 'yes') return canvas.toDataURL('image/jpeg');		//no need to check for tainted if it's allowed
 
-	if(isTainted(ctx)){											//check first that screenshots are allowed
+	if(isTainted(ctx)){											//check that screenshots are allowed
+		allowShots = 'no';
 		return false
 	}else{
-		return canvas.toDataURL('image/jpeg'); 					// can also use 'image/png' but the file is 10x bigger
+		allowShots = 'yes';
+		return canvas.toDataURL('image/jpeg') 					// can also use 'image/png' but the file is 10x bigger
 	}
+}
+
+//get image data at current time; returns an array
+function imageData(source){
+	if(allowShots == 'no') return false;
+	canvas.width = source.clientWidth / source.clientHeight * canvas.height;
+	ctx.drawImage(source, 0, 0, canvas.width, canvas.height);
+	if(allowShots == 'yes') return ctx.getImageData(0,0,canvas.width,canvas.height).data;
+	
+	if(isTainted(ctx)){
+		allowShots = 'no';
+		return false
+	}else{
+		allowShots = 'yes';
+		return ctx.getImageData(0,0,canvas.width,canvas.height).data
+	}
+}
+
+//get the absolute error between the screenShot and the video
+function errorCalc(){
+	var videoData = imageData(myVideo),
+		length = Math.min(shotData.length,videoData.length),
+		error = 0;
+	if(!videoData) return false;				//in case the service does not allow screenshots
+	for(var i = 0; i < length / 4; i++){			//every pixel takes 4 data points: R, G, B, alpha, in the 0 to 255 range; alpha data ignored
+		error += Math.abs(videoData[4*i] - shotData[4*i])+ Math.abs(videoData[4*i+1] - shotData[4*i+1]) + Math.abs(videoData[4*i+2] - shotData[4*i+2])	//all channels abs
+	}
+	return error / length
+}
+
+var	errorData = [[],[]],
+	deltaT = 0.0417,
+	shotData;
+
+//process to get the error between the video and the screenshot as a double array of times and errors, starting 2 seconds before current video time, and move to best
+function findShot(){
+	if(!imageData(myVideo)){chrome.runtime.sendMessage({message: "autosync_fail"});return};		//bail out early if it's not going to work
+	shotData = imageData(VideoSkipShot);				//previously defined global variables
+	errorData = [[],[]];
+	var endTime = myVideo.currentTime,
+		startTime = endTime - 1.5;
+	goToTime(startTime);
+	myVideo.muted = true;
+	myVideo.play();
+	var collection = setInterval(function () {							//collect data every deltaT seconds
+		var error = errorCalc()
+		if(error === false){							//no screenshots allowed so bail out and send message
+			clearInterval(collection);
+			chrome.runtime.sendMessage({message: "autosync_fail"});
+			return
+		}
+		errorData[0].push(myVideo.currentTime);
+		errorData[1].push(error)
+	}, deltaT*1000);
+	setTimeout(function(){
+		clearInterval(collection);
+		myVideo.pause();		
+		goToTime(minTime(errorData) + deltaT);					//scrub video to position of minimum error, plus extra frame as fix
+		myVideo.muted = false;
+		chrome.runtime.sendMessage({message: "autosync_done"})
+	},2500)									//do all this for 2.5 seconds so it catches 1.5 second before and 1 after. Results will be in errorData array
+}
+
+//find time for minimum error; errorData is a double list of errors and time
+function minTime(errorData){
+	var minError = 5000,						//sufficiently large to be larger than any error in errorData
+		lastTime = errorData[0][0],
+		minIndex = 0,
+		lastIndex = errorData[0].length - 1;
+	for(var i = 1; i <= lastIndex; i++){		//first find index for the minimum error in the array, ignoring first one
+		if(errorData[1][i] < minError && errorData[0][i] != lastTime){
+			minError = errorData[1][i];
+			minIndex = i
+		}
+		lastTime = errorData[0][i]			//to get beyond stuck time at the beginning
+	}
+	return errorData[0][minIndex]				//time for minimum error in the data array
 }
 
 //moves play to requested time
@@ -163,12 +246,25 @@ chrome.runtime.onMessage.addListener(
 		if(request.status){							//add overlay
 			if(request.dataURI){
 				VideoSkipShot.src = request.dataURI;
+				var	videoRatio = myVideo.clientWidth / myVideo.clientHeight,
+					shotRatio = request.ratio;
+				if(videoRatio <= shotRatio){			//possible black bars at top and bottom
+					VideoSkipShot.width = myVideo.clientWidth;
+					VideoSkipShot.height = VideoSkipShot.width / shotRatio;
+					VideoSkipShot.style.top = myVideo.offsetTop + myVideo.clientHeight/2 - VideoSkipShot.height/2 + 'px';
+					VideoSkipShot.style.left = myVideo.offsetLeft + 'px'
+				}else{									//possible black bars at left and right
+					VideoSkipShot.height = myVideo.clientHeight
+					VideoSkipShot.width = VideoSkipShot.height * shotRatio;
+					VideoSkipShot.style.top = myVideo.offsetTop + 'px';
+					VideoSkipShot.style.left = myVideo.offsetLeft + myVideo.clientWidth/2 - VideoSkipShot.width/2 + 'px'
+				}	
 				VideoSkipShot.style.display = ''
 			}
 		}else{											//remove overlay
 			VideoSkipShot.style.display = 'none'
 		}
-	
+
 	}else if(request.message == "fast_toggle"){
 		if(myVideo.paused){							//if paused, restart at normal speed
 			speedMode = 1;
@@ -187,6 +283,7 @@ chrome.runtime.onMessage.addListener(
 				myVideo.pause()
 			}
 		}
+
 	}else if(request.message == "move_shot"){		//move or resize superimposed screenshot
 		var	isFine = request.isFine;					//small increments
 		if(request.isSize){							//resize shot
@@ -209,14 +306,17 @@ chrome.runtime.onMessage.addListener(
 			}else{
 				VideoSkipShot.style.left = parseInt(VideoSkipShot.style.left.slice(0,-2)) + (isFine ? 1 : 10) + 'px'
 			}
-		}		
+		}
+
+	}else if(request.message == "auto_find"){
+		findShot()
 	}
   }
 )
 
-//whow filter settings as soon as the video goes full screen, and when the mouse is moved on fullscreen
+//show filter settings as soon as the video goes full screen, and when the mouse is moved on fullscreen
 window.onresize = function(){
-	if(((screen.availWidth || screen.width-30) <= window.innerWidth) && VideoSkipControl){		//it's fullscreen now
+	if(((screen.availWidth || screen.width-30) <= window.outerWidth) && VideoSkipControl){		//it's fullscreen now
 		showSettings()
 		var fadeTimer = setTimeout(function(){
 			VideoSkipControl.style.display = 'none'
@@ -227,7 +327,7 @@ window.onresize = function(){
 }
 
 window.onmousemove = function(){
-	if(((screen.availWidth || screen.width-30) <= window.innerWidth) && VideoSkipControl){
+	if(((screen.availWidth || screen.width-30) <= window.outerWidth) && VideoSkipControl){
 		delete fadeTimer;
 		showSettings();
 		var fadeTimer = setTimeout(function(){

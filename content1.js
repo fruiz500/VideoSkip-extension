@@ -19,9 +19,7 @@ chrome.runtime.sendMessage({message: "start_info", hasVideo: !!myVideo, isLoaded
 if(!!myVideo){													//add overlay image for superimpose function
 	myVideo.crossOrigin = 'anonymous';		//in case it helps
 	var superimpose = false,									//flag for sending image when superimposing a screenshot
-		VideoSkipShot = document.createElement('img');
-	VideoSkipShot.height = myVideo.offsetHeight;
-	VideoSkipShot.width = myVideo.offsetWidth;
+	VideoSkipShot = document.createElement('img');
 	VideoSkipShot.style.position = 'absolute';
 	VideoSkipShot.style.top = myVideo.style.top | 0;
 	VideoSkipShot.style.left = myVideo.style.left | 0;
@@ -32,8 +30,8 @@ if(!!myVideo){													//add overlay image for superimpose function
 	
 	var VideoSkipControl = document.createElement('span');			//to display filter settings on fullscreen
 	VideoSkipControl.style.position = 'absolute';
-	VideoSkipControl.style.top = (parseInt(myVideo.style.top.slice(0,-2)) + 100) + 'px';
-	VideoSkipControl.style.left = (parseInt(myVideo.style.left.slice(0,-2)) + 100) + 'px';
+	VideoSkipControl.style.top = (myVideo.offsetTop + 200) + 'px';
+	VideoSkipControl.style.left = (myVideo.offsetLeft + 200) + 'px';
 	VideoSkipControl.style.zIndex = myVideo.style.zIndex + 1 | 1;
 	VideoSkipControl.style.display = 'none';
 	VideoSkipControl.textContent = "This is the control";
