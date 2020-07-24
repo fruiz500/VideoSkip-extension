@@ -50,13 +50,49 @@ function loadFileAsURL(){
 			name = fileToLoad.name.slice(0,-4);
 			skipBox.value = data[0].trim();
 			if(data[1]) screenShot.src = 'data:image/jpeg;base64,' + data[1];
+			boxMsg.textContent = chrome.i18n.getMessage('contentOfFile') + fileToLoad.name;
+			setTimeout(function(){justLoaded = true;sendData();},1000)		//give it a whole second to load before data is extracted to memory and sent; also set switches
 		}else{
 			boxMsg.textContent = chrome.i18n.getMessage('wrongFile')
 		}
 	};
-	fileReader.readAsText(fileToLoad);
-	boxMsg.textContent = chrome.i18n.getMessage('contentOfFile') + fileToLoad.name;
-	setTimeout(function(){justLoaded = true;sendData();},1000)							//give it a whole second to load before data is extracted to memory and sent; also set switches
+	fileReader.readAsText(fileToLoad)
+}
+
+//similar, for loading subtitles to generate skips for profanity
+function loadSub(){
+	var fileToLoad = subFile.files[0],
+		fileReader = new FileReader();
+	fileReader.onload = function(fileLoadedEvent){
+		var URLFromFileLoaded = fileLoadedEvent.target.result;
+		var extension = fileToLoad.name.slice(-4);
+		if(extension == ".vtt" || extension == ".srt"){						//allow only .vtt and .srt formats
+			var subs = URLFromFileLoaded;										//get subs in text format, to be edited
+			subs = subs.replace(/(\d),(\d)/g,'$1.$2');		//convert decimal commas to periods
+			autoBeepGen(subs);
+			sendData()
+		}
+	};
+	fileReader.readAsText(fileToLoad)
+}
+
+//makes silenced profanity skips timed to subtitles with words in blockList
+function autoBeepGen(subs){
+	var blockListExp = new RegExp(blockList.textContent.replace(/, +/g,'|'),"g");
+	var subObj = PF_SRT.parse(subs);				//similar in structure to cuts, with keys: startTime, endTime, text, action (empty)
+	writeIn('\n\n');
+	for(var i = 0; i < subObj.length; i++){
+		var word = subObj[i].text.toLowerCase().match(blockListExp);
+		if(word){	//word found in block list
+			writeIn(toHMS(subObj[i].startTime) + ' --> ' + toHMS(subObj[i].endTime) + '\nprofane word (' + word[0] + ')\n\n')
+		}
+	}
+	var	initialData = skipBox.value.trim().split('\n').slice(0,2);		//first two lines containing screenshot timing
+	cuts = PF_SRT.parse(skipBox.value);
+	cuts.sort(function(a, b){return a.startTime - b.startTime;});
+	times2box();
+	skipBox.value = initialData.join('\n') + '\n\n' + skipBox.value;
+	curseMode.checked = true
 }
 
 //loads the screen shot from file, if the direct take didn't work
@@ -117,14 +153,14 @@ function download(data, filename, type) {
     a.click();
     setTimeout(function() {
        document.body.removeChild(a);
-       window.URL.revokeObjectURL(url);  
+       window.URL.revokeObjectURL(url);
     }, 0)
 }
 
 //to parse the content of the skip box in something close to .srt format, from StackOverflow
 var PF_SRT = function() {
   //SRT format
-  var pattern = /([\d:,.]+)\s*-+\>\s*([\d:,.]+)\s*\n([\s\S]*?(?=\n{2}|$))?/gm;		//no item number, can use decimal dot instead of comma, malformed arrows
+  var pattern = /([\d:,.]+)\s*-+\>\s*([\d:,.]+)\s*\n([\s\S]*?(?=\n{2}|=\n{2}))?/gm;		//no item number, can use decimal dot instead of comma, malformed arrows
   var _regExp;
 
   var init = function() {
@@ -138,7 +174,7 @@ var PF_SRT = function() {
     if (f == null)
       return _subtitles;
 
-    f = f.replace(/\r\n|\r|\n/g, '\n')
+    f = f.replace(/\r\n|\r|\n/g, '\n') + '\n\n';
 
     while ((matches = pattern.exec(f)) != null) {
       result.push(toLineObj(matches));
@@ -187,6 +223,13 @@ isSync = false;
 
 //shift all times so the screenshot has correct timing in the video
 function syncTimes(){
+	if(timeLabels.length == 0){
+		boxMsg.textContent = chrome.i18n.getMessage('time_in_box');
+		return
+	}else if(timeLabels[0].length < 1){
+		boxMsg.textContent = chrome.i18n.getMessage('time_in_box');
+		return
+	}
 	isSync = true;
 	chrome.tabs.sendMessage(activeTabId, {message: "need_time"});		//to be continued when the current time is received
 	setTimeout(function(){makeTimeLabels()},100)
@@ -276,6 +319,13 @@ function backSkip(){
 
 //scrub to first time in the box, unless a time is selected
 function scrub2shot(){
+	if(timeLabels.length == 0){
+		boxMsg.textContent = chrome.i18n.getMessage('time_in_box');
+		return
+	}else if(timeLabels[0].length < 1){
+		boxMsg.textContent = chrome.i18n.getMessage('time_in_box');
+		return
+	}
 	var index = getTimeIndex();
 	if(index != null){
 		skipBox.setSelectionRange(timeLabels[1][index],timeLabels[2][index]);
@@ -290,6 +340,10 @@ var isSuper = false;
 
 //put the screenshot on top of the video so a perfect match can be found, and back
 function toggleTopShot(){
+	if(screenShot.src == ''){
+		isSuper = true;
+		boxMsg.textContent = chrome.i18n.getMessage('no_superimpose');
+	}
 	if(isSuper){
 		isSuper = false;
 		chrome.tabs.sendMessage(activeTabId, {message: "superimpose", status: false})
@@ -388,16 +442,26 @@ exchangeBtn.addEventListener('click', function(){window.open('https://videoskip.
 
 shotFile.addEventListener('change', loadShot);
 
+subFile.addEventListener('change', loadSub);
+
 timeBtn.addEventListener('click', writeTime);
 
 arrowBtn.addEventListener('click', function(){writeIn(' --> ')});
 
 beepBtn.addEventListener('click', writeSilence);
 
-help.addEventListener('click', function(){window.open('help.html')});
+help.addEventListener('click', function(){
+	if(blockListCont.style.display == 'block'){	
+		blockListCont.style.display = 'none'
+	}else{
+		window.open('help.html');
+		blockListCont.style.display = 'block'
+	}
+});
 
 saveFile.addEventListener('click', function(){
-	if(!name) name = prompt('Enter the file name. Extension .skp wil be added');
+	if(screenShot.src == '' && timeLabels.length == 0) return;
+	if(!name) name = prompt(chrome.i18n.getMessage('fileName'));
 	download(skipBox.value + '\n' + screenShot.src, name + '.skp', "text/plain");	
 	boxMsg.textContent = chrome.i18n.getMessage('fileSaved') + name + '.skp'
 })
@@ -423,6 +487,10 @@ backBtn.addEventListener('click',backSkip);
 shotTimeBtn.addEventListener('click',scrub2shot);
 
 autoBtn.addEventListener('click',function(){
+	if(screenShot.src == ''){
+		boxMsg.textContent = chrome.i18n.getMessage('screenshot_first');
+		return
+	}
 	if(!isSuper) toggleTopShot();
 	chrome.tabs.sendMessage(activeTabId, {message: "auto_find"})
 });
@@ -507,6 +575,7 @@ chrome.runtime.onMessage.addListener(
 				cuts[i].startTime += seconds;
 				cuts[i].endTime += seconds
 			}
+			chrome.tabs.sendMessage(activeTabId, {message: "skip_data", cuts: cuts, switches: switches});		//so the content script has it too
 			times2box();										//put shifted times in the box
 	
 			if(shotTime != null){										//reconstruct initial data, if present
@@ -522,7 +591,8 @@ chrome.runtime.onMessage.addListener(
 			
 		}else if(isSilence){																	//insert single-word silence
 			writeIn(toHMS(request.time - 0.7) + ' --> ' + toHMS(request.time) + '\nprofane word\n\n');
-			isSilence = false
+			isSilence = false;
+			sendData()
 
 		}else{																		//just put it in box
 			writeIn(toHMS(request.time))

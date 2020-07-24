@@ -41,5 +41,17 @@
 	},
 	"autosync_fail": {
 		"message": "Este servicio no permite capturas de pantalla, de modo que no es posible buscar la captura de forma automática"
+	},
+	"time_in_box": {
+		"message": "Debe haber al menos un tiempo antes de hacer click"
+	},
+	"no_superimpose": {
+		"message": "Nada que superponer"
+	},
+	"fileName": {
+		"message": "Escriba el nombre del archivo. Se le dará extensión .skp"
+	},
+	"screenshot_first": {
+		"message": "Se necesita una captura"
 	}
 }

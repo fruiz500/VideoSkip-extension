@@ -41,5 +41,17 @@
 	},
 	"autosync_fail": {
 		"message": "This service does not allow screenshots, so auto shot finding is not possible"
+	},
+	"time_in_box": {
+		"message": "Must have at least one time in the box before clicking"
+	},
+	"no_superimpose": {
+		"message": "Nothing to superimpose"
+	},
+	"fileName": {
+		"message": "Enter the file name. Extension .skp wil be added"
+	},
+	"screenshot_first": {
+		"message": "Must have a screenshot first"
 	}
 }

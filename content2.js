@@ -51,7 +51,7 @@ function isTainted(ctx) {
 		}	
         return !sum;
     } catch(err) {
-        return (err.code === 18);
+        return true;
     }
 }
 
@@ -60,9 +60,13 @@ function makeShot(){
 	if(allowShots == 'no') return false;			//skip whole process if not allowed
 	myVideo.pause();
 	canvas.width = myVideo.videoWidth / myVideo.videoHeight * canvas.height;
-	ctx.drawImage(myVideo, 0, 0, canvas.width, canvas.height);
+	try {
+		ctx.drawImage(myVideo, 0, 0, canvas.width, canvas.height)			//crashes rather than fails in Firefox, due to CORS
+	} catch (err) {
+		allowShots = 'no';
+		return false
+	}
 	if(allowShots == 'yes') return canvas.toDataURL('image/jpeg');		//no need to check for tainted if it's allowed
-
 	if(isTainted(ctx)){											//check that screenshots are allowed
 		allowShots = 'no';
 		return false
@@ -76,7 +80,12 @@ function makeShot(){
 function imageData(source){
 	if(allowShots == 'no') return false;
 	canvas.width = source.clientWidth / source.clientHeight * canvas.height;
-	ctx.drawImage(source, 0, 0, canvas.width, canvas.height);
+	try {
+		ctx.drawImage(source, 0, 0, canvas.width, canvas.height)		//crashes in Firefox, for certain sites
+	} catch (err) {
+		allowShots = 'no';
+		return false
+	}
 	if(allowShots == 'yes') return ctx.getImageData(0,0,canvas.width,canvas.height).data;
 	
 	if(isTainted(ctx)){
@@ -94,25 +103,29 @@ function errorCalc(){
 		length = Math.min(shotData.length,videoData.length),
 		error = 0;
 	if(!videoData) return false;				//in case the service does not allow screenshots
-	for(var i = 0; i < length / 4; i++){			//every pixel takes 4 data points: R, G, B, alpha, in the 0 to 255 range; alpha data ignored
-		error += Math.abs(videoData[4*i] - shotData[4*i])+ Math.abs(videoData[4*i+1] - shotData[4*i+1]) + Math.abs(videoData[4*i+2] - shotData[4*i+2])	//all channels abs
+	for(var i = 0; i < length; i += 4){			//every pixel takes 4 data points: R, G, B, alpha, in the 0 to 255 range; alpha data ignored
+		error += Math.abs(videoData[i] - shotData[i])+ Math.abs(videoData[i+1] - shotData[i+1]) + Math.abs(videoData[i+2] - shotData[i+2])	//all channels abs
 	}
 	return error / length
 }
 
 var	errorData = [[],[]],
 	deltaT = 0.0417,
-	shotData;
+	shotData,
+	accel = 2;				//determined experimentally;
 
 //process to get the error between the video and the screenshot as a double array of times and errors, starting 2 seconds before current video time, and move to best
 function findShot(){
-	if(!imageData(myVideo)){chrome.runtime.sendMessage({message: "autosync_fail"});return};		//bail out early if it's not going to work
+  if(!imageData(myVideo)){		//bail out early if it's not going to work
+		chrome.runtime.sendMessage({message: "autosync_fail"})
+  }else{
 	shotData = imageData(VideoSkipShot);				//previously defined global variables
 	errorData = [[],[]];
 	var endTime = myVideo.currentTime,
 		startTime = endTime - 1.5;
 	goToTime(startTime);
 	myVideo.muted = true;
+	myVideo.playbackRate = accel;
 	myVideo.play();
 	var collection = setInterval(function () {							//collect data every deltaT seconds
 		var error = errorCalc()
@@ -123,14 +136,16 @@ function findShot(){
 		}
 		errorData[0].push(myVideo.currentTime);
 		errorData[1].push(error)
-	}, deltaT*1000);
+	}, deltaT*1000/accel);
 	setTimeout(function(){
 		clearInterval(collection);
-		myVideo.pause();		
-		goToTime(minTime(errorData) + deltaT);					//scrub video to position of minimum error, plus extra frame as fix
+		myVideo.pause();
+		myVideo.playbackRate = 1;
+		goToTime(minTime(errorData) + deltaT/2*accel);					//scrub video to position of minimum error, plus extra time as fix
 		myVideo.muted = false;
 		chrome.runtime.sendMessage({message: "autosync_done"})
-	},2500)									//do all this for 2.5 seconds so it catches 1.5 second before and 1 after. Results will be in errorData array
+	},2500/accel)									//do all this for 2.5 seconds so it catches 1.5 second before and 1 after. Results will be in errorData array
+  }
 }
 
 //find time for minimum error; errorData is a double list of errors and time

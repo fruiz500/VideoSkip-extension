@@ -35,6 +35,12 @@ input[type=checkbox] {
 #shotFile {
 	display: none;
 }
+#subFile {
+	display: none;
+}
+#blockListCont {
+	display: none;
+}
 .cssbutton {
 	-webkit-border-radius: 10px;
 	-moz-border-radius: 10px;
