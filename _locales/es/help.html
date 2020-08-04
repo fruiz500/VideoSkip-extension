@@ -6,45 +6,59 @@
 
 <link href="/help.css" rel="stylesheet">
 
+<script src="/help.js"></script>
+
 </head>
 
 <body>
 <div id="instructions">
-  <h2>Ayuda de VideoSkip</h2>   
+  <h2>Ayuda de VideoSkip</h2>
 <p> Esta extensión le permite filtrar varios tipos de contenido objetable en vídeos descargando por streaming. Utiliza las mismas categorías que la sección &quot;Guía para padres&quot; de IMDB.com. Puede omitir secciones por completo, o simplemente silenciar el sonido o dejar en blanco el vídeo, a su discreción. También hay una aplicación web independiente, que funciona con vídeos guardados localmente en el ordenador. Se puede descargar de <a href="https://videoskip.org/app" target="_blank">https://videoskip.org/app</a> para ordenador, o aquí para teléfonos o tabletas: <a href="https://videoskip.org/mobile" target="_blank">https://videoskip.org/mobile</a> Los archivos skip se pueden intercambiar en el VideoSkip Exchange, o como prefiera. El Exchange está en <a href="https://videoskip.org/exchange" target="_blank">https://videoskip.org/exchange</a></p>
-<p>Cómo filtrar un vídeo:</p>
+<p>Haga clic en los títulos para leer el contenido.</p>
+<h2 class="helpitem">Cómo filtrar un vídeo</h2>
+<div class="helptext">
 <ol>
-  <li>Cargue el vídeo de un servicio de streaming de forma normal. Asegúrese de que el vídeo que desea editar está listo para reproducir (no en pantalla completa), y haga clic en el icono de VideoSkip, situado en la esquina superior derecha del navegador.</li>
-  <li>Aparece una nueva pestaña. Seleccione las categorías de filtros que desea activar. Cuando una categoría está activa, el contenido correspondiente será omitido. De lo contrario, será mostrado.</li>
-  <li>Si tiene un archivo .skp que contiene las correcciones, puede cargarlo ahora con el botón &quot;Cargar archivo de filtros&quot;. Una vez cargado, su contenido aparecerá en la lista inferior, más una captura de pantalla a la derecha. Cada corrección consiste en tiempos de inicio y fin relativos al comienzo del vídeo, separados por una flecha, y en el renglón debajo un nobre de categoría y quizá una etiqueta auxiliar (como &quot;video&quot; o &quot;audio&quot;).</li>
+  <li>Cargue el vídeo de un servicio de streaming de forma normal. Asegúrese de que el vídeo que desea editar está listo para reproducir (no en pantalla completa), y haga clic en el icono de VideoSkip, situado en la esquina superior derecha del navegador. Aparece una nueva ventana. Se puede mover y cambiar de tamaño de forma normal con Ctrl + y Ctrl -.</li>
+  <li>Si tiene un archivo .skp que contiene las correcciones, puede cargarlo ahora con el botón &quot;Cargar archivo de filtros&quot;. Una vez cargado, su contenido aparece en una lista que se hace visible al hacer clic en &quot;Editar&quot;, más una captura de pantalla superpuesta al vídeo.</li>
+  <ul>
   <li>Si no tiene un archivo de filtros para la película que está viendo, es probable que otro usuario haya creado uno y lo haya publicado en el VideoSkip Exchange. Hay un botón para cargar esta página en una pestaña aparte. No es necesario registrarse para navegar o descargar archivos de filtros.</li>
-  <li>VideoSkip incluye un filtro automático de palabras soeces, activado con el botón  &quot;Auto prof.&quot; después de cargar el archivo de filtros. El programa le pedirá un archivo de subtítulos correspondiente al vídeo, en el que buscará las palabras contenidas en la lista de palabrotas editable. Dicha lista se ve cuando se presiona el botón de Ayuda. Esta acción no añade subtítulos al vídeo, los cuales deben cargarse a través del servicio de streaming.</li>
-  <li>El tiempo que aparece en la primera línea se usa para sincronizar los filtros con diferentes versiones del vídeo. Haga clic en el botón &quot;Ir al tiempo&quot;; si el vídeo muestra la misma imagen que la captura de pantalla, todo está sincronizado y puede seguir adelante sin más problemas; de lo contrario, debe sincronizar los filtros como se explica en la siguiente sección.</li>
-  <li>Puede cambiar los filtros en la lista. Hay botones para insertar el tiempo actual en el vídeo (hay que desplazarse ahí previamente), o una flecha formateada correctamente, además de otro botón que inserta un silencio sobre la palabra recién pronunciada. También hay un botón para guardar la lista en la carpeta predeterminada para descargas.</li>
-  <li>Haga clic en el botón de reproducción del vídeo, y quizá también en el botón de pantalla completa, siéntese y disfrute. Los filyros actuarán cuando llegue su momento. En pantalla completa, aparece un mensaje al mover el ratón, indicando los tipos de filtro que están activados.</li>
+  <li>VideoSkip incluye un filtro automático de palabras vulgares, activado con el botón  &quot;Auto prof.&quot; después de cargar el archivo de filtros. El programa le pedirá un archivo de subtítulos correspondiente al vídeo, en el que buscará las palabras contenidas en la lista de palabrotas editable. Dicha lista se ve cuando se presiona el botón de Ayuda. Esta acción no añade subtítulos al vídeo, los cuales deben cargarse a través del servicio de streaming. El tiempo de todos estos skips se puede ajustar con los botones de flecha, si  &quot;Alt.&quot; está seleccionado.</li>
+  <li>Puede cambiar los filtros en la lista, tras hacer clic en &quot;Editar&quot;. Hay botones para insertar el tiempo actual en el vídeo (hay que desplazarse ahí previamente), o una flecha formateada correctamente. También hay un botón para guardar la lista en la carpeta predeterminada para descargas.</li>
+  </ul>
+  <li>Si la imagen aparece &quot;doble&quot;, hay que mover el tiempo del vídeo can los botones de flecha, como se explica en la siguiente sección, hasta que la pantalla aparece normal. Entonce haga clic en &quot;Sincronizar&quot; para sincronizar los filtros y quitar la captura superpuesta.</li>
+  <li>Seleccione las categorías de filtros que desea activar, de acuerdo a la audiencia. El filtro será más restrictivo cuanto más alto esté (por ejemplo: Alto = para niños, Medio = para adolescentes, Bajo = para adultos). Si un filtro está en Off,  el contenido correspondiente será mostrado.</li>
+  <li>Comience el vídeo desde su propia página, siéntese y disfrute. Los filtros actuarán cuando llegue su momento. En pantalla completa, aparece un mensaje al mover el ratón, indicando los tipos de filtro que están activados.</li>
   </ol>
-<p>Cómo sincronizar los filtros:</p>
+  </div>
+<h2 class="helpitem">Cómo sincronizar los filtros</h2>
+<div class="helptext">
 <ol>
-  <li>Si el video coincide con la captura de pantalla cuando hace clic en el botón &quot;Ir al tiempo&quot;, todo está sincronizado y ya ha terminado esta fase. Lleve el vídeo al principio y disfrútelo.</li>
-  <li>Pero si el video proviene de una fuente distinta de la utilizada para hacer el archivo de sincronización, puede que no coincida. Use los botones de flecha para desplazar el video hasta que la pantalla coincida con la captura de pantalla o la descripción (por fotogramas, si selecciona &quot;Fino&quot;). El botón de avance rápido acelera la velocidad o reanuda la reproducción si está en pausa. El botón &quot;Superponer&quot; coloca la captura de pantalla justo encima del vídeo, para que pueda ver el momento preciso en que coinciden. Puede mover la captura de pantalla con las teclas de flecha y cambiar su tamaño si mantiene presionada la tecla Alt al mismo tiempo. Para correcciones finas, presione la tecla de cambio a mayúsculas. VideoSkip incluye un procedimiento para localizar el tiempo de la captura automáticamente, con solo hacer click en &quot;Buscar captura&quot; (si el servicio permite capturas de vídeo). Asegúrese de que el tiempo de la captura se halla a menos de un segundo del tiempo actual, antes de presionar el botón.</li>
+  <li>Si el video coincide con la captura de pantalla cuando hace clic en el botón &quot;Ir al tiempo&quot; (visible tras hacer clic en &quot;Editar&quot;), todo está sincronizado y ya ha terminado esta fase. Lleve el vídeo al principio y disfrútelo.</li>
+  <li>Pero si el video proviene de una fuente distinta de la utilizada para hacer el archivo de sincronización, puede que no coincida. Use los botones de flecha para desplazar el video hasta que la pantalla coincida con la captura de pantalla o la descripción (por fotogramas, si selecciona &quot;Fino&quot;). El botón de avance rápido acelera la velocidad o reanuda la reproducción si está en pausa. Puede cambiar el tamaño de la captura de pantalla con las teclas de flecha y moverla si mantiene presionada la tecla Alt al mismo tiempo. Para correcciones finas, presione la tecla de cambio a mayúsculas (seleccionar &quot;Alt&quot; o &quot;Fino&quot; hace lo mismo).</li>
+  <li>VideoSkip incluye un procedimiento para localizar el tiempo de la captura automáticamente, con solo hacer clic en &quot;Buscar captura&quot; (para servicios que permiten capturas de vídeo; haga clic en &quot;Editar&quot; para ver el botón). Asegúrese de que el tiempo de la captura se halla a menos de un segundo del tiempo actual, antes de presionar el botón.</li>
   <li>Haga clic en el botón &quot;Sincronizar&quot; cuando el vídeo y la captura de pantalla coincidan, de modo que los tiempos de comienzo y final para cada filtro sucedan en los momentos correctos.</li>
-  <li>Si la captura de pantalla todavía está encima del vídeo, haga clic en &quot;Superponer&quot; para retirarla.</li>
 </ol>
-<p>Cómo hacer sus propios filtros:</p>
+</div>
+<h2 class="helpitem">Cómo hacer sus propios filtros</h2>
+<div class="helptext">
 <ul>
-  <li>Un archivo de filtros bien construido comenzará con el tiempo de un evento cerca del inicio del video donde la imagen está cambiando rápidamente, más una descripción de la misma en la siguiente línea (no use números en la descripción), más una captura de pantalla. Esto es para que los filtros actúen en el momento adecuado aunque el video proceda de una fuente distinta que el que se usó para elaborar el archivo. Para capturar la pantalla, simplemente lleve el video al momento deseado y haga clic en &quot;Capturar&quot;; el tiempo se añadirá en la posición del cursor. Si el servicio no permite capturas de pantalla, aparecerá un botón para que pueda cargarlo manualmente. En ese caso, capturelae pantalla con el método integrado en el sistema operativo (&quot;herramienta de clip&quot; en Windows, cmd-shit-5 en MacOS), guárdelo en un archivo y luego cargue ese archivo en VideoSkip usando el botón que acaba de aparecer.</li>
-  <li>Para insertar filtros basta desplazarse hasta el punto donde debe comenzar, hacer clic en el botón &quot;Insertar tiempo&quot; en una nueva línea, seguido del botón &quot;Insertar flecha&quot;, desplazarse hasta el punto donde debe terminar, hacer clic en el botón &quot;Insertar tiempo&quot; una vez más, y luego ir a la línea siguiente y escribir el tipo de filtro y (opcionalmente) una etiqueta auxiliar. Si no está seguro de dónde se deben insertar un filtro, hay un botín de avance rápido que pasa el vídeo a alta velocidad. Haga clic nuevamente para detenerlo. El botón a su izquierda también detiene el video.</li>
+  <li>Un archivo de filtros bien construido comenzará con el tiempo de un evento cerca del inicio del video donde la imagen está cambiando rápidamente, más una descripción de la misma en la siguiente línea (no use números en la descripción), más una captura de pantalla. Esto es para que los filtros actúen en el momento adecuado aunque el video proceda de una fuente distinta que el que se usó para elaborar el archivo. Para capturar la pantalla, simplemente lleve el video al momento deseado y haga clic en &quot;Capturar&quot;; el tiempo se añadirá en la posición del cursor. Si el servicio no permite capturas de pantalla, aparecerá un botón para que pueda cargarlo manualmente. En ese caso, capture la pantalla con el método integrado en el sistema operativo (&quot;herramienta de clip&quot; en Windows, cmd-shit-5 en MacOS), guárdelo en un archivo y luego cargue ese archivo en VideoSkip usando el botón que acaba de aparecer. Si la pantalla tiene zonas en negro, es mejor excluirlas y capturar sólo lo que es el propio film.</li>
+  <li> Cada corrección consiste en tiempos de inicio y fin relativos al comienzo del vídeo, separados por una flecha, y en el renglón debajo un nobre de categoría y quizá una etiqueta auxiliar (como &quot;video&quot; o &quot;audio&quot;). Para insertar filtros basta desplazarse hasta el punto donde debe comenzar, hacer clic en el botón &quot;Insertar tiempo&quot; en una nueva línea, seguido del botón &quot;Insertar flecha&quot;, desplazarse hasta el punto donde debe terminar, hacer clic en el botón &quot;Insertar tiempo&quot; una vez más, y luego ir a la línea siguiente y escribir el tipo de filtro y (opcionalmente) una etiqueta auxiliar. Si no está seguro de dónde se deben insertar un filtro, hay un botín de avance rápido que pasa el vídeo a alta velocidad. Haga clic nuevamente para detenerlo. El botón a su izquierda también detiene el video.</li>
   <li>Los tipos de filtro no distinguen entre mayúsculas y minúsculas. Consisten en cualquier palabra (en realidad, las primeras tres letras son suficientes) de las categorías IMDB en inglés, que se muestran junto a las casillas de verificación, como &quot;sex&quot; (sexo), &quot;nudity&quot; (desnudez), &quot;gore&quot; (sangre), &quot;drugs&quot; (drogas), etc. Etiquetas auxiliares son estas palabras en inglés: &quot;audio&quot; (audio), &quot;sound&quot; (sonido), &quot;video&quot; (vídeo), &quot;image&quot; (imagen), o las tres primeras letras de cada una, incluyendo &quot;img&quot;. No hay distinción entre mayúsculas y minúsculas.</li>
-  <li>Las etiquetas auxiliares &quot;audio&quot; o &quot;sound&quot; hacen que el sonido se silencie durante el intervalo seleccionado, en vez de omitir la sección por completo, lo que podría ser útil para eliminar palabra vulgares. Las etiquetas &quot;video&quot; e &quot;image&quot; hacen que la imagen quede en blanco mientras sigue oyéndose el sonido, lo que puede ser útil en casos de desnudez, etc. La ausencia de etiquetas auxiliares significa que la sección se omitirá por completo. Se puede agregar texto explicativo entre paréntesis sin afectar los filtros.</li>
-  <li>Todo es editable en la lista. Por ejemplo, las palabras que se silencian suelen durar mucho menos de un segundo. Se puede revisar cada tiempo individualmente seleccionándolo en la lista y haciendo clic en &quot;Ir al tiempo&quot;. Si hay un tiempo seleccionado, las flechas lo cambiarán mientras corren el vídeo.</li>
+  <li>Las etiquetas auxiliares &quot;audio&quot; o &quot;sound&quot; hacen que el sonido se silencie durante el intervalo seleccionado, en vez de omitir la sección por completo, lo que podría ser útil para eliminar palabra vulgares. Las etiquetas &quot;video&quot; e &quot;image&quot; hacen que la imagen quede en blanco mientras sigue oyéndose el sonido, lo que puede ser útil en casos de desnudez, etc. La ausencia de etiquetas auxiliares significa que la sección se omitirá por completo.</li>
+  <li>Por último, si añade un número del 1 (leve) al 3 (fuerte) se podrá seleccionar el nivel de filtrado de forma más apropiada a la audiencia. Un buen estándar es éste: 1 = inconveniente para niños, 2 = inconveniente para adolescentes, 3 = inconveniente para adultos.  Se puede agregar texto explicativo entre paréntesis sin afectar los filtros.</li>
+  <li>Todo lo que hay en la lista es editable. Por ejemplo, las palabras que se silencian suelen durar mucho menos de un segundo. Se puede revisar cada tiempo individualmente seleccionándolo en la lista y haciendo clic en &quot;Ir al tiempo&quot;. Si hay un tiempo seleccionado, las flechas lo cambiarán mientras corren el vídeo.</li>
   <li>Los botones &quot;Insertar&quot; colocan las cosas siempre en la posición actual del cursor.</li>
+  <li>Asegúrese de dejar una línea en blanco entre los skips, que consisten en una línea con tiempos más una línea con texto debajo de esta.</li>
   <li>El botón &quot;Guardar&quot; guarda la lista más la captura de pantalla en formato .skp en la carpeta de Descargas del navegador. Dado que el formato está basado en texto, se puede leer el archivo en cualquier editor de textos.</li>
   <li>El botón &quot;VideoSkip Exchange&quot; abre una página web donde podrá compartir su archivos con otros usuarios de VideoSkip.</li>
   </ul>
-<p>Ejemplo de filtro, que hará que la pantalla quede en blanco desde los 14 minutos, 8,27 segundos desde el inicio de la película hasta los 14 minutos, 14 segundos, mientras el sonido aún se oye, si  &quot;Sexo y Desnudez&quot; están seleccionados. Contiene explicaciones adicionales que no afectan la ejecución:</p>
+<p>Ejemplo de filtro, que hará que la pantalla quede en blanco desde los 14 minutos, 8,27 segundos desde el inicio de la película hasta los 14 minutos, 14 segundos, mientras el sonido aún se oye, si  &quot;Sexo, Desnudez&quot; está seleccionado con nivel Alto. Contiene explicaciones adicionales que no afectan la ejecución:</p>
 <p>0:14:08.27 --&gt; 0:14:14<br>
-  imagen desnuda (varón, por detrás)</p>
-<p>Aquí tiene algunos vídeos (en inglés), que muestran la elaboración y uso de archivos de filtros:</p>
+  imagen desnuda 1 (varón, por detrás)</p>
+  </div>
+<h2 class="helpitem">Algunos vídeos (en inglés) sobre la elaboración y uso de filtros</h2> 
+<div class="helptext">
 <p>El autor de VideoSkip toca el ukelele con púa, (ADVERTENCIA, este video puede ser ofensivo para ukelelistas sensitivos):<br>
   <a href="https://www.youtube.com/watch?v=uDZfW9SLb_4" target="_blank">https://www.youtube.com/watch?v=uDZfW9SLb_4</a></p>
 <p>Cómo se obtiene el archivo de filtros para el video anterior, del VideoSkip Exchange:<br>
@@ -55,11 +69,18 @@
   <a href="https://www.youtube.com/watch?v=Fx04SVgUKO0" target="_blank">https://www.youtube.com/watch?v=Fx04SVgUKO0</a></p>
 <p>Cómo se publica el archivo en el VideoSkip Exchange:<br>
   <a href="https://www.youtube.com/watch?v=Tv5wXTkXhcs" target="_blank">https://www.youtube.com/watch?v=Tv5wXTkXhcs</a></p>
-<p><strong>Aviso legal:</strong> se informa a los propietarios y distribuidores de derechos de autor  que los usuarios y autores de este software están ejerciendo su derecho a la libertad de expresión, garantizado por la ley en muchas naciones, al abstenerse voluntariamente de ver o escuchar contenido sin modificar dicho contenido de ninguna manera. Cualquier acción legal que ignore este aviso se considerará acoso e infracción de los derechos básicos de la persona, según la ley.</p>
-<p><strong>Créditos:</strong></p>
+  </div>
+<h2 class="helpitem">Aviso legal</h2>
+<div class="helptext">
+<p>Se informa a los propietarios y distribuidores de derechos de autor  que los usuarios y autores de este software están ejerciendo su derecho a la libertad de expresión, garantizado por la ley en muchas naciones, al abstenerse voluntariamente de ver o escuchar contenido sin modificar dicho contenido de ninguna manera. Cualquier acción legal que ignore este aviso se considerará acoso e infracción de los derechos básicos de la persona, según la ley.</p>
+</div>
+<h2 class="helpitem">Créditos</h2>
+<div class="helptext">
 <p>El dominio VideoSkip.org fue amablemente donado por <a href="https://jeremyplsek.com" target="_blank">Jeremy Plsek</a>. El sucesor de su VideoSkip es <a href="https://sponsor.ajay.app/" target="_blank">SponsorBlock</a>, que omite anuncios en YouTube</p>
+<p>Método para &quot;Buscar captura&quot; de Alvaro Gericke</p>
 <p>Favicon hecho por <a href="https://www.flaticon.com/authors/smashicons" title="Smashicons">Smashicons</a> de <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></p>
 <p>Lista de palabrotas derivada de una lista de  <a href="https://www.freewebheaders.com/full-list-of-bad-words-banned-by-google/" target="_blank">freewebheaders.com</a></p>
+</div>
 </div>
 </body>
 </html>

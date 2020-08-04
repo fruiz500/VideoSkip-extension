@@ -1,5 +1,20 @@
 body {
 	margin-left: 10%;
 	margin-right: 10%;
-	font-size: large;
+	font-size: medium;
+}
+.helpitem {
+	font-size: medium;
+	cursor: pointer;
+	padding: 14px;
+	margin: 0;
+}
+.helpitem:hover {
+	background-color: #eeeeee;
+}
+.helptext {
+	font-size: medium;
+	max-height: 0;
+	overflow: hidden;
+	transition: max-height 0.3s ease-out;
 }

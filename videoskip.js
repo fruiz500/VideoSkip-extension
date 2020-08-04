@@ -38,6 +38,22 @@ if (ua.indexOf('safari') != -1) {
 }else if (document.documentMode || /Edge/.test(navigator.userAgent)){var isEdge = true
 }
 
+var oldPixelRatio = window.devicePixelRatio;					//for resizing window after zoom
+var stretchFact = 1;												//for resizing on Edit
+var startSize = oldPixelRatio > 1.2 ? oldPixelRatio / 2 : oldPixelRatio;
+
+setTimeout(function(){window.resizeTo( window.outerWidth * startSize, window.outerHeight * startSize)},500);	//correct initial zoom
+var resInt = setInterval(resizeScr,1000)		//look for resizing every second
+	
+
+//to correct for zoom while the window is displayed, and grow window when edit section is shown
+function resizeScr(){
+	var pixelRatio = window.devicePixelRatio;
+	window.resizeTo( window.outerWidth * pixelRatio / oldPixelRatio, window.outerHeight * pixelRatio / oldPixelRatio * stretchFact);
+	oldPixelRatio = pixelRatio;
+	stretchFact = 1
+}
+
 //loads the skips file
 function loadFileAsURL(){
 	var fileToLoad = skipFile.files[0],
@@ -50,8 +66,8 @@ function loadFileAsURL(){
 			name = fileToLoad.name.slice(0,-4);
 			skipBox.value = data[0].trim();
 			if(data[1]) screenShot.src = 'data:image/jpeg;base64,' + data[1];
-			boxMsg.textContent = chrome.i18n.getMessage('contentOfFile') + fileToLoad.name;
-			setTimeout(function(){justLoaded = true;sendData();},1000)		//give it a whole second to load before data is extracted to memory and sent; also set switches
+			boxMsg.textContent = fileToLoad.name + chrome.i18n.getMessage('contentOfFile');
+			setTimeout(function(){justLoaded = true;sendData();scrub2shot();toggleTopShot()},1000)		//give it a whole second to load before data is extracted to memory and sent; also set switches
 		}else{
 			boxMsg.textContent = chrome.i18n.getMessage('wrongFile')
 		}
@@ -83,8 +99,8 @@ function autoBeepGen(subs){
 	writeIn('\n\n');
 	for(var i = 0; i < subObj.length; i++){
 		var word = subObj[i].text.toLowerCase().match(blockListExp);
-		if(word){	//word found in block list
-			writeIn(toHMS(subObj[i].startTime) + ' --> ' + toHMS(subObj[i].endTime) + '\nprofane word (' + word[0] + ')\n\n')
+		if(word){	//word found in block list; add extra .3 s buffer in case there are two in a row
+			writeIn(toHMS(subObj[i].startTime - 0.15) + ' --> ' + toHMS(subObj[i].endTime + 0.15) + '\nprofane word (' + word[0] + ')\n\n')
 		}
 	}
 	var	initialData = skipBox.value.trim().split('\n').slice(0,2);		//first two lines containing screenshot timing
@@ -92,7 +108,7 @@ function autoBeepGen(subs){
 	cuts.sort(function(a, b){return a.startTime - b.startTime;});
 	times2box();
 	skipBox.value = initialData.join('\n') + '\n\n' + skipBox.value;
-	curseMode.checked = true
+	curseNum.value = 3
 }
 
 //loads the screen shot from file, if the direct take didn't work
@@ -275,45 +291,85 @@ function writeSilence(){
 	chrome.tabs.sendMessage(activeTabId, {message: "need_time"})
 }
 
+//gets index of a particular HMS time in the box, by location; returns null if the cursor is not on a time label
+function getTimeIndex(){
+	var start = skipBox.selectionStart,
+		end = skipBox.selectionEnd;
+	for(var i = 0; i < timeLabels[0].length; i++){
+		if(timeLabels[1][i] <= start && timeLabels[2][i] >= end) return i
+	}
+}
+
 var	deltaT = 0.0417;				//seconds for each frame at 24 fps
 
 //called by forward button
 function fwdSkip(){
-	if(skipBox.selectionStart != skipBox.selectionEnd){							//there is a selection
-		var index = getTimeIndex(),
-			tol = 0.02;
-		if(index != null){
-			skipBox.setSelectionRange(timeLabels[1][index],timeLabels[2][index]);
-			var selectedTime = fromHMS(timeLabels[0][index]);
+	if(editControls.style.display == ''){isSuper = true; chrome.tabs.sendMessage(activeTabId, {message: "superimpose", status: true, dataURI: screenShot.src, ratio: screenShot.width/screenShot.height})};
+	if(altMode.checked){										//special mode for shifting auto profanity skips, in case subtitle file was off
+		shiftProfSkips(true)
+
+	}else{
+		if(skipBox.selectionStart != skipBox.selectionEnd){							//there is a selection
+			var index = getTimeIndex(),
+				tol = 0.02;
+			if(index != null){
+				skipBox.setSelectionRange(timeLabels[1][index],timeLabels[2][index]);
+				var selectedTime = fromHMS(timeLabels[0][index]);
+				var timeShift = fineMode.checked ? deltaT : deltaT*10;
+				chrome.tabs.sendMessage(activeTabId, {message: "shift_time", timeShift: timeShift, isSuper: isSuper});
+				isScrub = true;
+				chrome.tabs.sendMessage(activeTabId, {message: "need_time"});		
+				skipBox.focus()
+			}
+		}else{											//scrub by a small amount
 			var timeShift = fineMode.checked ? deltaT : deltaT*10;
-			chrome.tabs.sendMessage(activeTabId, {message: "shift_time", timeShift: timeShift, isSuper: isSuper});
-			isScrub = true;
-			chrome.tabs.sendMessage(activeTabId, {message: "need_time"});		
-			skipBox.focus()
+			chrome.tabs.sendMessage(activeTabId, {message: "shift_time", timeShift: timeShift, isSuper: isSuper})
 		}
-	}else{											//scrub by a small amount
-		var timeShift = fineMode.checked ? deltaT : deltaT*10;
-		chrome.tabs.sendMessage(activeTabId, {message: "shift_time", timeShift: timeShift, isSuper: isSuper})
 	}
 }
 
 //called by back button
 function backSkip(){
-	if(skipBox.selectionStart != skipBox.selectionEnd){							//there is a selection
-		var index = getTimeIndex(),
-			tol = 0.02;
-		if(index != null){
-			skipBox.setSelectionRange(timeLabels[1][index],timeLabels[2][index]);
-			var selectedTime = fromHMS(timeLabels[0][index]);
+	if(editControls.style.display == ''){isSuper = true; chrome.tabs.sendMessage(activeTabId, {message: "superimpose", status: true, dataURI: screenShot.src, ratio: screenShot.width/screenShot.height})};
+	if(altMode.checked){										//special mode for shifting auto profanity skips, in case subtitle file was off
+		shiftProfSkips(true)
+
+	}else{
+		if(skipBox.selectionStart != skipBox.selectionEnd){							//there is a selection
+			var index = getTimeIndex(),
+				tol = 0.02;
+			if(index != null){
+				skipBox.setSelectionRange(timeLabels[1][index],timeLabels[2][index]);
+				var selectedTime = fromHMS(timeLabels[0][index]);
+				var timeShift = fineMode.checked ? deltaT : deltaT*10;
+				chrome.tabs.sendMessage(activeTabId, {message: "shift_time", timeShift: - timeShift, isSuper: isSuper});
+				isScrub = true;
+				chrome.tabs.sendMessage(activeTabId, {message: "need_time"});
+				skipBox.focus()
+			}
+		}else{											//scrub by a small amount
 			var timeShift = fineMode.checked ? deltaT : deltaT*10;
-			chrome.tabs.sendMessage(activeTabId, {message: "shift_time", timeShift: - timeShift, isSuper: isSuper});
-			isScrub = true;
-			chrome.tabs.sendMessage(activeTabId, {message: "need_time"});
-			skipBox.focus()
+			chrome.tabs.sendMessage(activeTabId, {message: "shift_time", timeShift: - timeShift, isSuper: isSuper})
 		}
-	}else{											//scrub by a small amount
-		var timeShift = fineMode.checked ? deltaT : deltaT*10;
-		chrome.tabs.sendMessage(activeTabId, {message: "shift_time", timeShift: - timeShift, isSuper: isSuper})
+	}
+}
+
+//called by the above, to shift auto-generated profanity skips
+function shiftProfSkips(isFwd){
+	var timeShift = 0,
+		isFine = fineMode.checked,
+		initialData = skipBox.value.trim().split('\n').slice(0,2);					//first two lines
+	for(var i = 0; i < cuts.length; i++){
+		if(cuts[i].text.match(/profane word \(/)){									//do it only for auto-generated skips
+			timeShift = (isFine ? deltaT : deltaT*10)*(isFwd ? 1 : -1);
+			cuts[i].startTime += timeShift;
+			cuts[i].endTime += timeShift
+		}
+	}
+	chrome.tabs.sendMessage(activeTabId, {message: "skip_data", cuts: cuts, switches: switches});		//so the content script has it too
+	times2box();
+	if(initialData){										//reconstruct initial data, if present
+		skipBox.value = initialData.join('\n') + '\n\n' + skipBox.value
 	}
 }
 
@@ -378,18 +434,9 @@ var switches = [false,false,false,false,false,false];
 
 //record position of content switches
 function recordSwitches(){
-	var boxes = checkBoxes.querySelectorAll('input');
+	var boxes = filters.querySelectorAll('input');
 	for(var i = 0; i < boxes.length; i++){
-		switches[i] = boxes[i].checked
-	}
-}
-
-//gets index of a particular HMS time in the box, by location; returns null if the cursor is not on a time label
-function getTimeIndex(){
-	var start = skipBox.selectionStart,
-		end = skipBox.selectionEnd;
-	for(var i = 0; i < timeLabels[0].length; i++){
-		if(timeLabels[1][i] <= start && timeLabels[2][i] >= end) return i
+		switches[i] = boxes[i].value != 0
 	}
 }
 
@@ -416,23 +463,25 @@ document.onkeydown = checkKey;
 
 function checkKey(e) {
   if(isSuper){								//this only works when a screenshot is superimposed on the video
-    e = e || window.event;					
-        if (e.keyCode == '38') {			//shifted combinations resize, unshifted moves, hold Alt for fine movement
+    e = e || window.event;	
+	var isFine = fineMode.checked != !!e.shiftKey,		//XOR of the two things
+		isAlt = altMode.checked != !!e.altKey;		
+	if (e.keyCode == '38') {			//alt combinations move, unshifted resizes, hold Shift for fine movement
         // up arrow
-			chrome.tabs.sendMessage(activeTabId, {message: "move_shot", isSize: e.altKey, dir: 'up', isFine: e.shiftKey})
-        }
-        else if (e.keyCode == '40') {
+		chrome.tabs.sendMessage(activeTabId, {message: "move_shot", isAlt: isAlt, dir: 'up', isFine: isFine})
+	}
+	else if (e.keyCode == '40') {
         // down arrow
-			chrome.tabs.sendMessage(activeTabId, {message: "move_shot", isSize: e.altKey, dir: 'down', isFine: e.shiftKey})			
-        }
-        else if (e.keyCode == '37') {
+		chrome.tabs.sendMessage(activeTabId, {message: "move_shot", isAlt: isAlt, dir: 'down', isFine: isFine})			
+	}
+	else if (e.keyCode == '37') {
        // left arrow
-			chrome.tabs.sendMessage(activeTabId, {message: "move_shot", isSize: e.altKey, dir: 'left', isFine: e.shiftKey})
-        }
-        else if (e.keyCode == '39') {
+		chrome.tabs.sendMessage(activeTabId, {message: "move_shot", isAlt: isAlt, dir: 'left', isFine: isFine})
+	}
+	else if (e.keyCode == '39') {
        // right arrow
-			chrome.tabs.sendMessage(activeTabId, {message: "move_shot", isSize: e.altKey, dir: 'right', isFine: e.shiftKey})
-        }
+		chrome.tabs.sendMessage(activeTabId, {message: "move_shot", isAlt: isAlt, dir: 'right', isFine: isFine})
+	}
   }
 }
 
@@ -450,12 +499,25 @@ arrowBtn.addEventListener('click', function(){writeIn(' --> ')});
 
 beepBtn.addEventListener('click', writeSilence);
 
-help.addEventListener('click', function(){
-	if(blockListCont.style.display == 'block'){	
-		blockListCont.style.display = 'none'
+helpBtn.addEventListener('click', function(){
+	window.open('help.html')
+});
+
+editBtn.addEventListener('click', function(){
+	if(editControls.style.display == 'block'){	
+		editControls.style.display = '';
+		stretchFact = 0.5
 	}else{
-		window.open('help.html');
-		blockListCont.style.display = 'block'
+		editControls.style.display = 'block';
+		stretchFact = 2
+	}
+});
+
+showList.addEventListener('click', function(){
+	if(blockList.style.display == 'block'){
+		blockList.style.display = 'none'
+	}else{
+		blockList.style.display = 'block'
 	}
 });
 
@@ -464,11 +526,11 @@ saveFile.addEventListener('click', function(){
 	if(!name) name = prompt(chrome.i18n.getMessage('fileName'));
 	download(skipBox.value + '\n' + screenShot.src, name + '.skp', "text/plain");	
 	boxMsg.textContent = chrome.i18n.getMessage('fileSaved') + name + '.skp'
-})
+});
 
 skipBox.addEventListener('change', sendData);
 
-checkBoxes.addEventListener('change', sendData);
+filters.addEventListener('change', sendData);
 
 shotBtn.addEventListener('click',takeShot);
 
@@ -479,6 +541,7 @@ fwdBtn.addEventListener('click',fwdSkip);
 fFwdBtn.addEventListener('click',function(){
 	skipBox.selectionStart = skipBox.selectionEnd;		//clear selection, if any
 	skipBox.focus();
+	if(editControls.style.display == ''){isSuper = true; chrome.tabs.sendMessage(activeTabId, {message: "superimpose", status: true, dataURI: screenShot.src, ratio: screenShot.width/screenShot.height})};
 	chrome.tabs.sendMessage(activeTabId, {message: "fast_toggle"})
 });
 
@@ -512,20 +575,21 @@ function isContained(containerStr, regex){
 	return result
 }
 
-//to decide whether a particular content is to be skipped, according to check boxes. Allows alternative and incomplete keywords
+//to decide whether a particular content is to be skipped, according to 3-level sliders. Allows alternative and incomplete keywords
 function isSkipped(label){
-	if(isContained(label,/sex|nud/) && sexMode.checked){
-		return true
-	}else if(isContained(label,/vio|gor/) && violenceMode.checked){
-		return true
-	}else if(isContained(label,/pro|cur|hat/) && curseMode.checked){
-		return true
-	}else if(isContained(label,/alc|dru|smo/) && boozeMode.checked){
-		return true
-	}else if(isContained(label,/fri|sca|int/) && scareMode.checked){
-		return true
-	}else if(isContained(label,/oth|bor/) && otherMode.checked){
-		return true
+	var level = parseInt(label.match(/\d/) ? label.match(/\d/)[0] : 3)
+	if(isContained(label,/sex|nud/)){
+		return (parseInt(sexNum.value) + level) > 3
+	}else if(isContained(label,/vio|gor/)){
+		return (parseInt(violenceNum.value) + level) > 3
+	}else if(isContained(label,/pro|cur|hat/)){
+		return (parseInt(curseNum.value) + level) > 3
+	}else if(isContained(label,/alc|dru|smo/)){
+		return (parseInt(boozeNum.value) + level) > 3
+	}else if(isContained(label,/fri|sca|int/)){
+		return (parseInt(scareNum.value) + level) > 3
+	}else if(isContained(label,/oth|bor/)){
+		return (parseInt(otherNum.value) + level) > 3
 	}else{
 		return false
 	}
@@ -533,16 +597,16 @@ function isSkipped(label){
 
 //set switches for edits present in skip file; used only when a file is loaded
 function setSwitches(){
-	var boxes = checkBoxes.querySelectorAll('input');
-	for(var i = 0; i < 6; i++) boxes[i].checked = false;
+	var sliders = filters.querySelectorAll('input');
+	for(var i = 0; i < 6; i++) sliders[i].value = 0;
 	for(var i = 0; i < cuts.length; i++){
 		var label = cuts[i].text.toLowerCase().replace(/\(.*\)/g,'');						//ignore text in parentheses
-		sexMode.checked = sexMode.checked || isContained(label,/sex|nud/);
-		violenceMode.checked = violenceMode.checked || isContained(label,/vio|gor/);
-		curseMode.checked = curseMode.checked || isContained(label,/pro|cur|hat/);
-		boozeMode.checked = boozeMode.checked || isContained(label,/alc|dru|smo/);
-		scareMode.checked = scareMode.checked || isContained(label,/fri|sca|int/);
-		otherMode.checked = otherMode.checked || isContained(label,/oth|bor/)
+		if(isContained(label,/sex|nud/)) sexNum.value = 3;
+		if(isContained(label,/vio|gor/)) violenceNum.value = 3;
+		if(isContained(label,/pro|cur|hat/)) curseNum.value = 3;
+		if(isContained(label,/alc|dru|smo/)) boozeNum.value = 3;
+		if(isContained(label,/fri|sca|int/)) scareNum.value = 3;
+		if(isContained(label,/oth|bor/)) otherNum.value = 3
 	}
 }
 
@@ -595,7 +659,8 @@ chrome.runtime.onMessage.addListener(
 			sendData()
 
 		}else{																		//just put it in box
-			writeIn(toHMS(request.time))
+			writeIn(toHMS(request.time));
+			if(cuts.length != 0) sendData()
 		}
 		
 	}else if(request.message == "video_shot"){

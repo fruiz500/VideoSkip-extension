@@ -6,6 +6,9 @@
 	"directory":{
 		"message": "en"
 	},
+	"width": {
+		"message": "740"
+	},
 	"noVideoMsg": {
 		"message": "I can't find a video on this page"
 	},
@@ -13,7 +16,7 @@
 		"message": "Wrong file type"
 	},
 	"contentOfFile": {
-		"message": "This is the content of file: "
+		"message": " loaded. Now scrub to the superimposed screenshot and click Sync times"
 	},
 	"shotLoaded": {
 		"message": "Screenshot loaded"

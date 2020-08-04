@@ -301,17 +301,7 @@ chrome.runtime.onMessage.addListener(
 
 	}else if(request.message == "move_shot"){		//move or resize superimposed screenshot
 		var	isFine = request.isFine;					//small increments
-		if(request.isSize){							//resize shot
-			if(request.dir == 'up'){
-				VideoSkipShot.height -= isFine ? 1 : 10
-			}else if(request.dir == 'down'){
-				VideoSkipShot.height += isFine ? 1 : 10
-			}else if(request.dir == 'left'){
-				VideoSkipShot.width -= isFine ? 1 : 10
-			}else{
-				VideoSkipShot.width += isFine ? 1 : 10
-			}
-		}else{											//move shot
+		if(request.isAlt){							//move shot
 			if(request.dir == 'up'){
 				VideoSkipShot.style.top = parseInt(VideoSkipShot.style.top.slice(0,-2)) - (isFine ? 1 : 10) + 'px'
 			}else if(request.dir == 'down'){
@@ -320,6 +310,20 @@ chrome.runtime.onMessage.addListener(
 				VideoSkipShot.style.left = parseInt(VideoSkipShot.style.left.slice(0,-2)) - (isFine ? 1 : 10) + 'px'
 			}else{
 				VideoSkipShot.style.left = parseInt(VideoSkipShot.style.left.slice(0,-2)) + (isFine ? 1 : 10) + 'px'
+			}
+		}else{											//resize shot
+			if(request.dir == 'up'){
+				VideoSkipShot.height += isFine ? 2 : 10;
+				VideoSkipShot.style.top = parseInt(VideoSkipShot.style.top.slice(0,-2)) - (isFine ? 1 : 5) + 'px'
+			}else if(request.dir == 'down'){
+				VideoSkipShot.height -= isFine ? 2 : 10;
+				VideoSkipShot.style.top = parseInt(VideoSkipShot.style.top.slice(0,-2)) + (isFine ? 1 : 5) + 'px'
+			}else if(request.dir == 'left'){
+				VideoSkipShot.width += isFine ? 2 : 10;
+				VideoSkipShot.style.left = parseInt(VideoSkipShot.style.left.slice(0,-2)) - (isFine ? 1 : 5) + 'px'
+			}else{
+				VideoSkipShot.width -= isFine ? 2 : 10;
+				VideoSkipShot.style.left = parseInt(VideoSkipShot.style.left.slice(0,-2)) + (isFine ? 1 : 5) + 'px'
 			}
 		}
 
