@@ -176,7 +176,7 @@ function download(data, filename, type) {
 //to parse the content of the skip box in something close to .srt format, from StackOverflow
 var PF_SRT = function() {
   //SRT format
-  var pattern = /([\d:,.]+)\s*-+\>\s*([\d:,.]+)\s*\n([\s\S]*?(?=\n{2}|=\n{2}))?/gm;		//no item number, can use decimal dot instead of comma, malformed arrows
+  var pattern = /([\d:,.]+)\s*-*\>\s*([\d:,.]+)\s*\n([\s\S]*?(?=\n+\s*\d|\n{2}))?/gm;		//no item number, can use decimal dot instead of comma, malformed arrows, no extra lines
   var _regExp;
 
   var init = function() {
@@ -577,7 +577,9 @@ function isContained(containerStr, regex){
 
 //to decide whether a particular content is to be skipped, according to 3-level sliders. Allows alternative and incomplete keywords
 function isSkipped(label){
-	var level = parseInt(label.match(/\d/) ? label.match(/\d/)[0] : 3)
+	var nuMatches = label.match(/\d/),
+		level = level >= 3 ? 3 : level;
+	level = level >= 3 ? 3 : (level <= 0 ? 0 : level);
 	if(isContained(label,/sex|nud/)){
 		return (parseInt(sexNum.value) + level) > 3
 	}else if(isContained(label,/vio|gor/)){
