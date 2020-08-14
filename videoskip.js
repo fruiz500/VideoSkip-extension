@@ -127,36 +127,73 @@ function loadShot(){
 	}
 }
 
-// Takes a data URI and returns the Data URI corresponding to the resized image at the wanted size. by Pierrick Martellière at StackOverflow
-function resizedShot(dataURIin, wantedHeight)		//width will be calculated to maintain aspect ratio
-    {
-        // We create an image to receive the Data URI
-        var img = document.createElement('img');
+// Takes a data URI and returns the Data URI corresponding to the resized image at the wanted size. Adapted from a function by Pierrick Martellière at StackOverflow
+function resizedShot(dataURIin, wantedHeight){		//width will be calculated to maintain aspect ratio
+	// We create an image to receive the Data URI
+	var img = document.createElement('img');
 
-        // When the event "onload" is triggered we can resize the image.
-        img.onload = function()
-            {        
-                // We create a canvas and get its context.
-                var canvas = document.createElement('canvas');
-                var ctx = canvas.getContext('2d');
+    // When the event "onload" is triggered we can resize the image.
+	img.onload = function() {        
+    // We create a canvas and get its context.
+		var canvas = document.createElement('canvas');
+		var ctx = canvas.getContext('2d');
+	
+	// We set the dimensions of the canvas.
+		var inputWidth = this.width,
+			inputHeight = this.height;
+		canvas.width = inputWidth;
+		canvas.height = inputHeight;
 
-                // We set the dimensions at the wanted size.
-				 var wantedWidth = wantedHeight * this.width / this.height;
-                canvas.width = wantedWidth;
-                canvas.height = wantedHeight;
+		ctx.drawImage(this, 0, 0, inputWidth, inputHeight);
 
-                // We resize the image with the canvas method drawImage();
-                ctx.drawImage(this, 0, 0, wantedWidth, wantedHeight);
+	//Cropping process starts here
+		var inputData = ctx.getImageData(0,0,canvas.width,canvas.height),
+			data = inputData.data,
+			pixels = inputWidth * inputHeight,
+			westIndex = pixels * 2,		//starting indices for pixels at cardinal points
+			eastIndex = westIndex + inputWidth * 4,
+			northIndex = inputWidth * 2,
+			southIndex = pixels * 4 - inputWidth * 2,
+			trueLeft = 0, trueRight = inputWidth,
+			trueTop = 0, trueBottom = inputHeight,
+			threshold = 5;					//top and bottom lines may have spurious content;
+	
+	//now scan middle horizontal line to determine true width; start on edges
+		for(var i = 0; i < inputWidth / 2; i++){
+			if(data[westIndex]+data[westIndex+1]+data[westIndex+2] > threshold) break;
+			trueLeft++;
+			westIndex += 4
+		}
+		for(var i = 0; i < inputWidth / 2; i++){
+			if(data[eastIndex]+data[eastIndex+1]+data[eastIndex+2] > threshold) break;
+			trueRight--;
+			eastIndex -= 4
+		}
+	//same for height
+		for(var i = 0; i < inputHeight / 2; i++){
+			if(data[northIndex]+data[northIndex+1]+data[northIndex+2] > threshold) break;
+			trueTop++;
+			northIndex += inputWidth * 4
+		}
+		for(var i = 0; i < inputHeight / 2; i++){
+			if(data[southIndex]+data[southIndex+1]+data[southIndex+2] > threshold) break;
+			trueBottom--;
+			southIndex -= inputWidth * 4
+		}
+	//these are the true dimensions
+		var trueWidth = trueRight - trueLeft,
+			trueHeight = trueBottom - trueTop;
+		
+	//resize canvas
+		canvas.width = wantedHeight * trueWidth / trueHeight;
+		canvas.height = wantedHeight;
+		ctx.drawImage(img, trueLeft, trueTop, trueRight-trueLeft, trueBottom-trueTop, 0, 0, canvas.width, canvas.height);
+		screenShot.src = canvas.toDataURL('image/jpeg');						
+	};
 
-                var dataURIout = canvas.toDataURL('image/jpeg');
-
-                // Use and treat your Data URI here !! //
-				screenShot.src = dataURIout
-            };
-
-        // We put the Data URI in the image's src attribute
-        img.src = dataURIin;
-    }
+    // We put the Data URI in the image's src attribute
+	img.src = dataURIin;
+}
 
 //to download data to a file, from StackOverflow
 function download(data, filename, type) {
@@ -304,7 +341,7 @@ var	deltaT = 0.0417;				//seconds for each frame at 24 fps
 
 //called by forward button
 function fwdSkip(){
-	if(editControls.style.display == ''){isSuper = true; chrome.tabs.sendMessage(activeTabId, {message: "superimpose", status: true, dataURI: screenShot.src, ratio: screenShot.width/screenShot.height})};
+	if(editControls.style.display == '' && !isSuper){isSuper = true; chrome.tabs.sendMessage(activeTabId, {message: "superimpose", status: true, dataURI: screenShot.src, ratio: screenShot.width/screenShot.height})};
 	if(altMode.checked){										//special mode for shifting auto profanity skips, in case subtitle file was off
 		shiftProfSkips(true)
 
@@ -316,21 +353,21 @@ function fwdSkip(){
 				skipBox.setSelectionRange(timeLabels[1][index],timeLabels[2][index]);
 				var selectedTime = fromHMS(timeLabels[0][index]);
 				var timeShift = fineMode.checked ? deltaT : deltaT*10;
-				chrome.tabs.sendMessage(activeTabId, {message: "shift_time", timeShift: timeShift, isSuper: isSuper});
+				chrome.tabs.sendMessage(activeTabId, {message: "shift_time", timeShift: timeShift});
 				isScrub = true;
 				chrome.tabs.sendMessage(activeTabId, {message: "need_time"});		
 				skipBox.focus()
 			}
 		}else{											//scrub by a small amount
 			var timeShift = fineMode.checked ? deltaT : deltaT*10;
-			chrome.tabs.sendMessage(activeTabId, {message: "shift_time", timeShift: timeShift, isSuper: isSuper})
+			chrome.tabs.sendMessage(activeTabId, {message: "shift_time", timeShift: timeShift})
 		}
 	}
 }
 
 //called by back button
 function backSkip(){
-	if(editControls.style.display == ''){isSuper = true; chrome.tabs.sendMessage(activeTabId, {message: "superimpose", status: true, dataURI: screenShot.src, ratio: screenShot.width/screenShot.height})};
+	if(editControls.style.display == '' && !isSuper){isSuper = true; chrome.tabs.sendMessage(activeTabId, {message: "superimpose", status: true, dataURI: screenShot.src, ratio: screenShot.width/screenShot.height})};
 	if(altMode.checked){										//special mode for shifting auto profanity skips, in case subtitle file was off
 		shiftProfSkips(true)
 
@@ -670,7 +707,8 @@ chrome.runtime.onMessage.addListener(
 			screenShot.src = request.dataURI
 		}else{
 			boxMsg.textContent = chrome.i18n.getMessage('badService');
-			shotFileBtn.style.display = ''
+			shotFileBtn.style.display = '';
+			autoBtn.style.display = 'none'
 		}
 		writeIn(toHMS(request.time));						//insert time regardless
 		setTimeout(function(){makeTimeLabels()},100)

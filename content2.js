@@ -314,10 +314,14 @@ chrome.runtime.onMessage.addListener(
 		}else{											//resize shot
 			if(request.dir == 'up'){
 				VideoSkipShot.height += isFine ? 2 : 10;
-				VideoSkipShot.style.top = parseInt(VideoSkipShot.style.top.slice(0,-2)) - (isFine ? 1 : 5) + 'px'
+				VideoSkipShot.style.top = parseInt(VideoSkipShot.style.top.slice(0,-2)) - (isFine ? 1 : 5) + 'px';
+				VideoSkipShot.width += isFine ? 2 : 10;		//also sideways
+				VideoSkipShot.style.left = parseInt(VideoSkipShot.style.left.slice(0,-2)) - (isFine ? 1 : 5) + 'px'
 			}else if(request.dir == 'down'){
 				VideoSkipShot.height -= isFine ? 2 : 10;
 				VideoSkipShot.style.top = parseInt(VideoSkipShot.style.top.slice(0,-2)) + (isFine ? 1 : 5) + 'px'
+				VideoSkipShot.width -= isFine ? 2 : 10;
+				VideoSkipShot.style.left = parseInt(VideoSkipShot.style.left.slice(0,-2)) + (isFine ? 1 : 5) + 'px'
 			}else if(request.dir == 'left'){
 				VideoSkipShot.width += isFine ? 2 : 10;
 				VideoSkipShot.style.left = parseInt(VideoSkipShot.style.left.slice(0,-2)) - (isFine ? 1 : 5) + 'px'

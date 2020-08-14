@@ -7,7 +7,8 @@
 		"message": "es"
 	},
 	"width": {
-		"message": "800"
+		"message": "800",
+		"description": "width of the popup in pixels, affected by the length of the button labels"
 	},
 	"noVideoMsg": {
 		"message": "No encuentro vídeos en esta página"
