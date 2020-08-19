@@ -151,7 +151,7 @@ function resizedShot(dataURIin, wantedHeight){		//width will be calculated to ma
 			data = inputData.data,
 			pixels = inputWidth * inputHeight,
 			westIndex = pixels * 2,		//starting indices for pixels at cardinal points
-			eastIndex = westIndex + inputWidth * 4,
+			eastIndex = westIndex - 4,
 			northIndex = inputWidth * 2,
 			southIndex = pixels * 4 - inputWidth * 2,
 			trueLeft = 0, trueRight = inputWidth,
@@ -615,8 +615,8 @@ function isContained(containerStr, regex){
 //to decide whether a particular content is to be skipped, according to 3-level sliders. Allows alternative and incomplete keywords
 function isSkipped(label){
 	var nuMatches = label.match(/\d/),
-		level = level >= 3 ? 3 : level;
-	level = level >= 3 ? 3 : (level <= 0 ? 0 : level);
+		level = parseInt(nuMatches ? nuMatches[0] : 3);
+	level = level >= 3 ? 3 : level;
 	if(isContained(label,/sex|nud/)){
 		return (parseInt(sexNum.value) + level) > 3
 	}else if(isContained(label,/vio|gor/)){
@@ -652,15 +652,17 @@ function setSwitches(){
 //fills the action field in object cuts, according to the position of the check boxes and the text at each time
 function setActions(){
 	for(var i = 0; i < cuts.length; i++){
-		var label = cuts[i].text.toLowerCase().replace(/\(.*\)/g,''),						//ignore text in parentheses
-			isAudio = isContained(label,/aud|sou|spe|wor/),
-			isVideo = isContained(label,/vid|ima|img/);
-		if(!isAudio && !isVideo){
-			cuts[i].action = isSkipped(label) ? 'skip' : ''	
-		}else if(isAudio){
-			cuts[i].action = isSkipped(label) ? 'mute' : ''
-		}else{
-			cuts[i].action = isSkipped(label) ? 'blank' : ''
+		if(cuts[i].text){
+			var label = cuts[i].text.toLowerCase().replace(/\(.*\)/g,''),						//ignore text in parentheses
+				isAudio = isContained(label,/aud|sou|spe|wor/),
+				isVideo = isContained(label,/vid|ima|img/);
+			if(!isAudio && !isVideo){
+				cuts[i].action = isSkipped(label) ? 'skip' : ''	
+			}else if(isAudio){
+				cuts[i].action = isSkipped(label) ? 'mute' : ''
+			}else{
+				cuts[i].action = isSkipped(label) ? 'blank' : ''
+			}
 		}
 	}
 }

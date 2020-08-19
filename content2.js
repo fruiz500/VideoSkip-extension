@@ -40,6 +40,7 @@ canvas.height = 240;
 var ctx = canvas.getContext('2d');
 
 var allowShots = '';		//to avoid checking for tainted over and over
+var shotRatio;				//of the screenshot
 
 //to check when canvas is tainted, from Duncan @ StackOverflow	
 function isTainted(ctx) {
@@ -261,8 +262,8 @@ chrome.runtime.onMessage.addListener(
 		if(request.status){							//add overlay
 			if(request.dataURI){
 				VideoSkipShot.src = request.dataURI;
-				var	videoRatio = myVideo.clientWidth / myVideo.clientHeight,
-					shotRatio = request.ratio;
+				var	videoRatio = myVideo.clientWidth / myVideo.clientHeight;
+				shotRatio = request.ratio;
 				if(videoRatio <= shotRatio){			//possible black bars at top and bottom
 					VideoSkipShot.width = myVideo.clientWidth;
 					VideoSkipShot.height = VideoSkipShot.width / shotRatio;
@@ -312,22 +313,24 @@ chrome.runtime.onMessage.addListener(
 				VideoSkipShot.style.left = parseInt(VideoSkipShot.style.left.slice(0,-2)) + (isFine ? 1 : 10) + 'px'
 			}
 		}else{											//resize shot
+			var increment = isFine ? 1 : 5,
+				increment2 = increment * shotRatio;
 			if(request.dir == 'up'){
-				VideoSkipShot.height += isFine ? 2 : 10;
-				VideoSkipShot.style.top = parseInt(VideoSkipShot.style.top.slice(0,-2)) - (isFine ? 1 : 5) + 'px';
-				VideoSkipShot.width += isFine ? 2 : 10;		//also sideways
-				VideoSkipShot.style.left = parseInt(VideoSkipShot.style.left.slice(0,-2)) - (isFine ? 1 : 5) + 'px'
+				VideoSkipShot.height += increment * 2;
+				VideoSkipShot.style.top = parseInt(VideoSkipShot.style.top.slice(0,-2)) - increment + 'px';
+				VideoSkipShot.width += increment2 * 2;		//also sideways
+				VideoSkipShot.style.left = parseInt(VideoSkipShot.style.left.slice(0,-2)) - increment2 + 'px'
 			}else if(request.dir == 'down'){
-				VideoSkipShot.height -= isFine ? 2 : 10;
-				VideoSkipShot.style.top = parseInt(VideoSkipShot.style.top.slice(0,-2)) + (isFine ? 1 : 5) + 'px'
-				VideoSkipShot.width -= isFine ? 2 : 10;
-				VideoSkipShot.style.left = parseInt(VideoSkipShot.style.left.slice(0,-2)) + (isFine ? 1 : 5) + 'px'
+				VideoSkipShot.height -= increment * 2;
+				VideoSkipShot.style.top = parseInt(VideoSkipShot.style.top.slice(0,-2)) + increment + 'px'
+				VideoSkipShot.width -= increment2 * 2;
+				VideoSkipShot.style.left = parseInt(VideoSkipShot.style.left.slice(0,-2)) + increment2 + 'px'
 			}else if(request.dir == 'left'){
-				VideoSkipShot.width += isFine ? 2 : 10;
-				VideoSkipShot.style.left = parseInt(VideoSkipShot.style.left.slice(0,-2)) - (isFine ? 1 : 5) + 'px'
+				VideoSkipShot.width += increment * 2;
+				VideoSkipShot.style.left = parseInt(VideoSkipShot.style.left.slice(0,-2)) - increment + 'px'
 			}else{
-				VideoSkipShot.width -= isFine ? 2 : 10;
-				VideoSkipShot.style.left = parseInt(VideoSkipShot.style.left.slice(0,-2)) + (isFine ? 1 : 5) + 'px'
+				VideoSkipShot.width -= increment * 2;
+				VideoSkipShot.style.left = parseInt(VideoSkipShot.style.left.slice(0,-2)) + increment + 'px'
 			}
 		}
 
