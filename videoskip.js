@@ -42,8 +42,8 @@ var oldPixelRatio = window.devicePixelRatio;					//for resizing window after zoo
 var stretchFact = 1;												//for resizing on Edit
 var startSize = oldPixelRatio > 1.2 ? oldPixelRatio / 2 : oldPixelRatio;
 
-setTimeout(function(){window.resizeTo( window.outerWidth * startSize, window.outerHeight * startSize)},500);	//correct initial zoom
-var resInt = setInterval(resizeScr,1000)		//look for resizing every second
+setTimeout(function(){window.resizeTo( window.outerWidth * startSize, window.outerHeight * startSize)},400);	//correct initial zoom
+var resInt = setInterval(resizeScr,500)		//look for resizing every half second
 	
 
 //to correct for zoom while the window is displayed, and grow window when edit section is shown
@@ -639,13 +639,15 @@ function setSwitches(){
 	var sliders = filters.querySelectorAll('input');
 	for(var i = 0; i < 6; i++) sliders[i].value = 0;
 	for(var i = 0; i < cuts.length; i++){
-		var label = cuts[i].text.toLowerCase().replace(/\(.*\)/g,'');						//ignore text in parentheses
-		if(isContained(label,/sex|nud/)) sexNum.value = 3;
-		if(isContained(label,/vio|gor/)) violenceNum.value = 3;
-		if(isContained(label,/pro|cur|hat/)) curseNum.value = 3;
-		if(isContained(label,/alc|dru|smo/)) boozeNum.value = 3;
-		if(isContained(label,/fri|sca|int/)) scareNum.value = 3;
-		if(isContained(label,/oth|bor/)) otherNum.value = 3
+		if(cuts[i].text){
+			var label = cuts[i].text.toLowerCase().replace(/\(.*\)/g,'');			//ignore text in parentheses
+			if(isContained(label,/sex|nud/)) sexNum.value = 3;
+			if(isContained(label,/vio|gor/)) violenceNum.value = 3;
+			if(isContained(label,/pro|cur|hat/)) curseNum.value = 3;
+			if(isContained(label,/alc|dru|smo/)) boozeNum.value = 3;
+			if(isContained(label,/fri|sca|int/)) scareNum.value = 3;
+			if(isContained(label,/oth|bor/)) otherNum.value = 3
+		}
 	}
 }
 

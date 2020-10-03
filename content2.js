@@ -218,7 +218,7 @@ if(myVideo) myVideo.ontimeupdate = function(){							//apply skips to video when
 //for interaction with the popup window
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
-	
+
     if(request.message == "skip_data"){		//got skip data from the popup, so put it in cuts and categories arrays
 		cuts = request.cuts;
 		switches = request.switches
