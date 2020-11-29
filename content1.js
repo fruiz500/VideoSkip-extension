@@ -6,13 +6,14 @@ function isVisible (ele) {
 	return (ele.offsetWidth > 0 && ele.offsetHeight > 0) && (ele.style.visibility != 'hidden')
 }
 
-var myVideos = document.querySelectorAll("video");			//get all videos on page, stick with the first one that is visible
+var myVideos = document.querySelectorAll("video"),			//get all videos on page, make list of the visible ones
+	visibleVideos = new Array;
 for(var i = 0; i < myVideos.length; i++){
 	if(isVisible(myVideos[i])){
-		myVideo = myVideos[i];
-		break
+		visibleVideos.push(myVideos[i])
 	}
 }
+if(visibleVideos.length > 0) myVideo = visibleVideos[visibleVideos.length-1];		//select last video that is theoretically visible (Amazon Prime fix)
 
 chrome.runtime.sendMessage({message: "start_info", hasVideo: !!myVideo, isLoaded: typeof(blankSubs) != "undefined"})		//just a Boolean confirming there's a video, so the popup loads, the second part is to avoid injecting the rest of the content script multiple times
 

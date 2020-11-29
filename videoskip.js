@@ -45,11 +45,13 @@ var startSize = oldPixelRatio > 1.2 ? oldPixelRatio / 2 : oldPixelRatio;
 setTimeout(function(){window.resizeTo( window.outerWidth * startSize, window.outerHeight * startSize)},400);	//correct initial zoom
 var resInt = setInterval(resizeScr,500)		//look for resizing every half second
 	
+var popupMoved = false;
 
 //to correct for zoom while the window is displayed, and grow window when edit section is shown
 function resizeScr(){
 	var pixelRatio = window.devicePixelRatio;
 	window.resizeTo( window.outerWidth * pixelRatio / oldPixelRatio, window.outerHeight * pixelRatio / oldPixelRatio * stretchFact);
+	if(!popupMoved){window.moveTo(2500,150); popupMoved = true};				//place on right edge; do it only once
 	oldPixelRatio = pixelRatio;
 	stretchFact = 1
 }
@@ -421,7 +423,7 @@ function scrub2shot(){
 	}
 	var index = getTimeIndex();
 	if(index != null){
-		skipBox.setSelectionRange(timeLabels[1][index],timeLabels[2][index]);
+		skipBox.setSelectionRange(timeLabels[2][index],timeLabels[2][index]);		//deselect if previously selected
 		chrome.tabs.sendMessage(activeTabId, {message: "change_time", time: fromHMS(timeLabels[0][index]), isSuper: isSuper})
 		skipBox.focus()
 	}else{											//scrub to 1st time
@@ -615,8 +617,8 @@ function isContained(containerStr, regex){
 //to decide whether a particular content is to be skipped, according to 3-level sliders. Allows alternative and incomplete keywords
 function isSkipped(label){
 	var nuMatches = label.match(/\d/),
-		level = parseInt(nuMatches ? nuMatches[0] : 3);
-	level = level >= 3 ? 3 : level;
+		level = parseInt(nuMatches ? nuMatches[0] : 1);			//if no level is found, make it level 1
+	level = level >= 3 ? 3 : level;								//highest level is 3
 	if(isContained(label,/sex|nud/)){
 		return (parseInt(sexNum.value) + level) > 3
 	}else if(isContained(label,/vio|gor/)){
@@ -675,6 +677,7 @@ chrome.runtime.onMessage.addListener(
 	 
     if(request.message == "video_time") {
 		if(isSync){																						//re-sync all times
+			isSync = false;
 			var	initialData = skipBox.value.trim().split('\n').slice(0,2),					//first two lines
 				shotTime = fromHMS(initialData[0]),
 				seconds = shotTime ? request.time - shotTime : 0;

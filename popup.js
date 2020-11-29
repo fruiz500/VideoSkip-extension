@@ -1,11 +1,12 @@
 var isFirefox = typeof InstallTrigger !== 'undefined',
 	height = isFirefox ? 400 : 380;
-var popupParams = "scrollbars=yes,resizable=yes,status=no,location=no,toolbar=no,menubar=no,width=" + chrome.i18n.getMessage('width') +",height=" + height + ",top=150,left=1500";
+var popupParams = "scrollbars=yes,resizable=yes,status=no,location=no,toolbar=no,menubar=no,width=" + chrome.i18n.getMessage('width') +",height=" + height + ",top=150,left=2500";
 var popup, activeTab;
-	
+
 //opens permanent popup on icon click
 function openPopup(){
-	popup = window.open('/_locales/' + chrome.i18n.getMessage('directory') + '/videoskip.html#' + activeTab.id,'popup',popupParams).focus()
+	var popup = window.open('/_locales/' + chrome.i18n.getMessage('directory') + '/videoskip.html#' + activeTab.id,'popup',popupParams);
+	popup.focus()
 }
 
 chrome.runtime.onMessage.addListener(

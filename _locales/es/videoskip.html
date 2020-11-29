@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" xml:lang="es" xmlns="http://www.w3.org/1999/xhtml" manifest="videoskip.appcache">
+<html lang="en" xml:lang="es" xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta charset="UTF-8">
 <title>VideoSkip extensión</title>
@@ -14,9 +14,9 @@
 <body>                    
 	<h2>VideoSkip</h2>
     <p>v 0.2.3 &nbsp;&#169; F. Ruiz 2020&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      <button id="helpBtn" class="cssbutton" title="mostrar instrucciones en nueva pestaña">Ayuda</button>
+      <button id="helpBtn" class="cssbutton" title="mostrar instrucciones en nueva pestaña (alt-h)" accesskey="h">Ayuda</button>
       <span class="hspacer"></span>
-      <button id="editBtn" class="cssbutton small" title="revelar el interfaz de edición">Editar</button></p>
+      <button id="editBtn" class="cssbutton small" title="revelar el interfaz de edición (alt-r)" accesskey="r">Editar</button></p>
     Seleccione los filtros y su intensidad:
     <br>
     <br>
@@ -48,23 +48,23 @@
     <label for="subFile"><span class="cssbutton small" id="subFileBtn" title="cargar subtítulos para filtro automático">Auto prof.</span></label>
 	<input type="file" id="subFile"/>
     <button id="exchangeBtn"class="cssbutton small" title="abrir el VideoSkip Exchange en nueva pestaña">VideoSkip Exchange</button>
-    <button id="backBtn"class="cssbutton small" title="retrasar un paso">&#9668;</button>
-    <input type="checkbox" id="fineMode"/ title="paso fino">&nbsp;<span class="fineText">Fino</span>&nbsp;
-    <input type="checkbox" id="altMode" title="ajustar silencios por profanidad / tamaño de captura"/>&nbsp;<span class="fineText">Alt.</span>
-    <button id="fwdBtn"class="cssbutton small" title="avanzar un paso">&#9658;</button>
-    <button id="fFwdBtn"class="cssbutton small" title="velocidad normal / acelerada / parar">&#9658;&#9658;</button>
-    <button id="syncBtn"class="cssbutton imptButton" title="cambiar todos los tiempos cuando el vídeo corresponde a la captura">Sincronizar</button>    
+    <button id="backBtn"class="cssbutton small" title="retrasar un paso / parar (alt-,)" accesskey=",">&#9668;</button>
+    <input type="checkbox" id="fineMode"/ title="paso fino (alt-n)" accesskey="n">&nbsp;<span class="fineText">Fino</span>&nbsp;
+    <input type="checkbox" id="altMode" title="ajustar silencios por profanidad / tamaño de captura (alt-m)" accesskey="m"/>&nbsp;<span class="fineText">Alt.</span>
+    <button id="fwdBtn"class="cssbutton small" title="avanzar un paso (alt-.)" accesskey=".">&#9658;</button>
+    <button id="fFwdBtn"class="cssbutton small" title="velocidad normal / acelerada / parar (alt-/)" accesskey="/">&#9658;&#9658;</button>
+    <button id="syncBtn"class="cssbutton imptButton" title="cambiar todos los tiempos cuando el vídeo corresponde a la captura (alt-y)" accesskey="y">Sincronizar</button>    
 
 	<div id="editControls">
     <br>
-    <button id="timeBtn" class="cssbutton small" title="insertar tiempo actual">Insertar tiempo</button>
-    <button id="arrowBtn" class="cssbutton small" title="insertar flecha formateada">Insertar flecha</button>
-    <button id="beepBtn" class="cssbutton small" title="insertar corto silencio">Insertar silencio</button>
-    <button id="saveFile" class="cssbutton imptButton small" title="guardar archivo .skp en Descargas">Guardar</button>
+    <button id="timeBtn" class="cssbutton small" title="insertar tiempo actual (alt-q)" accesskey="q">Insertar tiempo</button>
+    <button id="arrowBtn" class="cssbutton small" title="insertar flecha formateada (alt-w)" accesskey="w">Insertar flecha</button>
+    <button id="beepBtn" class="cssbutton small" title="insertar corto silencio (alt-a)" accesskey="a">Insertar silencio</button>
+    <button id="saveFile" class="cssbutton imptButton small" title="guardar archivo .skp en Descargas (alt-s)" accesskey="s">Guardar</button>
     &nbsp;&nbsp;
     <button id="autoBtn" class="cssbutton small" title="buscar captura en el vídeo">Buscar captura</button>
     <button id="shotTimeBtn"class="cssbutton small" title="avanzar al tiempo seleccionado o a la captura">Ir al tiempo</button>
-    <button id="moveBtn" class="cssbutton small" title="poner la captura sobre el vídeo">Superponer</button>
+    <button id="moveBtn" class="cssbutton small" title="poner la captura sobre el vídeo (alt-b)" accesskey="b">Superponer</button>
     <button id="shotBtn"class="cssbutton small" title="captura de pantalla">Capturar</button>
     <label for="shotFile" title="cargar captura de pantalla"><span class="cssbutton small" id="shotFileBtn" title="cargar captura">Cargar captura</span></label>
 	<input type="file" id="shotFile"/>
