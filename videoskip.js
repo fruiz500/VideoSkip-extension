@@ -4,7 +4,7 @@
         @licstart  The following is the entire license notice for the
         JavaScript code in this page.
 
-        Copyright (C) 2020  Francisco Ruiz
+        Copyright (C) 2021  Francisco Ruiz
 
         The JavaScript code in this page is free software: you can
         redistribute it and/or modify it under the terms of the GNU
@@ -27,7 +27,10 @@
 
 var name = '';								//global variable with name of skip file, minus extension
 var cuts = [];				//global variable containing the cuts, each array element is an object with this format {startTime,endTime,text,action}
-var activeTabId = parseInt(window.location.hash.slice(1));		//sent with this page's name as the window opens
+var pageInfo = window.location.hash.slice(1).split('&');		//sent with this page's name as the window opens, this contains ativeTabId + '&' + serviceName
+var activeTabId = parseInt(pageInfo[0]);		//sent with this page's name as the window opens
+var serviceName = pageInfo[1];				//will be used for automatic offsets
+var offsets = {};								//to contain offsets for different sources
 
 var ua = navigator.userAgent.toLowerCase(); 		//to choose fastest filter method, per https://jsben.ch/5qRcU
 if (ua.indexOf('safari') != -1) { 
@@ -64,12 +67,20 @@ function loadFileAsURL(){
 		var URLFromFileLoaded = fileLoadedEvent.target.result;
 		var extension = fileToLoad.name.slice(-4);
 		if(extension == ".skp"){
-			var data = URLFromFileLoaded.split('data:image/jpeg;base64,');			//separate skips from screenshot
-			name = fileToLoad.name.slice(0,-4);
-			skipBox.value = data[0].trim();
-			if(data[1]) screenShot.src = 'data:image/jpeg;base64,' + data[1];
+			var data = URLFromFileLoaded.split('data:image/jpeg;base64,');		//separate skips from screenshot
+			var data1 = data[0].split('{');										//separate skips from offsets
+			name = fileToLoad.name.slice(0,-4).replace(/ \[[a-z0-9\-]+\]/,'');	//remove extension and service list
+			skipBox.value = data1[0].trim();
+			if(data1[1]) offsets = JSON.parse('{' + data1[1].trim());			//make offsets object
+			if(data[1]) screenShot.src = 'data:image/jpeg;base64,' + data[1];	//extract screenshot
 			boxMsg.textContent = fileToLoad.name + chrome.i18n.getMessage('contentOfFile');
-			setTimeout(function(){justLoaded = true;sendData();scrub2shot();toggleTopShot()},1000)		//give it a whole second to load before data is extracted to memory and sent; also set switches
+			setTimeout(function(){
+				justLoaded = true;
+				sendData();
+				applyOffset();
+				scrub2shot();
+				toggleTopShot()}
+			,1000)		//give it a whole second to load before data is extracted to memory and sent; also set switches
 		}else{
 			boxMsg.textContent = chrome.i18n.getMessage('wrongFile')
 		}
@@ -86,7 +97,7 @@ function loadSub(){
 		var extension = fileToLoad.name.slice(-4);
 		if(extension == ".vtt" || extension == ".srt"){						//allow only .vtt and .srt formats
 			var subs = URLFromFileLoaded;										//get subs in text format, to be edited
-			subs = subs.replace(/(\d),(\d)/g,'$1.$2');		//convert decimal commas to periods
+			subs = subs.replace(/(\d),(\d)/g,'$1.$2');						//convert decimal commas to periods
 			autoBeepGen(subs);
 			sendData()
 		}
@@ -287,7 +298,41 @@ function syncTimes(){
 	}
 	isSync = true;
 	chrome.tabs.sendMessage(activeTabId, {message: "need_time"});		//to be continued when the current time is received
-	setTimeout(function(){makeTimeLabels()},100)
+	setTimeout(function(){
+		makeTimeLabels();
+		setTimeout(save2file,1000)
+	},100)
+}
+
+//shift all times according to offset in loaded skip file
+function applyOffset(){
+	var offset = offsets[serviceName];
+	if(offset != undefined){						//there is an offset for the current source, so shift all times
+		var	initialData = skipBox.value.trim().split('\n').slice(0,2),					//first two lines
+			shotTime = fromHMS(initialData[0]);
+		for(var i = 0; i < cuts.length; i++){
+			cuts[i].startTime += offset;
+			cuts[i].endTime += offset
+		}
+		times2box();											//put shifted times in the box
+	
+		if(shotTime){										//reconstruct initial data, if present, shifting the shot time as well
+			initialData[0] = toHMS(shotTime + offset);
+			skipBox.value = initialData.join('\n') + '\n\n' + skipBox.value
+		}
+		if(offset != 0){
+			boxMsg.textContent = chrome.i18n.getMessage('offsetApplied');
+		}
+		for(var service in offsets){						//adjust offsets
+			offsets[service] -= offset
+		}
+		setTimeout(function(){
+			setActions();
+			makeTimeLabels()
+		},100);
+	}else{
+		syncControls.style.visibility = 'visible'
+	}
 }
 
 //puts data from the cuts array into skipBox
@@ -312,7 +357,11 @@ function writeIn(string){
 	}else{
 		skipBox.setSelectionRange(newEnd,newEnd);
 	}
-	setTimeout(function(){cuts = PF_SRT.parse(skipBox.value); setActions(); makeTimeLabels()},100);
+	setTimeout(function(){
+		cuts = PF_SRT.parse(skipBox.value);
+		setActions();
+		makeTimeLabels()}
+	,100);
 	skipBox.focus()
 }
 
@@ -497,6 +546,16 @@ function sendData(){
 	makeTimeLabels()
 }
 
+//save skips to file
+function save2file(){
+	if(screenShot.src == '' && timeLabels.length == 0) return;
+	var sourceList = Object.keys(offsets);
+	sourceList.sort(function(a,b){return b.length - a.length;});		//sort alphabetically
+	if(!name) name = prompt(chrome.i18n.getMessage('fileName'));
+	download(skipBox.value + '\n\n' + JSON.stringify(offsets) + '\n\n' + screenShot.src, name + ' [' + sourceList.join('-') + '].skp', "text/plain");
+	boxMsg.textContent = chrome.i18n.getMessage('fileSaved') + name + ' [' + sourceList.join('-') + '].skp ' + chrome.i18n.getMessage('fileSaved2')
+}
+
 //to move and resize superimposed shot
 document.onkeydown = checkKey;
 
@@ -545,9 +604,11 @@ helpBtn.addEventListener('click', function(){
 editBtn.addEventListener('click', function(){
 	if(editControls.style.display == 'block'){	
 		editControls.style.display = '';
+		if(offsets[serviceName] != undefined) syncControls.style.visibility = '';
 		stretchFact = 0.5
 	}else{
 		editControls.style.display = 'block';
+		syncControls.style.visibility = 'visible';
 		stretchFact = 2
 	}
 });
@@ -560,12 +621,7 @@ showList.addEventListener('click', function(){
 	}
 });
 
-saveFile.addEventListener('click', function(){
-	if(screenShot.src == '' && timeLabels.length == 0) return;
-	if(!name) name = prompt(chrome.i18n.getMessage('fileName'));
-	download(skipBox.value + '\n' + screenShot.src, name + '.skp', "text/plain");	
-	boxMsg.textContent = chrome.i18n.getMessage('fileSaved') + name + '.skp'
-});
+saveFile.addEventListener('click', save2file);
 
 skipBox.addEventListener('change', sendData);
 
@@ -657,10 +713,13 @@ function setSwitches(){
 function setActions(){
 	for(var i = 0; i < cuts.length; i++){
 		if(cuts[i].text){
-			var label = cuts[i].text.toLowerCase().replace(/\(.*\)/g,''),						//ignore text in parentheses
+			var ignore = cuts[i].text.includes('//'),										//ignore skip containing // in text
+				label = cuts[i].text.toLowerCase().replace(/\(.*\)/g,''),				//ignore text in parentheses
 				isAudio = isContained(label,/aud|sou|spe|wor/),
 				isVideo = isContained(label,/vid|ima|img/);
-			if(!isAudio && !isVideo){
+			if(ignore){
+				cuts[i].action = ''
+			}else if(!isAudio && !isVideo){
 				cuts[i].action = isSkipped(label) ? 'skip' : ''	
 			}else if(isAudio){
 				cuts[i].action = isSkipped(label) ? 'mute' : ''
@@ -697,7 +756,13 @@ chrome.runtime.onMessage.addListener(
 			}else{
 				boxMsg.textContent = chrome.i18n.getMessage('advanced') + Math.floor(- seconds*100)/100 + chrome.i18n.getMessage('seconds')
 			}
-			setTimeout(function(){makeTimeLabels()},100)
+
+			for(var service in offsets){						//adjust offsets
+				offsets[service] -= seconds
+			}
+			offsets[serviceName] = 0;								//key for current source set to zero regardless
+			
+			setTimeout(makeTimeLabels,100)
 			
 		}else if(isSilence){																	//insert single-word silence
 			writeIn(toHMS(request.time - 0.7) + ' --> ' + toHMS(request.time) + '\nprofane word\n\n');
@@ -718,7 +783,7 @@ chrome.runtime.onMessage.addListener(
 			autoBtn.style.display = 'none'
 		}
 		writeIn(toHMS(request.time));						//insert time regardless
-		setTimeout(function(){makeTimeLabels()},100)
+		setTimeout(makeTimeLabels,100)
 		
 	}else if(request.message == "autosync_done"){
 		fineMode.checked = true;

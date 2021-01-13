@@ -8,7 +8,7 @@
 	},
 	"width": {
 		"message": "800",
-		"description": "width of the popup in pixels, affected by the length of the button labels"
+		"description": "ancho de la ventana en píxeles, función de la longitud de las etiquetas en los botones"
 	},
 	"noVideoMsg": {
 		"message": "No encuentro vídeos en esta página"
@@ -19,6 +19,9 @@
 	"contentOfFile": {
 		"message": " cargado. Ahora mueva el film hasta que coincida con la captura superpuesta y haga clic en Sincronizar"
 	},
+	"offsetApplied": {
+		"message": "Correciones adaptadas para este servicio. Ajuste las categorías a editar y disfrute el vídeo"
+	},
 	"shotLoaded": {
 		"message": "Captura cargada"
 	},
@@ -27,6 +30,9 @@
 	},
 	"fileSaved": {
 		"message": "Archivo guardado bajo nombre "
+	},
+	"fileSaved2": {
+		"message": "Por favor, compártalo con otros usuarios"
 	},
 	"seconds": {
 		"message": " segundos"

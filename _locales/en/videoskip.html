@@ -13,7 +13,7 @@
 
 <body>                    
 	<h2>VideoSkip</h2>
-    <p>v 0.2.3 &nbsp;&#169; F. Ruiz 2020&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <p>v 0.3 &nbsp;&#169; F. Ruiz 2021&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
       <button id="helpBtn" class="cssbutton" title="show instructions on new tab (alt-h)" accesskey="h">Help</button>
       <span class="hspacer"></span>
       <button id="editBtn" class="cssbutton small" title="toggle edit interface (alt-r)" accesskey="r">Edit</button></p>
@@ -27,17 +27,17 @@
     <th align="center">&nbsp;&nbsp;Violence, Gore&nbsp;&nbsp;</th>
     <th align="center">&nbsp;&nbsp;Profanity, Hate&nbsp;&nbsp;</th>
     <th align="center">&nbsp;&nbsp;Alcohol, Drugs, etc.&nbsp;&nbsp;</th>
-    <th align="center">&nbsp;&nbsp;Frightening, Intense&nbsp;&nbsp;</th>
+    <th align="center">&nbsp;&nbsp;Frighten, Intense&nbsp;&nbsp;</th>
     <th align="center">&nbsp;&nbsp;Other&nbsp;&nbsp;</th>
     </tr>
     <tr>
     <td>High<br>Medium<br>Low<br>Off</td>
-    <td align="center"><input id="sexNum" type="range" orient="vertical" min="0" max="3" step="1" value="0"></td>
-    <td align="center"><input id="violenceNum" type="range" orient="vertical" min="0" max="3" step="1" value="0"></td>
-    <td align="center"><input id="curseNum" type="range" orient="vertical" min="0" max="3" step="1" value="0"></td>
-    <td align="center"><input id="boozeNum" type="range" orient="vertical" min="0" max="3" step="1" value="0"></td>
-    <td align="center"><input id="scareNum" type="range" orient="vertical" min="0" max="3" step="1" value="0"></td>
-    <td align="center"><input id="otherNum" type="range" orient="vertical" min="0" max="3" step="1" value="0"></td>
+    <td align="center"><input id="sexNum" type="range" min="0" max="3" step="1" value="0"></td>
+    <td align="center"><input id="violenceNum" type="range" min="0" max="3" step="1" value="0"></td>
+    <td align="center"><input id="curseNum" type="range" min="0" max="3" step="1" value="0"></td>
+    <td align="center"><input id="boozeNum" type="range" min="0" max="3" step="1" value="0"></td>
+    <td align="center"><input id="scareNum" type="range" min="0" max="3" step="1" value="0"></td>
+    <td align="center"><input id="otherNum" type="range" min="0" max="3" step="1" value="0"></td>
     </tr>
     </table>
     <br>
@@ -48,12 +48,15 @@
     <label for="subFile"><span class="cssbutton small" id="subFileBtn" title="load subs file for auto profanity filter">Auto prof.</span></label>
 	<input type="file" id="subFile"/>
     <button id="exchangeBtn"class="cssbutton small" title="open the VideoSkip Exchange in a separate tab">VideoSkip Exchange</button>
+
+    <span id="syncControls">
     <button id="backBtn"class="cssbutton small" title="step rewind / stop (alt-,)" accesskey=",">&#9668;</button>
     <input type="checkbox" id="fineMode"/ title="frame by frame (alt-n)" accesskey="n">&nbsp;<span class="fineText">Fine</span>&nbsp;
     <input type="checkbox" id="altMode" title="shift auto prof. skips / resize shot (alt-m)" accesskey="m"/>&nbsp;<span class="fineText">Alt.</span>
     <button id="fwdBtn"class="cssbutton small" title="step advance / stop (alt-.)" accesskey=".">&#9658;</button>
     <button id="fFwdBtn"class="cssbutton small" title="toggle play / fast forward / stop (alt-/)" accesskey="/">&#9658;&#9658;</button>
     <button id="syncBtn"class="cssbutton imptButton" title="change all times when video and shot match (alt-y)" accesskey="y">Sync times</button>
+    </span>
     
     <div id="editControls">
     <br>

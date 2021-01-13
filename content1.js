@@ -15,7 +15,11 @@ for(var i = 0; i < myVideos.length; i++){
 }
 if(visibleVideos.length > 0) myVideo = visibleVideos[visibleVideos.length-1];		//select last video that is theoretically visible (Amazon Prime fix)
 
-chrome.runtime.sendMessage({message: "start_info", hasVideo: !!myVideo, isLoaded: typeof(blankSubs) != "undefined"})		//just a Boolean confirming there's a video, so the popup loads, the second part is to avoid injecting the rest of the content script multiple times
+var splitName = window.location.hostname.split('.');								//get the main name of the source
+var serviceName = splitName[splitName.length - 2] == 'co' ? splitName[splitName.length - 3] : splitName[splitName.length - 2];
+if(serviceName == '0' || serviceName == '') serviceName = 'local';
+
+chrome.runtime.sendMessage({message: "start_info", hasVideo: !!myVideo, isLoaded: typeof(blankSubs) != "undefined", serviceName: serviceName})		//just a Boolean confirming there's a video, so the popup loads, the second part is to avoid injecting the rest of the content script multiple times, plus some more info
 
 if(!!myVideo){													//add overlay image for superimpose function
 	myVideo.crossOrigin = 'anonymous';		//in case it helps

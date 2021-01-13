@@ -2,7 +2,6 @@
 var prevAction = '', cuts = [], speedMode = 1, subsClass = '', switches = [];
 	
 //this because different services do captions differently. Will add more as I get test accounts
-var serviceName = window.location.hostname;
 if(serviceName.includes('youtube')){ subsClass = '.caption-window'
 }else if(serviceName.includes('amazon')){ subsClass = '.persistentPanel'
 }else if(serviceName.includes('imdb')){ subsClass = '.persistentPanel'		//because it's Amazon

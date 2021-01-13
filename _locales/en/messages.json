@@ -7,7 +7,7 @@
 		"message": "en"
 	},
 	"width": {
-		"message": "780",
+		"message": "800",
 		"description": "width of the popup in pixels, affected by the length of the button labels"
 	},
 	"noVideoMsg": {
@@ -19,6 +19,9 @@
 	"contentOfFile": {
 		"message": " loaded. Now scrub to the superimposed screenshot and click Sync times"
 	},
+	"offsetApplied": {
+		"message": "Skip times adjusted for this source. Adjust the category sliders and enjoy the video"
+	},
 	"shotLoaded": {
 		"message": "Screenshot loaded"
 	},
@@ -27,6 +30,9 @@
 	},
 	"fileSaved": {
 		"message": "File saved with name "
+	},
+	"fileSaved2": {
+		"message": "Please share with other users"
 	},
 	"seconds": {
 		"message": " seconds"
