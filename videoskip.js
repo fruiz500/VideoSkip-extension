@@ -30,7 +30,8 @@ var cuts = [];				//global variable containing the cuts, each array element is a
 var pageInfo = window.location.hash.slice(1).split('&');		//sent with this page's name as the window opens, this contains ativeTabId + '&' + serviceName
 var activeTabId = parseInt(pageInfo[0]);		//sent with this page's name as the window opens
 var serviceName = pageInfo[1];				//will be used for automatic offsets
-var offsets = {};								//to contain offsets for different sources
+var offsets = {};								//to contain offsets for different sources. Initialized for a first save
+offsets[serviceName] = 0;
 
 var ua = navigator.userAgent.toLowerCase(); 		//to choose fastest filter method, per https://jsben.ch/5qRcU
 if (ua.indexOf('safari') != -1) { 
@@ -77,10 +78,8 @@ function loadFileAsURL(){
 			setTimeout(function(){
 				justLoaded = true;
 				sendData();
-				applyOffset();
-				scrub2shot();
-				toggleTopShot()}
-			,1000)		//give it a whole second to load before data is extracted to memory and sent; also set switches
+				applyOffset()
+			},100)		//give it some time to load before data is extracted to memory and sent; also set switches
 		}else{
 			boxMsg.textContent = chrome.i18n.getMessage('wrongFile')
 		}
@@ -300,7 +299,7 @@ function syncTimes(){
 	chrome.tabs.sendMessage(activeTabId, {message: "need_time"});		//to be continued when the current time is received
 	setTimeout(function(){
 		makeTimeLabels();
-		setTimeout(save2file,1000)
+		setTimeout(save2file,100)
 	},100)
 }
 
@@ -320,9 +319,9 @@ function applyOffset(){
 			initialData[0] = toHMS(shotTime + offset);
 			skipBox.value = initialData.join('\n') + '\n\n' + skipBox.value
 		}
-		if(offset != 0){
-			boxMsg.textContent = chrome.i18n.getMessage('offsetApplied');
-		}
+
+		boxMsg.textContent = chrome.i18n.getMessage('offsetApplied');
+
 		for(var service in offsets){						//adjust offsets
 			offsets[service] -= offset
 		}
@@ -330,8 +329,11 @@ function applyOffset(){
 			setActions();
 			makeTimeLabels()
 		},100);
-	}else{
-		syncControls.style.visibility = 'visible'
+	}else{									//no offset found, so scrub to shot time and superimpose
+		offsets[serviceName] = 0;								//re-initialize offset
+		syncControls.style.visibility = 'visible';			//show transport buttons
+		scrub2shot();
+		toggleTopShot()
 	}
 }
 
@@ -696,17 +698,22 @@ function isSkipped(label){
 function setSwitches(){
 	var sliders = filters.querySelectorAll('input');
 	for(var i = 0; i < 6; i++) sliders[i].value = 0;
+	var noGrade = false;
 	for(var i = 0; i < cuts.length; i++){
 		if(cuts[i].text){
 			var label = cuts[i].text.toLowerCase().replace(/\(.*\)/g,'');			//ignore text in parentheses
-			if(isContained(label,/sex|nud/)) sexNum.value = 3;
-			if(isContained(label,/vio|gor/)) violenceNum.value = 3;
-			if(isContained(label,/pro|cur|hat/)) curseNum.value = 3;
-			if(isContained(label,/alc|dru|smo/)) boozeNum.value = 3;
-			if(isContained(label,/fri|sca|int/)) scareNum.value = 3;
-			if(isContained(label,/oth|bor/)) otherNum.value = 3
+			if(isContained(label,/sex|nud/)) sexNum.value = 2;
+			if(isContained(label,/vio|gor/)) violenceNum.value = 2;
+			if(isContained(label,/pro|cur|hat/)) curseNum.value = 2;
+			if(isContained(label,/alc|dru|smo/)) boozeNum.value = 2;
+			if(isContained(label,/fri|sca|int/)) scareNum.value = 2;
+			if(isContained(label,/oth|bor/)) otherNum.value = 2;
+			if(!label.match(/\d/)) noGrade = true									//raise flag for ungraded edit
 		}
 	}
+	if(noGrade) setTimeout(function(){
+		boxMsg.textContent = chrome.i18n.getMessage('unGraded');
+	},500)
 }
 
 //fills the action field in object cuts, according to the position of the check boxes and the text at each time
@@ -733,13 +740,14 @@ function setActions(){
 //to get the time, screenshot, or other info from the content script
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
-	 
+	var syncFix = 0.043;							//use a time that is actually 1 frame earlier than reported (to correct messaging delays)
     if(request.message == "video_time") {
 		if(isSync){																						//re-sync all times
 			isSync = false;
 			var	initialData = skipBox.value.trim().split('\n').slice(0,2),					//first two lines
 				shotTime = fromHMS(initialData[0]),
 				seconds = shotTime ? request.time - shotTime : 0;
+			seconds -= syncFix;																//apply fix
 			for(var i = 0; i < cuts.length; i++){
 				cuts[i].startTime += seconds;
 				cuts[i].endTime += seconds
@@ -765,12 +773,12 @@ chrome.runtime.onMessage.addListener(
 			setTimeout(makeTimeLabels,100)
 			
 		}else if(isSilence){																	//insert single-word silence
-			writeIn(toHMS(request.time - 0.7) + ' --> ' + toHMS(request.time) + '\nprofane word\n\n');
+			writeIn(toHMS(request.time - 0.7 - syncFix) + ' --> ' + toHMS(request.time - syncFix) + '\nprofane word\n\n');
 			isSilence = false;
 			sendData()
 
 		}else{																		//just put it in box
-			writeIn(toHMS(request.time));
+			writeIn(toHMS(request.time - syncFix));
 			if(cuts.length != 0) sendData()
 		}
 		
@@ -782,7 +790,7 @@ chrome.runtime.onMessage.addListener(
 			shotFileBtn.style.display = '';
 			autoBtn.style.display = 'none'
 		}
-		writeIn(toHMS(request.time));						//insert time regardless
+		writeIn(toHMS(request.time - syncFix));						//insert time regardless
 		setTimeout(makeTimeLabels,100)
 		
 	}else if(request.message == "autosync_done"){

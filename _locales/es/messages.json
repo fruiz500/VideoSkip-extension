@@ -22,6 +22,9 @@
 	"offsetApplied": {
 		"message": "Correciones adaptadas para este servicio. Ajuste las categorías a editar y disfrute el vídeo"
 	},
+	"unGraded": {
+		"message": "ATENCIóN: Este archivo contiene correcciones sin nivel, que no funcionarán a menos que su categoría se ponga en Alto"
+	},
 	"shotLoaded": {
 		"message": "Captura cargada"
 	},

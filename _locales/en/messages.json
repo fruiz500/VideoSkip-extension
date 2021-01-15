@@ -22,6 +22,9 @@
 	"offsetApplied": {
 		"message": "Skip times adjusted for this source. Adjust the category sliders and enjoy the video"
 	},
+	"unGraded": {
+		"message": "WARNING: This file contains ungraded edits, which won't work unless its slider is set High"
+	},
 	"shotLoaded": {
 		"message": "Screenshot loaded"
 	},
