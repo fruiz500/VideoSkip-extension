@@ -11,6 +11,8 @@ Chrome: https://chrome.google.com/webstore/detail/videoskip/mlmifkfgafheljfcjlgo
 
 Firefox: https://addons.mozilla.org/en-US/firefox/addon/videoskip/
 
+Edge: https://microsoftedge.microsoft.com/addons/detail/videoskip/enikjnojafmkjadebkopndkognbebomf
+
 There's also a promotional page at https://videoskip.weebly.com
 
 The VideoSkip Exchange, where users can get and contribute skip files for popular feature films, is live at https://videoskip.org/exchange
