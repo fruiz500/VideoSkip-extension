@@ -19,6 +19,7 @@ if(serviceName.includes('youtube')){ subsClass = '.caption-window'
 }else if(serviceName.includes('showtime')){ subsClass = '.closed-captioning-text'
 }else if(serviceName.includes('pluto')){ subsClass = '.captions'
 }else if(serviceName.includes('tubi')){ subsClass = '#captionsComponent'		//actually not a class, but it should work
+}else if(serviceName.includes('roku')){ subsClass = '.vjs-text-track-cue'
 }
 
 //blanks/unblanks subtitles for different services
@@ -325,10 +326,10 @@ chrome.runtime.onMessage.addListener(
 				VideoSkipShot.width -= increment2 * 2;
 				VideoSkipShot.style.left = parseInt(VideoSkipShot.style.left.slice(0,-2)) + increment2 + 'px'
 			}else if(request.dir == 'left'){
-				VideoSkipShot.width += increment * 2;
+				VideoSkipShot.width -= increment * 2;
 				VideoSkipShot.style.left = parseInt(VideoSkipShot.style.left.slice(0,-2)) - increment + 'px'
 			}else{
-				VideoSkipShot.width -= increment * 2;
+				VideoSkipShot.width += increment * 2;
 				VideoSkipShot.style.left = parseInt(VideoSkipShot.style.left.slice(0,-2)) + increment + 'px'
 			}
 		}

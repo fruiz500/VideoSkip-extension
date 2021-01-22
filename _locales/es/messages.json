@@ -6,12 +6,11 @@
 	"directory":{
 		"message": "es"
 	},
-	"width": {
-		"message": "800",
-		"description": "ancho de la ventana en píxeles, función de la longitud de las etiquetas en los botones"
-	},
 	"noVideoMsg": {
 		"message": "No encuentro vídeos en esta página"
+	},
+	"popupOpen": {
+		"message": "La ventana de VideoSkip ya está abierta, en la esquina superior izquierda de la pantalla"
 	},
 	"wrongFile": {
 		"message": "Tipo de archivo erróneo"

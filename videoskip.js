@@ -30,8 +30,7 @@ var cuts = [];				//global variable containing the cuts, each array element is a
 var pageInfo = window.location.hash.slice(1).split('&');		//sent with this page's name as the window opens, this contains ativeTabId + '&' + serviceName
 var activeTabId = parseInt(pageInfo[0]);		//sent with this page's name as the window opens
 var serviceName = pageInfo[1];				//will be used for automatic offsets
-var offsets = {};								//to contain offsets for different sources. Initialized for a first save
-offsets[serviceName] = 0;
+var offsets = {};								//to contain offsets for different sources. Initialized with first time or screenshot
 
 var ua = navigator.userAgent.toLowerCase(); 		//to choose fastest filter method, per https://jsben.ch/5qRcU
 if (ua.indexOf('safari') != -1) { 
@@ -48,14 +47,11 @@ var startSize = oldPixelRatio > 1.2 ? oldPixelRatio / 2 : oldPixelRatio;
 
 setTimeout(function(){window.resizeTo( window.outerWidth * startSize, window.outerHeight * startSize)},400);	//correct initial zoom
 var resInt = setInterval(resizeScr,500)		//look for resizing every half second
-	
-var popupMoved = false;
 
 //to correct for zoom while the window is displayed, and grow window when edit section is shown
 function resizeScr(){
 	var pixelRatio = window.devicePixelRatio;
 	window.resizeTo( window.outerWidth * pixelRatio / oldPixelRatio, window.outerHeight * pixelRatio / oldPixelRatio * stretchFact);
-	if(!popupMoved){window.moveTo(2500,150); popupMoved = true};				//place on right edge; do it only once
 	oldPixelRatio = pixelRatio;
 	stretchFact = 1
 }
@@ -74,14 +70,14 @@ function loadFileAsURL(){
 			skipBox.value = data1[0].trim();
 			if(data1[1]) offsets = JSON.parse('{' + data1[1].trim());			//make offsets object
 			if(data[1]) screenShot.src = 'data:image/jpeg;base64,' + data[1];	//extract screenshot
-			boxMsg.textContent = fileToLoad.name + chrome.i18n.getMessage('contentOfFile');
+			showMsg(fileToLoad.name + chrome.i18n.getMessage('contentOfFile'));
 			setTimeout(function(){
 				justLoaded = true;
 				sendData();
 				applyOffset()
 			},100)		//give it some time to load before data is extracted to memory and sent; also set switches
 		}else{
-			boxMsg.textContent = chrome.i18n.getMessage('wrongFile')
+			showMsg(chrome.i18n.getMessage('wrongFile'))
 		}
 	};
 	fileReader.readAsText(fileToLoad)
@@ -133,9 +129,9 @@ function loadShot(){
 	};
 	if(fileToLoad){
 		fileReader.readAsDataURL(fileToLoad);
-		boxMsg.textContent = chrome.i18n.getMessage('shotLoaded')
+		showMsg(chrome.i18n.getMessage('shotLoaded'))
 	}else{
-		boxMsg.textContent = chrome.i18n.getMessage('shotCanceled')
+		showMsg(chrome.i18n.getMessage('shotCanceled'))
 	}
 }
 
@@ -289,17 +285,18 @@ isSync = false;
 //shift all times so the screenshot has correct timing in the video
 function syncTimes(){
 	if(timeLabels.length == 0){
-		boxMsg.textContent = chrome.i18n.getMessage('time_in_box');
+		showMsg(chrome.i18n.getMessage('time_in_box'));
 		return
 	}else if(timeLabels[0].length < 1){
-		boxMsg.textContent = chrome.i18n.getMessage('time_in_box');
+		showMsg(chrome.i18n.getMessage('time_in_box'));
 		return
 	}
 	isSync = true;
 	chrome.tabs.sendMessage(activeTabId, {message: "need_time"});		//to be continued when the current time is received
 	setTimeout(function(){
 		makeTimeLabels();
-		setTimeout(save2file,100)
+		setTimeout(save2file,100);
+		filterLink.click()							//go on to filter tab
 	},100)
 }
 
@@ -320,7 +317,8 @@ function applyOffset(){
 			skipBox.value = initialData.join('\n') + '\n\n' + skipBox.value
 		}
 
-		boxMsg.textContent = chrome.i18n.getMessage('offsetApplied');
+		showMsg(chrome.i18n.getMessage('offsetApplied'));
+		filterLink.click();								//open filter tab
 
 		for(var service in offsets){						//adjust offsets
 			offsets[service] -= offset
@@ -330,8 +328,8 @@ function applyOffset(){
 			makeTimeLabels()
 		},100);
 	}else{									//no offset found, so scrub to shot time and superimpose
-		offsets[serviceName] = 0;								//re-initialize offset
-		syncControls.style.visibility = 'visible';			//show transport buttons
+		offsets[serviceName] = 0;			//initialize offset
+		syncLink.click();					//go to sync tab
 		scrub2shot();
 		toggleTopShot()
 	}
@@ -370,7 +368,7 @@ function writeIn(string){
 //insert things in box
 function writeTime(){
 	isSync = false;
-	chrome.tabs.sendMessage(activeTabId, {message: "need_time"})	
+	chrome.tabs.sendMessage(activeTabId, {message: "need_time"});
 }
 
 var isSilence = false;
@@ -379,6 +377,14 @@ var isSilence = false;
 function writeSilence(){
 	isSilence = true;
 	chrome.tabs.sendMessage(activeTabId, {message: "need_time"})
+}
+
+//display warning message in all tabs
+function showMsg(text){
+	boxMsg1.textContent = text;
+	boxMsg2.textContent = text;
+	boxMsg3.textContent = text;
+	boxMsg4.textContent = text
 }
 
 //gets index of a particular HMS time in the box, by location; returns null if the cursor is not on a time label
@@ -392,9 +398,8 @@ function getTimeIndex(){
 
 var	deltaT = 0.0417;				//seconds for each frame at 24 fps
 
-//called by forward button
+//called by forward buttons
 function fwdSkip(){
-	if(editControls.style.display == '' && !isSuper){isSuper = true; chrome.tabs.sendMessage(activeTabId, {message: "superimpose", status: true, dataURI: screenShot.src, ratio: screenShot.width/screenShot.height})};
 	if(altMode.checked){										//special mode for shifting auto profanity skips, in case subtitle file was off
 		shiftProfSkips(true)
 
@@ -418,9 +423,8 @@ function fwdSkip(){
 	}
 }
 
-//called by back button
+//called by back buttons
 function backSkip(){
-	if(editControls.style.display == '' && !isSuper){isSuper = true; chrome.tabs.sendMessage(activeTabId, {message: "superimpose", status: true, dataURI: screenShot.src, ratio: screenShot.width/screenShot.height})};
 	if(altMode.checked){										//special mode for shifting auto profanity skips, in case subtitle file was off
 		shiftProfSkips(true)
 
@@ -442,6 +446,13 @@ function backSkip(){
 			chrome.tabs.sendMessage(activeTabId, {message: "shift_time", timeShift: - timeShift, isSuper: isSuper})
 		}
 	}
+}
+
+//called by fast forward buttons
+function fFwdToggle(){
+	skipBox.selectionStart = skipBox.selectionEnd;		//clear selection, if any
+	skipBox.focus();
+	chrome.tabs.sendMessage(activeTabId, {message: "fast_toggle"})
 }
 
 //called by the above, to shift auto-generated profanity skips
@@ -466,10 +477,10 @@ function shiftProfSkips(isFwd){
 //scrub to first time in the box, unless a time is selected
 function scrub2shot(){
 	if(timeLabels.length == 0){
-		boxMsg.textContent = chrome.i18n.getMessage('time_in_box');
+		showMsg(chrome.i18n.getMessage('time_in_box'));
 		return
 	}else if(timeLabels[0].length < 1){
-		boxMsg.textContent = chrome.i18n.getMessage('time_in_box');
+		showMsg(chrome.i18n.getMessage('time_in_box'));
 		return
 	}
 	var index = getTimeIndex();
@@ -488,7 +499,7 @@ var isSuper = false;
 function toggleTopShot(){
 	if(screenShot.src == ''){
 		isSuper = true;
-		boxMsg.textContent = chrome.i18n.getMessage('no_superimpose');
+		showMsg(chrome.i18n.getMessage('no_superimpose'));
 	}
 	if(isSuper){
 		isSuper = false;
@@ -552,10 +563,11 @@ function sendData(){
 function save2file(){
 	if(screenShot.src == '' && timeLabels.length == 0) return;
 	var sourceList = Object.keys(offsets);
+	if(sourceList.length == 0) offsets[serviceName] = 0;					//if never loaded before
 	sourceList.sort(function(a,b){return b.length - a.length;});		//sort alphabetically
 	if(!name) name = prompt(chrome.i18n.getMessage('fileName'));
 	download(skipBox.value + '\n\n' + JSON.stringify(offsets) + '\n\n' + screenShot.src, name + ' [' + sourceList.join('-') + '].skp', "text/plain");
-	boxMsg.textContent = chrome.i18n.getMessage('fileSaved') + name + ' [' + sourceList.join('-') + '].skp ' + chrome.i18n.getMessage('fileSaved2')
+	showMsg(chrome.i18n.getMessage('fileSaved') + name + ' [' + sourceList.join('-') + '].skp ' + chrome.i18n.getMessage('fileSaved2'))
 }
 
 //to move and resize superimposed shot
@@ -603,18 +615,6 @@ helpBtn.addEventListener('click', function(){
 	window.open('help.html')
 });
 
-editBtn.addEventListener('click', function(){
-	if(editControls.style.display == 'block'){	
-		editControls.style.display = '';
-		if(offsets[serviceName] != undefined) syncControls.style.visibility = '';
-		stretchFact = 0.5
-	}else{
-		editControls.style.display = 'block';
-		syncControls.style.visibility = 'visible';
-		stretchFact = 2
-	}
-});
-
 showList.addEventListener('click', function(){
 	if(blockList.style.display == 'block'){
 		blockList.style.display = 'none'
@@ -633,22 +633,27 @@ shotBtn.addEventListener('click',takeShot);
 
 shotFileBtn.style.display = 'none';
 
+backBtn.addEventListener('click',backSkip);
+
+fineMode.addEventListener('click',fineSync);
+
 fwdBtn.addEventListener('click',fwdSkip);
 
-fFwdBtn.addEventListener('click',function(){
-	skipBox.selectionStart = skipBox.selectionEnd;		//clear selection, if any
-	skipBox.focus();
-	if(editControls.style.display == ''){isSuper = true; chrome.tabs.sendMessage(activeTabId, {message: "superimpose", status: true, dataURI: screenShot.src, ratio: screenShot.width/screenShot.height})};
-	chrome.tabs.sendMessage(activeTabId, {message: "fast_toggle"})
-});
+fFwdBtn.addEventListener('click',fFwdToggle);
 
-backBtn.addEventListener('click',backSkip);
+backBtn2.addEventListener('click',backSkip);
+
+fineMode2.addEventListener('click',fineSync);
+
+fwdBtn2.addEventListener('click',fwdSkip);
+
+fFwdBtn2.addEventListener('click',fFwdToggle);
 
 shotTimeBtn.addEventListener('click',scrub2shot);
 
 autoBtn.addEventListener('click',function(){
 	if(screenShot.src == ''){
-		boxMsg.textContent = chrome.i18n.getMessage('screenshot_first');
+		showMsg(chrome.i18n.getMessage('screenshot_first'));
 		return
 	}
 	if(!isSuper) toggleTopShot();
@@ -658,6 +663,86 @@ autoBtn.addEventListener('click',function(){
 moveBtn.addEventListener('click',toggleTopShot);
 
 syncBtn.addEventListener('click',syncTimes);
+
+//check the two Fine mode boxes as one
+function fineSync(){
+	if(this.checked){
+		fineMode.checked = true;
+		fineMode2.checked = true
+	}else{
+		fineMode.checked = false;
+		fineMode2.checked = false
+	}
+}
+
+<!--variables and functions for making tabs, by Matt Doyle 2009-->
+var tabLinks = new Array(),
+	contentDivs = new Array();
+
+function initTabs(){
+
+      // Grab the tab links and content divs from the page
+      var tabListItems = document.getElementById('tabs').childNodes;
+      for( var i = 0; i < tabListItems.length; i++){
+        if(tabListItems[i].nodeName == "LI"){
+          var tabLink = getFirstChildWithTagName( tabListItems[i], 'A' );
+          var id = getHash( tabLink.getAttribute('href'));
+          tabLinks[id] = tabLink;
+          contentDivs[id] = document.getElementById(id)
+        }
+      }
+
+      // Assign onclick events to the tab links, and
+      // highlight the first tab
+      var i = 0;
+
+      for(var id in tabLinks){
+        tabLinks[id].onclick = showTab;
+        tabLinks[id].onfocus = function(){ this.blur()};
+        if (i == 0) tabLinks[id].className = 'selected';
+        i++
+      }
+
+      // Hide all content divs except the first
+      var i = 0;
+
+      for(var id in contentDivs){
+        if( i != 0 ) contentDivs[id].className = 'tabContent hide';
+        i++
+      }
+}
+
+function showTab(){
+      var selectedId = getHash( this.getAttribute('href'));
+
+      // Highlight the selected tab, and dim all others.
+      // Also show the selected content div, and hide all others.
+      for(var id in contentDivs){
+        if(id == selectedId){
+          tabLinks[id].className = 'selected';
+          contentDivs[id].className = 'tabContent'
+        }else{
+          tabLinks[id].className = '';
+          contentDivs[id].className = 'tabContent hide'
+        }
+      }
+      // Stop the browser following the link
+      return false
+}
+
+function getFirstChildWithTagName(element, tagName){
+      for(var i = 0; i < element.childNodes.length; i++){
+        if(element.childNodes[i].nodeName == tagName) return element.childNodes[i]
+      }
+}
+
+function getHash(url){
+      var hashPos = url.lastIndexOf('#');
+      return url.substring(hashPos + 1)
+}
+//end of tab functions
+
+initTabs();
 
 //faster way to check for content depending on browser; returns a Boolean; regex and stringArray content should match
 function isContained(containerStr, regex){
@@ -712,7 +797,7 @@ function setSwitches(){
 		}
 	}
 	if(noGrade) setTimeout(function(){
-		boxMsg.textContent = chrome.i18n.getMessage('unGraded');
+		showMsg(chrome.i18n.getMessage('unGraded'))
 	},500)
 }
 
@@ -760,9 +845,9 @@ chrome.runtime.onMessage.addListener(
 				skipBox.value = initialData.join('\n') + '\n\n' + skipBox.value
 			}
 			if(seconds >= 0){
-				boxMsg.textContent = chrome.i18n.getMessage('delayed') + Math.floor(seconds*100)/100 + chrome.i18n.getMessage('seconds')
+				showMsg(chrome.i18n.getMessage('delayed') + Math.floor(seconds*100)/100 + chrome.i18n.getMessage('seconds'))
 			}else{
-				boxMsg.textContent = chrome.i18n.getMessage('advanced') + Math.floor(- seconds*100)/100 + chrome.i18n.getMessage('seconds')
+				showMsg(chrome.i18n.getMessage('advanced') + Math.floor(- seconds*100)/100 + chrome.i18n.getMessage('seconds'))
 			}
 
 			for(var service in offsets){						//adjust offsets
@@ -786,7 +871,7 @@ chrome.runtime.onMessage.addListener(
 		if(request.dataURI){
 			screenShot.src = request.dataURI
 		}else{
-			boxMsg.textContent = chrome.i18n.getMessage('badService');
+			showMsg(chrome.i18n.getMessage('badService'));
 			shotFileBtn.style.display = '';
 			autoBtn.style.display = 'none'
 		}
@@ -795,11 +880,15 @@ chrome.runtime.onMessage.addListener(
 		
 	}else if(request.message == "autosync_done"){
 		fineMode.checked = true;
-		boxMsg.textContent = chrome.i18n.getMessage('autosync_done')
+		showMsg(chrome.i18n.getMessage('autosync_done'))
 
 	}else if(request.message == "autosync_fail"){
 		autoBtn.disabled = true;
-		boxMsg.textContent = chrome.i18n.getMessage('autosync_fail')
+		showMsg(chrome.i18n.getMessage('autosync_fail'))
+		
+	}else if(request.message == "are_you_there"){
+		if(serviceName == request.serviceName) chrome.runtime.sendMessage({message: "popup_open"});
+		setTimeout(function(){window.moveTo(0,0)},10)
 	}
   }
 )

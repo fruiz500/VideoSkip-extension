@@ -58,16 +58,16 @@ td {
     color: white;
 }
 .hspacer {
-	width: 380px;
+	width: 180px;
 	height: auto;
 	display:inline-block;
 }
 #skipBox {
 	height: 250px;
-	width: 340px;
+	width: 99%;
 	background: #fffffc;
 }
-#boxMsg {
+.boxMsg {
 	color: blue;
 }
 #skipFile {
@@ -84,9 +84,6 @@ td {
 }
 #syncControls {
 	visibility: hidden;
-}
-#screenShot {
-	max-width: 50%;
 }
 #blockList {
 	display: none;
@@ -124,4 +121,52 @@ td {
 .fineText {
 	font-size: small;
 	color: gray;
+}
+ul#tabs {
+	margin: 0;
+	text-align: center;
+	padding: 11px;
+	width: 100%;
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	z-index: 1;
+	background-color: #c6d5c6;
+}
+ul#tabs li {
+	display: inline;
+	width: auto;
+}
+ul#tabs li a {
+	font-family: sans-serif;
+	font-size: 18px;
+	border: none;
+	text-decoration: none;
+	padding: 10px;
+	margin-left: -4px;
+	padding-bottom: 11px;
+	color: #42454a;
+	background-color: #c6d5c6;
+}
+ul#tabs li a:hover {
+	background-color: #a4b3a4;
+}
+ul#tabs li a.selected {
+	font-weight: bold;
+	padding: 12px;
+	border: none;
+	color: #000;
+	background-color: #ffffff;
+	border-top-left-radius: 15px;
+	border-top-right-radius: 15px;
+}
+div.tabContent {
+	border: none;
+	max-width: 1000px;
+	margin-left: auto;
+	margin-right: auto;
+	background-color: #ffffff;
+}
+div.tabContent.hide {
+	display: none;
 }

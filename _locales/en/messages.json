@@ -6,12 +6,11 @@
 	"directory":{
 		"message": "en"
 	},
-	"width": {
-		"message": "800",
-		"description": "width of the popup in pixels, affected by the length of the button labels"
-	},
 	"noVideoMsg": {
 		"message": "I can't find a video on this page"
+	},
+	"popupOpen": {
+		"message": "The VideoSkip window is already open, by the upper left corner of the screen"
 	},
 	"wrongFile": {
 		"message": "Wrong file type"

@@ -1,7 +1,8 @@
 var isFirefox = typeof InstallTrigger !== 'undefined',
-	height = isFirefox ? 400 : 380;
-var popupParams = "scrollbars=yes,resizable=yes,status=no,location=no,toolbar=no,menubar=no,width=" + chrome.i18n.getMessage('width') +",height=" + height + ",top=150,left=2500";
-var popup, activeTab, serviceName;
+	height = isFirefox ? 480 : 470;
+	width = isFirefox ? 510 : 470;
+var popupParams = "scrollbars=yes,resizable=yes,status=no,location=no,toolbar=no,menubar=no,width=" + width + ",height=" + height + ",top=0,left=0";
+var popup, activeTab, serviceName, popupTimer;
 
 //opens permanent popup on icon click
 function openPopup(){
@@ -15,16 +16,25 @@ chrome.runtime.onMessage.addListener(
 		var hasVideo = request.hasVideo;
 		if(hasVideo){
 			serviceName = request.serviceName;
-			openPopup();							//opens separate window if there's a video
+			chrome.runtime.sendMessage({message: "are_you_there", serviceName: serviceName});	//ask if the window is already open
+			popupTimer = setTimeout(function(){		//give some time to an existing popup to reply before opening a new one
+				openPopup();							//opens separate window if there's a video
 //load 2nd content script programmatically (needs activeTab permission)
-			if(!request.isLoaded) chrome.tabs.executeScript({
-				file: '/content2.js',
-				allFrames: true
-			})
-			window.close()
+				if(!request.isLoaded) chrome.tabs.executeScript({
+					file: '/content2.js',
+					allFrames: true
+				})
+				window.close()
+			},100)
 		}else{
-			noVideo.style.display = ''
+			noVideo.textContent = chrome.i18n.getMessage('noVideoMsg');
+			setTimeout(window.close,3000)
 		}
+		
+	}else if(request.message == "popup_open"){		//reply from existing popup
+		clearTimeout(popupTimer);
+		noVideo.textContent = chrome.i18n.getMessage('popupOpen');
+		setTimeout(window.close,3000)
 	}
   }
 );

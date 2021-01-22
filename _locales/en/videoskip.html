@@ -11,23 +11,69 @@
 
 </head>
 
-<body>                    
-	<h2>VideoSkip</h2>
-    <p>v 0.3 &nbsp;&#169; F. Ruiz 2021&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      <button id="helpBtn" class="cssbutton" title="show instructions on new tab (alt-h)" accesskey="h">Help</button>
-      <span class="hspacer"></span>
-      <button id="editBtn" class="cssbutton small" title="toggle edit interface (alt-r)" accesskey="r">Edit</button></p>
-    Select the filters and their strength:
+<body>
+
+  <!--Tabs-->
+<ul id="tabs">
+  <li><a href="#loadTab" id="loadLink" title="load skip file (alt-L)" accesskey="l">Load</a></li>
+  <li><a href="#syncTab" id="syncLink" title="sync skips with video (alt-s) " accesskey="s">Sync</a></li>
+  <li><a href="#filterTab" id="filterLink" title="set filter strength (alt-f)" accesskey="f">Filter</a></li>
+  <li><a href="#editTab" id="editLink" title="write or edit skips (alt-w)" accesskey="w">Edit</a></li>
+</ul>
+
+<!--Main tab-->
+<div class="tabContent" id="loadTab">   
+<br><br><br>
+	<table>
+    <tr>           
+	<td><img src="/img/icon64.png"></td>
+    <td><h2>&nbsp;&nbsp;VideoSkip</h2></td>
+    </tr>
+    </table>
+    v 0.3 &nbsp;&#169; F. Ruiz 2021
+    <span class="hspacer"></span>
+      <button id="helpBtn" class="cssbutton" title="show instructions on new tab (alt-h)" accesskey="h">Help</button></p>
+    <br><br>
+    <div id="boxMsg1" class="boxMsg">First load here the .skp file containing the skips:</div>
+    <br>
+    <label for="skipFile"><span class="cssbutton imptButton" id="skipFileBtn" title="load .skp file">Load skip file</span></label>
+	<input type="file" id="skipFile"/>
+    <br><br><br>
+    <p>If you don't have one, maybe someone has posted it on the VideoSkip Exchange</p>
+    <button id="exchangeBtn"class="cssbutton small" title="open the VideoSkip Exchange in a separate tab">VideoSkip Exchange</button>
+</div>
+
+<div class="tabContent" id="syncTab">
+<br><br><br>
+	<div id="boxMsg2" class="boxMsg">Move the time until video and screenshot match, then click Sync times</div>
+    <br>
+	<img id="screenShot" height="240px">
+    <br>
+    <button id="backBtn"class="cssbutton small" title="step rewind / stop (alt-,)" accesskey=",">&#9668;</button>
+    <input type="checkbox" id="fineMode"/ title="frame by frame (alt-n)" accesskey="n">&nbsp;<span class="fineText">Fine</span>&nbsp;
+    <input type="checkbox" id="altMode" title="shift auto prof. skips / resize shot (alt-m)" accesskey="m"/>&nbsp;<span class="fineText">Alt.</span>
+    <button id="fwdBtn"class="cssbutton small" title="step advance / stop (alt-.)" accesskey=".">&#9658;</button>
+    <button id="fFwdBtn"class="cssbutton small" title="toggle play / fast forward / stop (alt-/)" accesskey="/">&#9658;&#9658;</button>
+    <button id="autoBtn" class="cssbutton small" title="find shot in video">Find shot</button>
+    <button id="moveBtn" class="cssbutton small" title="overlay shot on video (alt-b)" accesskey="b">Superimpose</button>
+    <br><br>
+    <button id="syncBtn"class="cssbutton imptButton" title="change all times when video and shot match (alt-y)" accesskey="y">Sync times</button>
+</div>
+
+<div class="tabContent" id="filterTab">
+<br><br><br>
+	<div id="boxMsg3" class="boxMsg"></div>
+    Select the filter strength for each category, and you're done:
     <br>
     <br>
     <table id="filters">
     <tr>
     <td></td>
-    <th align="center">&nbsp;&nbsp;Sex, Nudity&nbsp;&nbsp;</th>
-    <th align="center">&nbsp;&nbsp;Violence, Gore&nbsp;&nbsp;</th>
-    <th align="center">&nbsp;&nbsp;Profanity, Hate&nbsp;&nbsp;</th>
-    <th align="center">&nbsp;&nbsp;Alcohol, Drugs, etc.&nbsp;&nbsp;</th>
-    <th align="center">&nbsp;&nbsp;Frighten, Intense&nbsp;&nbsp;</th>
+    <th align="center">&nbsp;&nbsp;Sex&nbsp;&nbsp;</th>
+    <th align="center">&nbsp;&nbsp;Violence&nbsp;&nbsp;</th>
+    <th align="center">&nbsp;&nbsp;Profanity&nbsp;&nbsp;</th>
+    <th align="center">&nbsp;&nbsp;Alcohol&nbsp;&nbsp;</th>
+    <th align="center">&nbsp;&nbsp;Intense&nbsp;&nbsp;</th>
     <th align="center">&nbsp;&nbsp;Other&nbsp;&nbsp;</th>
     </tr>
     <tr>
@@ -40,45 +86,36 @@
     <td align="center"><input id="otherNum" type="range" min="0" max="3" step="1" value="0"></td>
     </tr>
     </table>
-    <br>
-    <div id="boxMsg">Load here the .skp file containing the skips:</div>
-    <br>
-    <label for="skipFile"><span class="cssbutton imptButton" id="skipFileBtn" title="load .skp file">Load skip file</span></label>
-	<input type="file" id="skipFile"/>
-    <label for="subFile"><span class="cssbutton small" id="subFileBtn" title="load subs file for auto profanity filter">Auto prof.</span></label>
+    <br><br><br><br>
+    <p>Auto profanity filter</p>
+    <label for="subFile"><span class="cssbutton small" id="subFileBtn" title="load subs file for auto profanity filter">Load subtitles file</span></label>
 	<input type="file" id="subFile"/>
-    <button id="exchangeBtn"class="cssbutton small" title="open the VideoSkip Exchange in a separate tab">VideoSkip Exchange</button>
-
-    <span id="syncControls">
-    <button id="backBtn"class="cssbutton small" title="step rewind / stop (alt-,)" accesskey=",">&#9668;</button>
-    <input type="checkbox" id="fineMode"/ title="frame by frame (alt-n)" accesskey="n">&nbsp;<span class="fineText">Fine</span>&nbsp;
-    <input type="checkbox" id="altMode" title="shift auto prof. skips / resize shot (alt-m)" accesskey="m"/>&nbsp;<span class="fineText">Alt.</span>
-    <button id="fwdBtn"class="cssbutton small" title="step advance / stop (alt-.)" accesskey=".">&#9658;</button>
-    <button id="fFwdBtn"class="cssbutton small" title="toggle play / fast forward / stop (alt-/)" accesskey="/">&#9658;&#9658;</button>
-    <button id="syncBtn"class="cssbutton imptButton" title="change all times when video and shot match (alt-y)" accesskey="y">Sync times</button>
-    </span>
     
-    <div id="editControls">
+    <div id="blockListCont">
+	<p id="showList"><b>Click here to display and edit the block list</b> used for automatically generating silences from a subtitle file. Edit as needed while maintaining the format. Use only lowercase.</p>
+	<div id="blockList" contenteditable>anus, ass fuck, ass hole, assfuck, asshole, assshole, assbag, assbandit, assbang, assbanged, assbanger, assbangs, assbite, assclown, asscock, asscracker, assface, assfaces, assfuck, assfucker, ass-fucker, assfukka, assgoblin, assh0le, asshat, ass-hat, asshead, asshopper, ass-jabber, assjacker, asslick, asslicker, assmaster, assmonkey, assmucus, assmucus, assmunch, assmuncher, assnigger, asspirate, ass-pirate, assshit, asssucker, asswad, asswhole, asswipe, asswipes, auto erotic, bastard, beatch, bimbo, bitch, black cock, bloke, bloody hell, bollock, bollok, bollox, boong, bull shit, bullshit, butt, clit, cock, cockfucker, cocksuck, cocksucker, condom, coonnass, crap, cunt, cyberfuck, dago, damn, darn, dego, dick, dildo, dike, douche, dyke, ejaculate, erect, erection, erotic, escort, fag, faggot, fuck, fuck off, fuck you, fuckass, fuckhole, gay, god damn, goddam, gooch, gook, hard core, hardcore, homoerotic, honky, hooker, hoor, hootch, hore, horniest, horny, hussy, hymen, injun, intercourse, jack off, jackass, jackhole, jackoff, jack-off, jaggi, jagoff, jail bait, jailbait, jerk, jerk off, jerk0ff, jerkass, jerked, jerkoff, jerk-off, jigaboo, jiggaboo, jiggerboo, jism, jiz, jizm, jizz, jizzed, jock, juggs, jungle bunny, junglebunny, junkie, junky, kafir, kawk, kinbaku, kinkster, klan, knob end, knobbing, knobead, knobed, knobend, knobhead, knobjocky, knobjokey, kock, kondum, kondums, kooch, kooches, kootch, kum, kummer, kumming, kums, kunilingus, kunja, kunt, kwif, kike, kraut, kyke, lameass, lardass, lesbian, lezzie, masterbat, masturbat, motha, mother fucker, motherfuck, motherfucker, negro, nigger, nimrod, ninny, nipple, orgasim, orgasm, paedophil, paki, panooch, pansy, pantie, pants down, panty, pedophil, pee, penis, penisfucker, pikey, pillowbiter, pimp, pimpis, pinko, piss, piss off, polack, pollack, poop, porn, porno, pornography, pubi, pussy, puto, queaf, queef, queer, quim, raghead, retard, russkie, russky, sadist, schizo, schlong, scissoring, screw, screwed, screwing, scroat, scrog, scrot, sex, sexy, shit, skag, skank, skeet, slanteye, sleaze, sleazy, slut, smartass, smeg, smegma, smut, sodomi, sodomy, son of a bitch, souse, sperm, spick, splooge, spooge, suck, swastika, swinger, tampon, teat, tits, titt, towelhead, twat, twunt, upskirt, viagra, voyeur, wank, wazoo, wedgie, weenie, weewee, weiner, weirdo, wench, wet dream, wetback, whore, wiseass, wog, wop, xxx, yid, yiffy, yobbo, zibbi, zoophilia, zubb</div></div>
+</div>
+
+<div class="tabContent" id="editTab">
+<br><br><br>
+	<div id="boxMsg4" class="boxMsg">Edit the skips here</div>
     <br>
-    Edit &nbsp;&nbsp;&nbsp;
-    <button id="timeBtn" class="cssbutton small" title="insert current time (alt-q)" accesskey="q">Insert time</button>
-    <button id="arrowBtn" class="cssbutton small" title="insert a correctly formatted arrow (alt-w)" accesskey="w">Insert arrow</button>
-    <button id="beepBtn" class="cssbutton small" title="insert a quick word mute (alt-a)" accesskey="a">Insert silence</button>
-    <button id="saveFile" class="cssbutton imptButton small" title="save .skp file to Downloads (alt-s)" accesskey="s">Save</button>
-    &nbsp;&nbsp;
-    <button id="autoBtn" class="cssbutton small" title="find shot in video">Find shot</button>
+	<button id="backBtn2"class="cssbutton small" title="step rewind / stop (alt-,)" accesskey=",">&#9668;</button>
+    <input type="checkbox" id="fineMode2"/ title="frame by frame (alt-n)" accesskey="n">&nbsp;<span class="fineText">Fine</span>&nbsp;
+    <button id="fwdBtn2"class="cssbutton small" title="step advance / stop (alt-.)" accesskey=".">&#9658;</button>
+    <button id="fFwdBtn2"class="cssbutton small" title="toggle play / fast forward / stop (alt-/)" accesskey="/">&#9658;&#9658;</button>
     <button id="shotTimeBtn"class="cssbutton small" title="go to selected time / screenshot time">Go to time</button>
-    <button id="moveBtn" class="cssbutton small" title="overlay shot on video (alt-b)" accesskey="b">Superimpose</button>
     <button id="shotBtn"class="cssbutton small" title="take screenshot">Take screenshot</button>
     <label for="shotFile" title="load screenshot"><span class="cssbutton small" id="shotFileBtn" title="load screenshot">Load screenshot</span></label>
 	<input type="file" id="shotFile"/>
+    <br><br>
+    <button id="timeBtn" class="cssbutton small" title="insert current time (alt-q)" accesskey="q">Insert time</button>
+    <button id="arrowBtn" class="cssbutton small" title="insert a correctly formatted arrow (alt-w)" accesskey="w">Insert arrow</button>
+    <button id="beepBtn" class="cssbutton small" title="insert a quick word mute (alt-a)" accesskey="a">Insert silence</button>
+    <button id="saveFile" class="cssbutton imptButton small" title="save .skp file to Downloads (alt-v)" accesskey="v">Save</button> 
     <br>
-	<textarea id="skipBox" rows="10" placeholder="Skips appear here"></textarea>
-    &nbsp;&nbsp;&nbsp;<img id="screenShot">
-<div id="blockListCont">
-<p id="showList"><b>Click here to display and edit the block list</b> used for automatically generating silences from a subtitle file, derived from a list courtesy of <a href="https://www.freewebheaders.com/full-list-of-bad-words-banned-by-google/" target="_blank">freewebheaders.com</a>. Edit as needed while maintaining the format. Use only lowercase.</p>
-  <div id="blockList" contenteditable>anus, ass fuck, ass hole, assfuck, asshole, assshole, assbag, assbandit, assbang, assbanged, assbanger, assbangs, assbite, assclown, asscock, asscracker, assface, assfaces, assfuck, assfucker, ass-fucker, assfukka, assgoblin, assh0le, asshat, ass-hat, asshead, asshopper, ass-jabber, assjacker, asslick, asslicker, assmaster, assmonkey, assmucus, assmucus, assmunch, assmuncher, assnigger, asspirate, ass-pirate, assshit, asssucker, asswad, asswhole, asswipe, asswipes, auto erotic, bastard, beatch, bimbo, bitch, black cock, bloke, bloody hell, bollock, bollok, bollox, boong, bull shit, bullshit, butt, clit, cock, cockfucker, cocksuck, cocksucker, condom, coonnass, crap, cunt, cyberfuck, dago, damn, darn, dego, dick, dildo, dike, douche, dyke, ejaculate, erect, erection, erotic, escort, fag, faggot, fuck, fuck off, fuck you, fuckass, fuckhole, gay, god damn, goddam, gooch, gook, hard core, hardcore, homoerotic, honky, hooker, hoor, hootch, hore, horniest, horny, hussy, hymen, injun, intercourse, jack off, jackass, jackhole, jackoff, jack-off, jaggi, jagoff, jail bait, jailbait, jerk, jerk off, jerk0ff, jerkass, jerked, jerkoff, jerk-off, jigaboo, jiggaboo, jiggerboo, jism, jiz, jizm, jizz, jizzed, jock, juggs, jungle bunny, junglebunny, junkie, junky, kafir, kawk, kinbaku, kinkster, klan, knob end, knobbing, knobead, knobed, knobend, knobhead, knobjocky, knobjokey, kock, kondum, kondums, kooch, kooches, kootch, kum, kummer, kumming, kums, kunilingus, kunja, kunt, kwif, kike, kraut, kyke, lameass, lardass, lesbian, lezzie, masterbat, masturbat, motha, mother fucker, motherfuck, motherfucker, negro, nigger, nimrod, ninny, nipple, orgasim, orgasm, paedophil, paki, panooch, pansy, pantie, pants down, panty, pedophil, pee, penis, penisfucker, pikey, pillowbiter, pimp, pimpis, pinko, piss, piss off, polack, pollack, poop, porn, porno, pornography, pubi, pussy, puto, queaf, queef, queer, quim, raghead, retard, russkie, russky, sadist, schizo, schlong, scissoring, screw, screwed, screwing, scroat, scrog, scrot, sex, sexy, shit, skag, skank, skeet, slanteye, sleaze, sleazy, slut, smartass, smeg, smegma, smut, sodomi, sodomy, son of a bitch, souse, sperm, spick, splooge, spooge, suck, swastika, swinger, tampon, teat, tits, titt, towelhead, twat, twunt, upskirt, viagra, voyeur, wank, wazoo, wedgie, weenie, weewee, weiner, weirdo, wench, wet dream, wetback, whore, wiseass, wog, wop, xxx, yid, yiffy, yobbo, zibbi, zoophilia, zubb</div>
-</div></div>
+	<textarea id="skipBox" rows="8" placeholder="Skips appear here"></textarea>
+</div>
 
 <script src="/videoskip.js"></script>
 
