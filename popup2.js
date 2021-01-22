@@ -1,1 +1,0 @@
-noVideo.textContent = chrome.i18n.getMessage('noVideoMsg')
