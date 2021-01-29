@@ -1,7 +1,9 @@
 var isFirefox = typeof InstallTrigger !== 'undefined',
-	height = isFirefox ? 480 : 470;
-	width = isFirefox ? 510 : 470;
-var popupParams = "scrollbars=yes,resizable=yes,status=no,location=no,toolbar=no,menubar=no,width=" + width + ",height=" + height + ",top=0,left=0";
+	height = isFirefox ? 480 : 470,
+	width = isFirefox ? 510 : 470,
+	top = isFirefox ? 150 : 150,
+	left = isFirefox ? 2500 : 2500;
+var popupParams = "scrollbars=yes,resizable=yes,status=no,location=no,toolbar=no,menubar=no,width=" + width + ",height=" + height + ",top=" + top + ",left=" + left;
 var popup, activeTab, serviceName, popupTimer;
 
 //opens permanent popup on icon click
@@ -11,19 +13,20 @@ function openPopup(){
 }
 
 chrome.runtime.onMessage.addListener(
-  function(request, sender, sendResponse) {	  
+  function(request, sender, sendResponse) {
+	clearTimeout(timer1); 
 	if(request.message == "start_info"){				//reply from the content script
 		var hasVideo = request.hasVideo;
 		if(hasVideo){
+			//load 2nd content script programmatically (needs activeTab permission)
+			if(!request.isLoaded) chrome.tabs.executeScript({
+				file: '/content2.js',
+				allFrames: true
+			});
 			serviceName = request.serviceName;
 			chrome.runtime.sendMessage({message: "are_you_there", serviceName: serviceName});	//ask if the window is already open
 			popupTimer = setTimeout(function(){		//give some time to an existing popup to reply before opening a new one
 				openPopup();							//opens separate window if there's a video
-//load 2nd content script programmatically (needs activeTab permission)
-				if(!request.isLoaded) chrome.tabs.executeScript({
-					file: '/content2.js',
-					allFrames: true
-				})
 				window.close()
 			},100)
 		}else{
@@ -31,7 +34,7 @@ chrome.runtime.onMessage.addListener(
 			setTimeout(window.close,3000)
 		}
 		
-	}else if(request.message == "popup_open"){		//reply from existing popup
+	}else if(request.message == "im_here"){		//reply from existing popup
 		clearTimeout(popupTimer);
 		noVideo.textContent = chrome.i18n.getMessage('popupOpen');
 		setTimeout(window.close,3000)
@@ -46,7 +49,7 @@ window.onload = function() {
 		chrome.tabs.executeScript({
 			file: '/content1.js',
 			allFrames: true
-		})
+		});
 		if(isFirefox){
 			chrome.tabs.executeScript({		//Firefox has trouble loading the content script in a one-two sequence, so load it all at once
 				file: '/content2.js',
@@ -55,3 +58,9 @@ window.onload = function() {
 		}
 	})
 }
+
+//display a message if there's no reply from the content script
+var timer1 = setTimeout(function(){
+	noVideo.textContent = chrome.i18n.getMessage('noVideoMsg');
+	setTimeout(window.close,3000)
+},100)

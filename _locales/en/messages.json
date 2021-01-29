@@ -12,6 +12,9 @@
 	"popupOpen": {
 		"message": "The VideoSkip window is already open, by the upper left corner of the screen"
 	},
+	"noScript": {
+		"message": "I can't communicate with the video. Please close this window, reload the video page, and try again"
+	},
 	"wrongFile": {
 		"message": "Wrong file type"
 	},

@@ -108,7 +108,7 @@ function autoBeepGen(subs){
 	for(var i = 0; i < subObj.length; i++){
 		var word = subObj[i].text.toLowerCase().match(blockListExp);
 		if(word){	//word found in block list; add extra .3 s buffer in case there are two in a row
-			writeIn(toHMS(subObj[i].startTime - 0.15) + ' --> ' + toHMS(subObj[i].endTime + 0.15) + '\nprofane word (' + word[0] + ')\n\n')
+			writeIn(toHMS(subObj[i].startTime - 0.15) + ' --> ' + toHMS(subObj[i].endTime + 0.15) + '\nprofane word 1 (' + word[0] + ')\n\n')
 		}
 	}
 	var	initialData = skipBox.value.trim().split('\n').slice(0,2);		//first two lines containing screenshot timing
@@ -887,8 +887,17 @@ chrome.runtime.onMessage.addListener(
 		showMsg(chrome.i18n.getMessage('autosync_fail'))
 		
 	}else if(request.message == "are_you_there"){
-		if(serviceName == request.serviceName) chrome.runtime.sendMessage({message: "popup_open"});
-		setTimeout(function(){window.moveTo(0,0)},10)
+		if(serviceName == request.serviceName) chrome.runtime.sendMessage({message: "im_here"});
+		setTimeout(function(){window.moveTo(isFirefox ? 0 : 2500,0)},10)				//top right unless it's Firefox, which has a bug, so top left
+		
+	}else if(request.message == "script_here"){
+		clearTimeout(noScriptTimer)
 	}
   }
 )
+
+//all done, so confirm that the content script is loaded too
+chrome.tabs.sendMessage(activeTabId, {message: "is_script_loaded"});
+var noScriptTimer = setTimeout(function(){
+	showMsg(chrome.i18n.getMessage('noScript'))
+},1000)

@@ -336,6 +336,10 @@ chrome.runtime.onMessage.addListener(
 
 	}else if(request.message == "auto_find"){
 		findShot()
+		
+	}else if(request.message == "is_script_loaded"){					//confirm with popup window that script is loaded
+		chrome.runtime.sendMessage({message: "script_here"})
+		
 	}
   }
 )
