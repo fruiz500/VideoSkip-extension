@@ -7,19 +7,34 @@
 		"message": "en"
 	},
 	"noVideoMsg": {
-		"message": "I can't find a video on this page"
+		"message": "VideoSkip helps you to skip over video content that you'd rather not see. Please make sure the video is ready to play before you click the VideoSkip button"
 	},
 	"popupOpen": {
-		"message": "The VideoSkip window is already open, by the upper left corner of the screen"
+		"message": "The VideoSkip window is open by the upper right corner of the screen, possibly behind this window ⇨"
 	},
-	"noScript": {
-		"message": "I can't communicate with the video. Please close this window, reload the video page, and try again"
+	"popupOpenLeft": {
+		"message": "The VideoSkip window is open by the upper left corner of the screen, possibly behind this window ⇦"
+	},
+	"exchangeText": {
+		"message": "VideoSkip works from a local file that controls video playback for a given title. You can get it from many sources, but here is a link to the official Exchange"
+	},
+	"helpLabel": {
+		"message": "Help"
 	},
 	"wrongFile": {
 		"message": "Wrong file type"
 	},
-	"contentOfFile": {
-		"message": " loaded. Now scrub to the superimposed screenshot and click Sync times"
+	"nowLoad": {
+		"message": "Load here the .skp file containing the skips"
+	},
+	"nowSync": {
+		"message": "Move the time until video and screenshot match, then click Sync times"
+	},
+	"nowFilter": {
+		"message": "Select the filter strength for each category"
+	},
+	"nowEdit": {
+		"message": "Edit the skips here"
 	},
 	"offsetApplied": {
 		"message": "Skip times adjusted for this source. Adjust the category sliders and enjoy the video"
@@ -39,34 +54,37 @@
 	"fileSaved2": {
 		"message": "Please share with other users"
 	},
-	"seconds": {
-		"message": " seconds"
-	},
-	"delayed": {
-		"message": "Skips delayed by "
-	},
-	"advanced": {
-		"message": "Skips advanced by "
-	},
 	"badService": {
 		"message": "This service does not allow taking screenshots. Take it from the OS and load it with the button"
 	},
-	"autosync_done": {
+	"autosyncDone": {
 		"message": "Auto shot finding done. You may need to repeat it or adjust with time arrows. Then click Sync times"
 	},
-	"autosync_fail": {
+	"autosyncFail": {
 		"message": "This service does not allow screenshots, so auto shot finding is not possible"
 	},
-	"time_in_box": {
+	"noTimeInBox": {
 		"message": "Must have at least one time in the box before clicking"
 	},
-	"no_superimpose": {
+	"noSuperimpose": {
 		"message": "Nothing to superimpose"
 	},
 	"fileName": {
 		"message": "Enter the file name. Extension .skp wil be added"
 	},
-	"screenshot_first": {
+	"screenshotFirst": {
 		"message": "Must have a screenshot first"
+	},
+	"categories": {
+		"message": "sex,violence,profanity,substance,intense,other"
+	},
+	"noEditsLoaded": {
+		"message": "VideoSkip: no edits loaded"
+	},
+	"noFiltersEngaged": {
+		"message": "VideoSkip: no filters engaged"
+	},
+	"VideoSkipOn": {
+		"message": "VideoSkip on: "
 	}
 }

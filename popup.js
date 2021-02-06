@@ -1,6 +1,6 @@
 var isFirefox = typeof InstallTrigger !== 'undefined',
 	height = isFirefox ? 480 : 470,
-	width = isFirefox ? 510 : 470,
+	width = isFirefox ? 530 : 490,
 	top = isFirefox ? 150 : 150,
 	left = isFirefox ? 2500 : 2500;
 var popupParams = "scrollbars=yes,resizable=yes,status=no,location=no,toolbar=no,menubar=no,width=" + width + ",height=" + height + ",top=" + top + ",left=" + left;
@@ -25,19 +25,22 @@ chrome.runtime.onMessage.addListener(
 			});
 			serviceName = request.serviceName;
 			chrome.runtime.sendMessage({message: "are_you_there", serviceName: serviceName});	//ask if the window is already open
-			popupTimer = setTimeout(function(){		//give some time to an existing popup to reply before opening a new one
+			popupTimer = setTimeout(function(){		//give some time for an existing popup to reply before opening a new one
 				openPopup();							//opens separate window if there's a video
-				window.close()
-			},100)
+				noVideo.textContent = chrome.i18n.getMessage('popupOpen');
+				setTimeout(window.close,5000)
+			},100)	
 		}else{
 			noVideo.textContent = chrome.i18n.getMessage('noVideoMsg');
-			setTimeout(window.close,3000)
+			exchangeText.textContent = chrome.i18n.getMessage('exchangeText');
+			helpBtn.textContent = chrome.i18n.getMessage('helpLabel');
+			exchange.style.display = 'block'
 		}
 		
 	}else if(request.message == "im_here"){		//reply from existing popup
 		clearTimeout(popupTimer);
-		noVideo.textContent = chrome.i18n.getMessage('popupOpen');
-		setTimeout(window.close,3000)
+		noVideo.textContent = chrome.i18n.getMessage(isFirefox ? 'popupOpenLeft' : 'popupOpen');		//repositioned window appears at left in Firefox
+		setTimeout(window.close,5000)
 	}
   }
 );
@@ -57,10 +60,16 @@ window.onload = function() {
 			})
 		}
 	})
+	helpBtn.addEventListener('click', function(){
+		window.open('/_locales/' + chrome.i18n.getMessage('directory') + '/help.html')
+	})
+	exchangeBtn.addEventListener('click', function(){
+		window.open('https://videoskip.org/exchange')
+	})
 }
 
 //display a message if there's no reply from the content script
 var timer1 = setTimeout(function(){
 	noVideo.textContent = chrome.i18n.getMessage('noVideoMsg');
-	setTimeout(window.close,3000)
+	setTimeout(window.close,5000)
 },100)

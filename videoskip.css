@@ -69,6 +69,7 @@ td {
 }
 .boxMsg {
 	color: blue;
+	font-weight: bold;
 }
 #skipFile {
 	display: none;
@@ -168,5 +169,8 @@ div.tabContent {
 	background-color: #ffffff;
 }
 div.tabContent.hide {
+	display: none;
+}
+#rubric {
 	display: none;
 }

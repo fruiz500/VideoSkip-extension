@@ -30,7 +30,9 @@ var cuts = [];				//global variable containing the cuts, each array element is a
 var pageInfo = window.location.hash.slice(1).split('&');		//sent with this page's name as the window opens, this contains ativeTabId + '&' + serviceName
 var activeTabId = parseInt(pageInfo[0]);		//sent with this page's name as the window opens
 var serviceName = pageInfo[1];				//will be used for automatic offsets
+sourceTitle.textContent += serviceName;
 var offsets = {};								//to contain offsets for different sources. Initialized with first time or screenshot
+var killWindow;					//a timer to close window if the video page unloads
 
 var ua = navigator.userAgent.toLowerCase(); 		//to choose fastest filter method, per https://jsben.ch/5qRcU
 if (ua.indexOf('safari') != -1) { 
@@ -46,7 +48,12 @@ var stretchFact = 1;												//for resizing on Edit
 var startSize = oldPixelRatio > 1.2 ? oldPixelRatio / 2 : oldPixelRatio;
 
 setTimeout(function(){window.resizeTo( window.outerWidth * startSize, window.outerHeight * startSize)},400);	//correct initial zoom
-var resInt = setInterval(resizeScr,500)		//look for resizing every half second
+
+var resInt = setInterval(function(){
+	resizeScr();								//look for resizing every half second
+	if(!killWindow) killWindow = setTimeout(function(){window.close()},3000);		//close in 1 sec if no reply
+	chrome.tabs.sendMessage(activeTabId, {message: "is_video_there"});		//poll content2 script
+},500);
 
 //to correct for zoom while the window is displayed, and grow window when edit section is shown
 function resizeScr(){
@@ -70,14 +77,13 @@ function loadFileAsURL(){
 			skipBox.value = data1[0].trim();
 			if(data1[1]) offsets = JSON.parse('{' + data1[1].trim());			//make offsets object
 			if(data[1]) screenShot.src = 'data:image/jpeg;base64,' + data[1];	//extract screenshot
-			showMsg(fileToLoad.name + chrome.i18n.getMessage('contentOfFile'));
 			setTimeout(function(){
 				justLoaded = true;
 				sendData();
 				applyOffset()
 			},100)		//give it some time to load before data is extracted to memory and sent; also set switches
 		}else{
-			showMsg(chrome.i18n.getMessage('wrongFile'))
+			boxMsg1.textContent = chrome.i18n.getMessage('wrongFile')
 		}
 	};
 	fileReader.readAsText(fileToLoad)
@@ -129,9 +135,9 @@ function loadShot(){
 	};
 	if(fileToLoad){
 		fileReader.readAsDataURL(fileToLoad);
-		showMsg(chrome.i18n.getMessage('shotLoaded'))
+		boxMsg4.textContent = chrome.i18n.getMessage('shotLoaded')
 	}else{
-		showMsg(chrome.i18n.getMessage('shotCanceled'))
+		boxMsg4.textContent = chrome.i18n.getMessage('shotCanceled')
 	}
 }
 
@@ -285,10 +291,10 @@ isSync = false;
 //shift all times so the screenshot has correct timing in the video
 function syncTimes(){
 	if(timeLabels.length == 0){
-		showMsg(chrome.i18n.getMessage('time_in_box'));
+		boxMsg2.textContent = chrome.i18n.getMessage('noTimeInBox');
 		return
 	}else if(timeLabels[0].length < 1){
-		showMsg(chrome.i18n.getMessage('time_in_box'));
+		boxMsg2.textContent = chrome.i18n.getMessage('noTimeInBox');
 		return
 	}
 	isSync = true;
@@ -317,8 +323,8 @@ function applyOffset(){
 			skipBox.value = initialData.join('\n') + '\n\n' + skipBox.value
 		}
 
-		showMsg(chrome.i18n.getMessage('offsetApplied'));
 		filterLink.click();								//open filter tab
+		boxMsg3.textContent = chrome.i18n.getMessage('offsetApplied');
 
 		for(var service in offsets){						//adjust offsets
 			offsets[service] -= offset
@@ -329,6 +335,8 @@ function applyOffset(){
 		},100);
 	}else{									//no offset found, so scrub to shot time and superimpose
 		offsets[serviceName] = 0;			//initialize offset
+		syncTab.style.display = '';
+		syncLink.style.display = '';
 		syncLink.click();					//go to sync tab
 		scrub2shot();
 		toggleTopShot()
@@ -377,14 +385,6 @@ var isSilence = false;
 function writeSilence(){
 	isSilence = true;
 	chrome.tabs.sendMessage(activeTabId, {message: "need_time"})
-}
-
-//display warning message in all tabs
-function showMsg(text){
-	boxMsg1.textContent = text;
-	boxMsg2.textContent = text;
-	boxMsg3.textContent = text;
-	boxMsg4.textContent = text
 }
 
 //gets index of a particular HMS time in the box, by location; returns null if the cursor is not on a time label
@@ -477,10 +477,10 @@ function shiftProfSkips(isFwd){
 //scrub to first time in the box, unless a time is selected
 function scrub2shot(){
 	if(timeLabels.length == 0){
-		showMsg(chrome.i18n.getMessage('time_in_box'));
+		boxMsg4.textContent = chrome.i18n.getMessage('noTimeInBox');
 		return
 	}else if(timeLabels[0].length < 1){
-		showMsg(chrome.i18n.getMessage('time_in_box'));
+		boxMsg4.textContent = chrome.i18n.getMessage('noTimeInBox');
 		return
 	}
 	var index = getTimeIndex();
@@ -499,7 +499,7 @@ var isSuper = false;
 function toggleTopShot(){
 	if(screenShot.src == ''){
 		isSuper = true;
-		showMsg(chrome.i18n.getMessage('no_superimpose'));
+		boxMsg2.textContent = chrome.i18n.getMessage('noSuperimpose');
 	}
 	if(isSuper){
 		isSuper = false;
@@ -567,7 +567,7 @@ function save2file(){
 	sourceList.sort(function(a,b){return b.length - a.length;});		//sort alphabetically
 	if(!name) name = prompt(chrome.i18n.getMessage('fileName'));
 	download(skipBox.value + '\n\n' + JSON.stringify(offsets) + '\n\n' + screenShot.src, name + ' [' + sourceList.join('-') + '].skp', "text/plain");
-	showMsg(chrome.i18n.getMessage('fileSaved') + name + ' [' + sourceList.join('-') + '].skp ' + chrome.i18n.getMessage('fileSaved2'))
+	boxMsg4.textContent = chrome.i18n.getMessage('fileSaved') + name + ' [' + sourceList.join('-') + '].skp ' + chrome.i18n.getMessage('fileSaved2')
 }
 
 //to move and resize superimposed shot
@@ -599,7 +599,9 @@ function checkKey(e) {
 
 skipFile.addEventListener('change', loadFileAsURL);
 
-exchangeBtn.addEventListener('click', function(){window.open('https://videoskip.org/exchange')});
+exchangeBtn.addEventListener('click', function(){
+	window.open('https://videoskip.org/exchange')
+});
 
 shotFile.addEventListener('change', loadShot);
 
@@ -653,7 +655,7 @@ shotTimeBtn.addEventListener('click',scrub2shot);
 
 autoBtn.addEventListener('click',function(){
 	if(screenShot.src == ''){
-		showMsg(chrome.i18n.getMessage('screenshot_first'));
+		boxMsg3.textContent = chrome.i18n.getMessage('screenshotFirst');
 		return
 	}
 	if(!isSuper) toggleTopShot();
@@ -663,6 +665,28 @@ autoBtn.addEventListener('click',function(){
 moveBtn.addEventListener('click',toggleTopShot);
 
 syncBtn.addEventListener('click',syncTimes);
+
+showSyncBtn.addEventListener('click',function(){
+	if(syncTab.style.display == ''){
+		syncTab.style.display = 'none';
+		syncLink.style.display = 'none';
+	}else{
+		syncTab.style.display = '';
+		syncLink.style.display = '';
+		syncLink.click()
+	}
+});
+
+rubricBtn.addEventListener('click',function(){
+	if(rubric.style.display == 'block'){
+		rubric.style.display = 'none'
+	}else{
+		rubric.style.display = 'block'
+	}
+});
+
+syncLink.style.display = 'none';
+syncTab.style.display = 'none';
 
 //check the two Fine mode boxes as one
 function fineSync(){
@@ -726,6 +750,16 @@ function showTab(){
           contentDivs[id].className = 'tabContent hide'
         }
       }
+	  //display appropriate messages
+	  if(this.id == 'loadLink'){
+		  boxMsg1.textContent = chrome.i18n.getMessage('nowLoad');
+	  }else if(this.id == 'syncLink'){
+		  boxMsg2.textContent = chrome.i18n.getMessage('nowSync');
+	  }else if(this.id == 'filterLink'){
+		  boxMsg3.textContent = chrome.i18n.getMessage('nowFilter');
+	  }else if(this.id == 'editLink'){
+		  boxMsg4.textContent = chrome.i18n.getMessage('nowEdit');
+	  }
       // Stop the browser following the link
       return false
 }
@@ -797,7 +831,7 @@ function setSwitches(){
 		}
 	}
 	if(noGrade) setTimeout(function(){
-		showMsg(chrome.i18n.getMessage('unGraded'))
+		boxMsg3.textContent = chrome.i18n.getMessage('unGraded')
 	},500)
 }
 
@@ -844,11 +878,6 @@ chrome.runtime.onMessage.addListener(
 				initialData[0] = toHMS(shotTime + seconds);
 				skipBox.value = initialData.join('\n') + '\n\n' + skipBox.value
 			}
-			if(seconds >= 0){
-				showMsg(chrome.i18n.getMessage('delayed') + Math.floor(seconds*100)/100 + chrome.i18n.getMessage('seconds'))
-			}else{
-				showMsg(chrome.i18n.getMessage('advanced') + Math.floor(- seconds*100)/100 + chrome.i18n.getMessage('seconds'))
-			}
 
 			for(var service in offsets){						//adjust offsets
 				offsets[service] -= seconds
@@ -871,7 +900,7 @@ chrome.runtime.onMessage.addListener(
 		if(request.dataURI){
 			screenShot.src = request.dataURI
 		}else{
-			showMsg(chrome.i18n.getMessage('badService'));
+			boxMsg4.textContent = chrome.i18n.getMessage('badService');
 			shotFileBtn.style.display = '';
 			autoBtn.style.display = 'none'
 		}
@@ -880,24 +909,18 @@ chrome.runtime.onMessage.addListener(
 		
 	}else if(request.message == "autosync_done"){
 		fineMode.checked = true;
-		showMsg(chrome.i18n.getMessage('autosync_done'))
+		boxMsg2.textContent = chrome.i18n.getMessage('autosyncDone')
 
 	}else if(request.message == "autosync_fail"){
 		autoBtn.disabled = true;
-		showMsg(chrome.i18n.getMessage('autosync_fail'))
+		boxMsg2.textContent = chrome.i18n.getMessage('autosyncFail')
 		
 	}else if(request.message == "are_you_there"){
 		if(serviceName == request.serviceName) chrome.runtime.sendMessage({message: "im_here"});
-		setTimeout(function(){window.moveTo(isFirefox ? 0 : 2500,0)},10)				//top right unless it's Firefox, which has a bug, so top left
+		setTimeout(function(){resizeScr();window.moveTo(isFirefox ? 0 : 2500,0)},10)				//top right unless it's Firefox, which has a bug, so top left
 		
-	}else if(request.message == "script_here"){
-		clearTimeout(noScriptTimer)
+	}else if(request.message == "video_here"){
+		if(request.hasControl){clearTimeout(killWindow); killWindow = null}
 	}
   }
 )
-
-//all done, so confirm that the content script is loaded too
-chrome.tabs.sendMessage(activeTabId, {message: "is_script_loaded"});
-var noScriptTimer = setTimeout(function(){
-	showMsg(chrome.i18n.getMessage('noScript'))
-},1000)

@@ -27,20 +27,20 @@
 	<table>
     <tr>           
 	<td><img src="/img/icon64.png"></td>
-    <td><h2>&nbsp;&nbsp;VideoSkip</h2></td>
+    <td><h2 id="sourceTitle">&nbsp;&nbsp;VideoSkip en </h2></td>
     </tr>
     </table>
     v 0.3 &nbsp;&#169; F. Ruiz 2021
     <span class="hspacer"></span>
       <button id="helpBtn" class="cssbutton" title="mostrar instrucciones en nueva pestaña (alt-h)" accesskey="h">Ayuda</button>
     <br><br>
-      <div id="boxMsg1" class="boxMsg">Primero, cargue aquí el archivo .skp que contiene el material a filtrar</div>
-     <br>
-    <label for="skipFile"><span class="cssbutton imptButton" id="skipFileBtn" title="cargar archivo .skp">Cargar archivo de filtros</span></label>
-	<input type="file" id="skipFile"/>
-    <br><br><br>
-    <p>Si no lo tiene, quizá alguien lo ha cargado en el VideoSkip Exchange</p>
+    p>VideoSkip funciona desde un archivo local que controla la reproducción de un título concreto. Lo puede obtener de fuentes diversas, pero aquí tiene un enlace que abrirá el VideoSkip Exchange oficial</p>
     <button id="exchangeBtn"class="cssbutton small" title="abrir el VideoSkip Exchange en nueva pestaña">VideoSkip Exchange</button>
+    <br><br><br>
+    <div id="boxMsg1" class="boxMsg">Primero, cargue aquí el archivo .skp que contiene el material a filtrar</div>
+    <br><br>
+    <label for="skipFile"><span class="cssbutton imptButton" id="skipFileBtn" title="cargar archivo .skp">Cargar archivo de filtros</span></label>
+	<input type="file" id="skipFile"/>   
 </div> 
 
 <div class="tabContent" id="syncTab">
@@ -62,8 +62,7 @@
 
 <div class="tabContent" id="filterTab">
 	<br><br><br>
-	<div id="boxMsg3" class="boxMsg"></div>          
-    Seleccione los filtros y su intensidad:
+	<div id="boxMsg3" class="boxMsg">Seleccione los filtros y su intensidad, y ya está:</div>          
     <br>
     <br>
     <table id="filters">
@@ -77,7 +76,7 @@
     <th align="center">&nbsp;&nbsp;Otro&nbsp;&nbsp;</th>
     </tr>
     <tr>
-    <td>Alto<br>Medio<br>Bajo<br>Off</td>
+    <td><span title="filtrado alto: para niños">Alto</span><br><span title="filtrado medio: para adolescentes y adultos sensibles">Medio</span><br><span title="filtrado bajo: para adultos">Bajo</span><br><span title="ningún filtrado">Off</span></td>
     <td align="center"><input id="sexNum" type="range" min="0" max="3" step="1" value="0"></td>
     <td align="center"><input id="violenceNum" type="range" min="0" max="3" step="1" value="0"></td>
     <td align="center"><input id="curseNum" type="range" min="0" max="3" step="1" value="0"></td>
@@ -86,7 +85,57 @@
     <td align="center"><input id="otherNum" type="range" min="0" max="3" step="1" value="0"></td>
     </tr>
     </table>
-    <br><br><br><br>
+    <br>
+    <div id="rubricBtn">Haga clic aquí para descripción detallada</div>
+    <br>
+<table id="rubric">
+<tr>
+<td>Nivel de filtro</td>
+<td><b>Alto: para niños</b>
+</td>
+<td><b>Medio: para adolescentes</b>
+</td>
+<td><b>Bajo: para adultos</b>
+</td>
+</tr>
+<tr>
+<td><b>Sexo y Desnudez</b></td>
+<td>Beso heterosexual. Conversación sobre el sexo. Desnudez dorsal o distante. Más todo lo que hay a la derecha.</td>
+<td>Sexo implícito. Situaciones homosexuales. Besos con pasión. Desnudez frontal. Más todo lo que hay a la derecha.</td>
+<td>Sexo explícito. Sodomía. Bestialidad. Violación sexual. Pornografía. Abuso de menores.</td>
+</tr>
+<tr>
+<td><b>Violencia y Sangre</b></td>
+<td>Golpes a mano o fusta. Disparos a distancia. Bofetadas. Castigo corporal. Más todo lo que hay a la derecha.</td>
+<td>Suicidio. Desmembración. Disparos a quemarropa o a sangre fría. Lucha sangrienta con armas blancas. Más todo lo que hay a la derecha.</td>
+<td>Sadismo. Masoquismo. Tortura. Contenido diseñado para crear shock.</td>
+</tr>
+<tr>
+<td><b>Profanidad y Odio</b></td>
+<td>Palabras soeces en general. Maldiciones. Más todo lo que hay a la derecha.</td>
+<td>Blasfemia idiomática. Epítetos racistas. Más todo lo que hay a la derecha.</td>
+<td>Blasfemia intencional. Satanismo.</td>
+</tr>
+<tr>
+<td><b>Alcohol, Drogas, Tabaco</b></td>
+<td>Uso de sustancias no incidental. Comportamiento adictivo. Más todo lo que hay a la derecha.</td>
+<td>Uso intravenoso. Preparación de drogas. Uso por adolescentes. Más todo lo que hay a la derecha.</td>
+<td>Contenido diseñado para incitar al abuso de sustancias.</td>
+</tr>
+<tr>
+<td><b>Intenso</b></td>
+<td>Que da miedo a niños. Duro emocionalmente para niños.</td>
+<td>Estremecedor o duro emocionalmente para jóvenes.</td>
+<td>Estremecedor para adultos.</td>
+</tr>
+<tr>
+<td><b>Otro</b></td>
+<td>Ligero.</td>
+<td>Moderado.</td>
+<td>Intenso.</td>
+</tr>
+</table>
+    <br><br>
     <p>Filtro automático de profanidad</p>
     <label for="subFile"><span class="cssbutton small" id="subFileBtn" title="cargar subtítulos para filtro automático">Cargar archivo de subtítulos</span></label>
 	<input type="file" id="subFile"/>
@@ -111,6 +160,7 @@
     <button id="timeBtn" class="cssbutton small" title="insertar tiempo actual (alt-q)" accesskey="q">Insertar tiempo</button>
     <button id="arrowBtn" class="cssbutton small" title="insertar flecha formateada (alt-w)" accesskey="w">Insertar flecha</button>
     <button id="beepBtn" class="cssbutton small" title="insertar corto silencio (alt-a)" accesskey="a">Insertar silencio</button>
+    <button id="showSyncBtn" class="cssbutton small" title="revelar la pestaña Sincro">Sincronizar</button>
     <button id="saveFile" class="cssbutton imptButton small" title="guardar archivo .skp en Descargas (alt-s)" accesskey="s">Guardar</button>  
     <br>
 	<textarea id="skipBox" rows="10" placeholder="Los filtros aparecen aquí"></textarea>

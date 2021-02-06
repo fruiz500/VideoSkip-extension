@@ -7,25 +7,40 @@
 		"message": "es"
 	},
 	"noVideoMsg": {
-		"message": "No encuentro vídeos en esta página"
+		"message": "VideoSkip le ayuda a saltarse contenidos de vídeo que preferiría no ver. Por favor, asegúrese de que el vídeo esté listo antes de presionar el botón de VideoSkip"
 	},
 	"popupOpen": {
-		"message": "La ventana de VideoSkip ya está abierta, en la esquina superior izquierda de la pantalla"
+		"message": "La ventana de VideoSkip está abierta en la esquina superior derecha de la pantalla, quizás detrás de esta ventana ⇨"
 	},
-	"noScript": {
-		"message": "No consigo comunicar con el vídeo. Por favor, cierre esta ventana, cargue el vídeo de nuevo, y repitamos"
+	"popupOpenLeft": {
+		"message": "La ventana de VideoSkip está abierta en la esquina superior izquierda de la pantalla, quizás detrás de esta ventana ⇦"
+	},
+	"exchangeText": {
+		"message": "VideoSkip funciona desde un archivo local que controla la reproducción de un título concreto. Lo puede obtener de fuentes diversas, pero aquí tiene un enlace que abrirá el VideoSkip Exchange oficial"
+	},
+	"helpLabel": {
+		"message": "Ayuda"
 	},
 	"wrongFile": {
 		"message": "Tipo de archivo erróneo"
 	},
-	"contentOfFile": {
-		"message": " cargado. Ahora mueva el film hasta que coincida con la captura superpuesta y haga clic en Sincronizar"
+	"nowLoad": {
+		"message": "Cargue aquí el archivo .skp que contiene las correcciones"
+	},
+	"nowSync": {
+		"message": "Corra el vídeo hasta que coincida a la captura, y haga clic en Sincronizar"
+	},
+	"nowFilter": {
+		"message": "Seleccione la intensidad de filtrado en cada categoría"
+	},
+	"nowEdit": {
+		"message": "Edite los filtros aquí"
 	},
 	"offsetApplied": {
 		"message": "Correciones adaptadas para este servicio. Ajuste las categorías a editar y disfrute el vídeo"
 	},
 	"unGraded": {
-		"message": "ATENCIóN: Este archivo contiene correcciones sin nivel, que no funcionarán a menos que su categoría se ponga en Alto"
+		"message": "ATENCIóN: Este archivo contiene correcciones sin nivel asignado, que no funcionarán a menos que su categoría se ponga en Alto"
 	},
 	"shotLoaded": {
 		"message": "Captura cargada"
@@ -39,34 +54,37 @@
 	"fileSaved2": {
 		"message": "Por favor, compártalo con otros usuarios"
 	},
-	"seconds": {
-		"message": " segundos"
-	},
-	"delayed": {
-		"message": "Correcciones retrasadas "
-	},
-	"advanced": {
-		"message": "Correcciones adelantadas "
-	},
 	"badService": {
 		"message": "Este servicio no permite capturas de pantalla. Captúrela fuera del navegador y cárguela con el botón"
 	},
-	"autosync_done": {
+	"autosyncDone": {
 		"message": "Búsqueda de captura terminada. Puede que tenga que repetirla o ajustar el tiempo con las flechas. Luego haga clic en Sincronizar"
 	},
-	"autosync_fail": {
+	"autosyncFail": {
 		"message": "Este servicio no permite capturas de pantalla, de modo que no es posible buscar la captura de forma automática"
 	},
-	"time_in_box": {
+	"noTimeInBox": {
 		"message": "Debe haber al menos un tiempo antes de hacer clic"
 	},
-	"no_superimpose": {
+	"noSuperimpose": {
 		"message": "Nada que superponer"
 	},
 	"fileName": {
 		"message": "Escriba el nombre del archivo. Se le dará extensión .skp"
 	},
-	"screenshot_first": {
+	"screenshotFirst": {
 		"message": "Se necesita una captura"
+	},
+	"categories": {
+		"message": "sexo,violencia,profanidad,sustancias,intenso,otro"
+	},
+	"noEditsLoaded": {
+		"message": "VideoSkip: no hay nada cargado"
+	},
+	"noFiltersEngaged": {
+		"message": "VideoSkip: filtros en Off"
+	},
+	"VideoSkipOn": {
+		"message": "VideoSkip activo: "
 	}
 }

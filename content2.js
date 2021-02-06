@@ -186,35 +186,6 @@ function executeOnPageSpace(code){
   return result
 }
 
-if(myVideo) myVideo.ontimeupdate = function(){							//apply skips to video when it gets to them
-	var action = '', startTime, endTime;
-	for(var i = 0; i < cuts.length; i++){
-		startTime = cuts[i].startTime;						//times in seconds
-		endTime = cuts[i].endTime;
-		if(myVideo.currentTime > startTime && myVideo.currentTime < endTime){
-			action = cuts[i].action;
-			break
-		}else{
-			action = ''
-		}
-	}
-	if(action == prevAction){					//apply action to the DOM if there's a change
-		return
-	}else if(action == 'skip'){				//skip range
-		goToTime(endTime)
-	}else if(action == 'blank'){				//blank screeen
-		myVideo.style.opacity =  0
-	}else if(action == 'mute'){				//mute sound & subs
-		myVideo.muted = true;
-		blankSubs(myVideo.muted)
-	}else{										//back to normal
-		myVideo.style.opacity =  '';
-		myVideo.muted = false;
-		blankSubs(myVideo.muted)
-	}
-	prevAction = action
-}
-	
 //for interaction with the popup window
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
@@ -337,9 +308,8 @@ chrome.runtime.onMessage.addListener(
 	}else if(request.message == "auto_find"){
 		findShot()
 		
-	}else if(request.message == "is_script_loaded"){					//confirm with popup window that script is loaded
-		chrome.runtime.sendMessage({message: "script_here"})
-		
+	}else if(request.message == "is_video_there"){			//confirm with popup window that script is loaded
+		if(!!myVideo) chrome.runtime.sendMessage({message: "video_here", hasControl: !!myVideo.ontimeupdate})
 	}
   }
 )
@@ -372,23 +342,23 @@ function showSettings(){
 	var spacer = document.createTextNode("\u00A0\u00A0");		//two non-breaking spaces
 	if(cuts.length == 0){
 		VideoSkipControl.appendChild(spacer);
-		var text = document.createTextNode("VideoSkip: no edits loaded");
+		var text = document.createTextNode(chrome.i18n.getMessage('noEditsLoaded'));
 		VideoSkipControl.appendChild(text);
 		VideoSkipControl.appendChild(spacer);
 	}else{
-		var	keyWords = ['sex','violence','profanity','substance','intense','other'],
+		var	keyWords = chrome.i18n.getMessage('categories').split(','),
 			output = [];
 		for(var i = 0; i < keyWords.length; i++){
 			if(switches[i]) output.push(keyWords[i])
 		}
 		if(output.length == 0){
 			VideoSkipControl.appendChild(spacer);
-			var text = document.createTextNode("VideoSkip: no filters engaged");
+			var text = document.createTextNode(chrome.i18n.getMessage('noFiltersEngaged'));
 			VideoSkipControl.appendChild(text);
 			VideoSkipControl.appendChild(spacer);
 		}else{
 			VideoSkipControl.appendChild(spacer);
-			var text = document.createTextNode("VideoSkip on: ");
+			var text = document.createTextNode(chrome.i18n.getMessage('VideoSkipOn'));
 			VideoSkipControl.appendChild(text);
 			VideoSkipControl.appendChild(spacer);
 			var filters = document.createElement('b');
