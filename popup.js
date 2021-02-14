@@ -48,17 +48,23 @@ chrome.runtime.onMessage.addListener(
 window.onload = function() {
 	chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
     	activeTab = tabs[0];
-//load 1st content script programmatically (needs activeTab permission)
+//load 1st content script programmatically (needs activeTab permission) Firefox sometimes throws an error, hence the try block
+	try{
 		chrome.tabs.executeScript({
 			file: '/content1.js',
 			allFrames: true
 		});
-		if(isFirefox){
+		if(isFirefox && !subsClasses){
 			chrome.tabs.executeScript({		//Firefox has trouble loading the content script in a one-two sequence, so load it all at once
 				file: '/content2.js',
 				allFrames: true
 			})
 		}
+	}catch(err){								//show error message after other messages
+		setTimeout(function(){
+			noVideo.textContent = chrome.i18n.getMessage('firefoxError')
+		},500)
+	}
 	})
 	helpBtn.addEventListener('click', function(){
 		window.open('/_locales/' + chrome.i18n.getMessage('directory') + '/help.html')
@@ -72,4 +78,4 @@ window.onload = function() {
 var timer1 = setTimeout(function(){
 	noVideo.textContent = chrome.i18n.getMessage('noVideoMsg');
 	setTimeout(window.close,5000)
-},100)
+},300)

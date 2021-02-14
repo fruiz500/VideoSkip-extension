@@ -60,6 +60,15 @@ if(!!myVideo){													//add overlay image for superimpose function
 				action = ''
 			}
 		}
+
+		if(action == 'mute'){				//mute/unmute subtitles regardless of previous action, in case the subs element changes in the middle of the interval
+			blankSubs(true);
+			mutedSubs = true
+		}else if(action != 'mute' && mutedSubs){		//reset to normal
+			blankSubs(false);
+			mutedSubs = false
+		}
+
 		if(action == prevAction){					//apply action to the DOM if there's a change
 			return
 		}else if(action == 'skip'){				//skip range
@@ -67,13 +76,13 @@ if(!!myVideo){													//add overlay image for superimpose function
 		}else if(action == 'blank'){				//blank screeen
 			myVideo.style.opacity =  0
 		}else if(action == 'mute'){				//mute sound & subs
-			myVideo.muted = true;
-			blankSubs(myVideo.muted)
+			myVideo.muted = true
 		}else{										//back to normal
 			myVideo.style.opacity =  '';
-			myVideo.muted = false;
-			blankSubs(myVideo.muted)
+			myVideo.muted = false
 		}
 		prevAction = action
   	}
-}
+};
+
+"end of injected content1"			//add this so it becomes the "result" and Firefox is happy

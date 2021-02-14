@@ -6,8 +6,11 @@
 	"directory":{
 		"message": "es"
 	},
+	"firefoxError": {
+		"message": "Firefox tiene un problema que a veces le impide cargar a VideoSkip. Use otro navegador si ve este mensaje"
+	},
 	"noVideoMsg": {
-		"message": "VideoSkip le ayuda a saltarse contenidos de vídeo que preferiría no ver. Por favor, asegúrese de que el vídeo esté listo antes de presionar el botón de VideoSkip"
+		"message": "VideoSkip le ayuda a saltarse partes de una película que preferiría no ver. Por favor, asegúrese de que la película esté lista antes de presionar el botón de VideoSkip"
 	},
 	"popupOpen": {
 		"message": "La ventana de VideoSkip está abierta en la esquina superior derecha de la pantalla, quizás detrás de esta ventana ⇨"
@@ -16,13 +19,19 @@
 		"message": "La ventana de VideoSkip está abierta en la esquina superior izquierda de la pantalla, quizás detrás de esta ventana ⇦"
 	},
 	"exchangeText": {
-		"message": "VideoSkip funciona desde un archivo local que controla la reproducción de un título concreto. Lo puede obtener de fuentes diversas, pero aquí tiene un enlace que abrirá el VideoSkip Exchange oficial"
+		"message": "Le hará falta un archivo .skp para cada título concreto. Lo puede obtener de fuentes diversas, pero aquí tiene un enlace que abre el VideoSkip Exchange oficial"
 	},
 	"helpLabel": {
 		"message": "Ayuda"
 	},
+	"badAds": {
+		"message": " introduce anuncios que interfieren con el filtrado. Recargue la página hasta que la película comience sin anuncios, y asegúrese de que no haya anuncios en medio de la película"
+	},
 	"wrongFile": {
 		"message": "Tipo de archivo erróneo"
+	},
+	"fileLoaded": {
+		"message": " cargado"
 	},
 	"nowLoad": {
 		"message": "Cargue aquí el archivo .skp que contiene las correcciones"

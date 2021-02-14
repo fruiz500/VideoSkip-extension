@@ -3,11 +3,14 @@
 	"manifest_descr": {
 		"message": "Skips/mutes/blanks selected parts of streaming videos"
 	},
-	"directory":{
+	"directory": {
 		"message": "en"
 	},
+	"firefoxError": {
+		"message": "Firefox has a bug that sometimes prevents VideoSkip from loading. Use a different browser if you see this"
+	},
 	"noVideoMsg": {
-		"message": "VideoSkip helps you to skip over video content that you'd rather not see. Please make sure the video is ready to play before you click the VideoSkip button"
+		"message": "VideoSkip helps you to skip over movie content that you'd rather not see. Please make sure the movie is ready to play before you click the VideoSkip button"
 	},
 	"popupOpen": {
 		"message": "The VideoSkip window is open by the upper right corner of the screen, possibly behind this window ⇨"
@@ -16,13 +19,19 @@
 		"message": "The VideoSkip window is open by the upper left corner of the screen, possibly behind this window ⇦"
 	},
 	"exchangeText": {
-		"message": "VideoSkip works from a local file that controls video playback for a given title. You can get it from many sources, but here is a link to the official Exchange"
+		"message": "You will need a skip file containing edits for a given title. You can get it from many sources, but here is a link to the official Exchange"
 	},
 	"helpLabel": {
 		"message": "Help"
 	},
+	"badAds": {
+		"message": " injects ads in a way that causes filtering to fail. Reload the page until the movie starts with no ads, and make sure there are no ads in the middle of the movie"
+	},
 	"wrongFile": {
 		"message": "Wrong file type"
+	},
+	"fileLoaded": {
+		"message": " loaded"
 	},
 	"nowLoad": {
 		"message": "Load here the .skp file containing the skips"

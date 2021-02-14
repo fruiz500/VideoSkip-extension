@@ -1,25 +1,35 @@
 //load this after a video is found
-var prevAction = '', cuts = [], speedMode = 1, subsClass = '', switches = [];
-	
-//this because different services do captions differently. Will add more as I get test accounts
-if(serviceName.includes('youtube')){ subsClass = '.caption-window'
-}else if(serviceName.includes('amazon')){ subsClass = '.persistentPanel'
-}else if(serviceName.includes('imdb')){ subsClass = '.persistentPanel'		//because it's Amazon
-}else if(serviceName.includes('netflix')){ subsClass = '.player-timedtex'; serviceName = 'netflix' 
-}else if(serviceName.includes('sling')){ subsClass = '.bmpui-ui-subtitle-overlay'
-}else if(serviceName.includes('redbox')){ subsClass = '.cc-text-container'
-}else if(serviceName.includes('plex')){ subsClass = '.libjass-subs'
-}else if(serviceName.includes('vudu')){ subsClass = '.subtitles'
-}else if(serviceName.includes('hulu123')){ subsClass = '.vjs-text-track-display'
-}else if(serviceName.includes('hulu')){ subsClass = '.closed-caption-container'
-}else if(serviceName.includes('hbo')){ subsClass = '.__player-cc-root'
-}else if(serviceName.includes('starz')){ subsClass = '.cue-list'
-}else if(serviceName.includes('crackle')){ subsClass = '.clpp-subtitles-container'
-}else if(serviceName.includes('epix')){ subsClass = '.fp-captions'
-}else if(serviceName.includes('showtime')){ subsClass = '.closed-captioning-text'
-}else if(serviceName.includes('pluto')){ subsClass = '.captions'
-}else if(serviceName.includes('tubi')){ subsClass = '#captionsComponent'		//actually not a class, but it should work
-}else if(serviceName.includes('roku')){ subsClass = '.vjs-text-track-cue'
+var prevAction = '', cuts = [], speedMode = 1, subsClass = '', switches = [], mutedSubs = false;
+
+//subtitles in different services
+const subsClasses = {
+	youtube:'.caption-window',
+	amazon:'.atvwebplayersdk-captions-text',
+	imdb:'.atvwebplayersdk-captions-text',
+	netflix:'.player-timedtext',
+	sling:'.bmpui-ui-subtitle-overlay',
+	redbox:'.cc-text-container',
+	plex:'.libjass-subs',
+	vudu:'.subtitles',
+	hulu123:'.vjs-text-track-display',
+	hulu:'.closed-caption-container',
+	hbo:'.__player-cc-root',
+	starz:'.cue-list',
+	crackle:'.clpp-subtitles-container',
+	epix:'.fp-captions',
+	showtime:'.closed-captioning-text',
+	pluto:'.captions',
+	tubi:'#captionsComponent',		//actually not a class, but it should work
+	roku:'.vjs-text-track-cue',
+	peacock:'.video-player__subtitles',
+	kanopy:'.vjs-text-track-cue'
+};
+
+for(var name in subsClasses){
+	if(serviceName.includes(name)){
+		subsClass = subsClasses[name];
+		break
+	}
 }
 
 //blanks/unblanks subtitles for different services
@@ -372,4 +382,6 @@ function showSettings(){
 		VideoSkipControl.style.left = '100px'
 	}
 	VideoSkipControl.style.display = ''
-}
+};
+
+"end of injected content2"			//add this so it becomes the "result" and Firefox is happy
