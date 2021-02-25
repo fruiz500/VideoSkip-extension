@@ -6,8 +6,12 @@ function isVisible (ele) {
 	return (ele.offsetWidth > 0 && ele.offsetHeight > 0) && (ele.style.visibility != 'hidden')
 }
 
-var myVideos = document.querySelectorAll("video"),			//get all videos on page, make list of the visible ones
-	visibleVideos = new Array;
+var splitName = window.location.hostname.split('.');								//get the main name of the source
+var serviceName = splitName[splitName.length - 2] == 'co' ? splitName[splitName.length - 3] : splitName[splitName.length - 2];
+if(serviceName == '0' || serviceName == '') serviceName = 'local';
+
+var myVideos = document.querySelectorAll("video");			//get all videos on page, make list of the visible ones
+var visibleVideos = new Array;
 for(var i = 0; i < myVideos.length; i++){
 	if(isVisible(myVideos[i])){
 		visibleVideos.push(myVideos[i])
@@ -15,9 +19,11 @@ for(var i = 0; i < myVideos.length; i++){
 }
 if(visibleVideos.length > 0) myVideo = visibleVideos[visibleVideos.length-1];		//select last video that is theoretically visible (Amazon Prime fix)
 
-var splitName = window.location.hostname.split('.');								//get the main name of the source
-var serviceName = splitName[splitName.length - 2] == 'co' ? splitName[splitName.length - 3] : splitName[splitName.length - 2];
-if(serviceName == '0' || serviceName == '') serviceName = 'local';
+//hack for appleTV+
+if(serviceName == 'apple'){
+	myVideo = document.querySelector('apple-tv-plus-player').shadowRoot.querySelector('amp-video-player-internal').shadowRoot.querySelector('amp-video-player').shadowRoot.querySelector('video');
+	mySubtitles = myVideo.nextSibling
+}
 
 chrome.runtime.sendMessage({message: "start_info", hasVideo: !!myVideo, isLoaded: typeof(blankSubs) != "undefined", serviceName: serviceName})		//just a Boolean confirming there's a video, so the popup loads, the second part is to avoid injecting the rest of the content script multiple times, plus some more info
 
@@ -84,5 +90,14 @@ if(!!myVideo){													//add overlay image for superimpose function
 		prevAction = action
   	}
 };
+
+//to keep the VS window alive
+chrome.runtime.onMessage.addListener(
+  function(request, sender, sendResponse) {
+	  if(request.message == "is_script_there"){			//confirm with popup window that script is loaded
+		chrome.runtime.sendMessage({message: "script_here"})
+	  }
+  }
+)
 
 "end of injected content1"			//add this so it becomes the "result" and Firefox is happy

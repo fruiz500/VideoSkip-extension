@@ -47,6 +47,9 @@ input[type=range]::-moz-range-thumb {
 input[type=range]:focus {
     outline: none;
 }
+table {
+	width: 100%;
+}
 td {
 	align-content: center;
 }
@@ -58,7 +61,7 @@ td {
     color: white;
 }
 .hspacer {
-	width: 180px;
+	width: 70px;
 	height: auto;
 	display:inline-block;
 }
@@ -70,6 +73,13 @@ td {
 .boxMsg {
 	color: blue;
 	font-weight: bold;
+	min-height: 30px;
+	display: block;
+}
+.doneLabel {
+	color: green;
+	font-size: x-large;
+	text-align: center;
 }
 #skipFile {
 	display: none;
@@ -171,6 +181,14 @@ div.tabContent {
 div.tabContent.hide {
 	display: none;
 }
-#rubric {
+#rubricText {
+	min-height: 40px;
+	padding: 6px;
+	display: block;
+}
+#autoProfanity {
+	display: none;
+}
+#successBanner {
 	display: none;
 }

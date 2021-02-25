@@ -25,34 +25,39 @@
         for the JavaScript code in this page.
         */
 
-var name = '';								//global variable with name of skip file, minus extension
-var cuts = [];				//global variable containing the cuts, each array element is an object with this format {startTime,endTime,text,action}
-var pageInfo = window.location.hash.slice(1).split('&');		//sent with this page's name as the window opens, this contains ativeTabId + '&' + serviceName
-var activeTabId = parseInt(pageInfo[0]);		//sent with this page's name as the window opens
-var serviceName = pageInfo[1];				//will be used for automatic offsets
-sourceTitle.textContent += serviceName;
-var offsets = {};								//to contain offsets for different sources. Initialized with first time or screenshot
-var killWindow;					//a timer to close window if the video page unloads
+var	fileName = '',							//global variable with name of skip file, minus extension
+	cuts = [],								//global variable containing the cuts, each array element is an object with this format {startTime,endTime,text,action}
+	offsets = {},							//to contain offsets for different sources. Initialized with first time or screenshot
+	killWindow;							//a timer to close window if the video page unloads
 
-var ua = navigator.userAgent.toLowerCase(); 		//to choose fastest filter method, per https://jsben.ch/5qRcU
+var pageInfo = window.location.hash.slice(1).split('&'),		//sent with this page's name as the window opens, this contains ativeTabId + '&' + serviceName
+	activeTabId = parseInt(pageInfo[0]),		//sent with this page's name as the window opens
+	serviceName;
+if(pageInfo[1]) serviceName = pageInfo[1];		//serviceName also gets loaded later from a message. Can be left undefined
+
+const badAds = ["amazon","imdb","pluto"];		//list of services that change video timing with their ads
+if(badAds.indexOf(serviceName) != -1){
+	alert(serviceName + chrome.i18n.getMessage('badAds'))		//warn user about movies with ads from this service
+}
+
+const ua = navigator.userAgent.toLowerCase(); 		//to choose fastest filter method, per https://jsben.ch/5qRcU
 if (ua.indexOf('safari') != -1) { 
   if (ua.indexOf('chrome') == -1){ var isSafari = true
-  }else{ var isChrome = true
-  }
+  }else{ var isChrome = true }
 }else if(typeof InstallTrigger !== 'undefined'){var isFirefox = true
 }else if (document.documentMode || /Edge/.test(navigator.userAgent)){var isEdge = true
 }
 
-var oldPixelRatio = window.devicePixelRatio;					//for resizing window after zoom
-var stretchFact = 1;												//for resizing on Edit
-var startSize = oldPixelRatio > 1.2 ? oldPixelRatio / 2 : oldPixelRatio;
+var oldPixelRatio = window.devicePixelRatio,					//for resizing window after zoom
+	stretchFact = 1,												//for resizing on Edit
+	startSize = oldPixelRatio > 1.2 ? oldPixelRatio / 2 : oldPixelRatio;
 
 setTimeout(function(){window.resizeTo( window.outerWidth * startSize, window.outerHeight * startSize)},400);	//correct initial zoom
 
 var resInt = setInterval(function(){
-	resizeScr();								//look for resizing every half second
-	if(!killWindow) killWindow = setTimeout(function(){window.close()},3000);		//close in 1 sec if no reply
-	chrome.tabs.sendMessage(activeTabId, {message: "is_video_there"});		//poll content2 script
+	resizeScr()								//look for resizing every half second
+	if(!killWindow) killWindow = setTimeout(function(){window.close()},3000);		//close in 3 sec if no reply
+	chrome.tabs.sendMessage(activeTabId, {message: "is_script_there"})		//poll content1 script
 },500);
 
 //to correct for zoom while the window is displayed, and grow window when edit section is shown
@@ -73,10 +78,12 @@ function loadFileAsURL(){
 		if(extension == ".skp"){
 			var data = URLFromFileLoaded.split('data:image/jpeg;base64,');		//separate skips from screenshot
 			var data1 = data[0].split('{');										//separate skips from offsets
-			name = fileToLoad.name.slice(0,-4).replace(/ \[[a-z0-9\-]+\]/,'');	//remove extension and service list
+			fileName = fileToLoad.name.slice(0,-4).replace(/ \[[a-z0-9\-]+\]/,'');	//remove extension and service list
 			skipBox.value = data1[0].trim();
 			if(data1[1]) offsets = JSON.parse('{' + data1[1].trim());			//make offsets object
 			if(data[1]) screenShot.src = 'data:image/jpeg;base64,' + data[1];	//extract screenshot
+			if(!loadLink.textContent.match('✔')) loadLink.textContent += " ✔";
+			loadDone.textContent = chrome.i18n.getMessage('tabDone');
 			setTimeout(function(){
 				justLoaded = true;
 				sendData();
@@ -210,12 +217,12 @@ function resizedShot(dataURIin, wantedHeight){		//width will be calculated to ma
 }
 
 //to download data to a file, from StackOverflow
-function download(data, filename, type) {
+function download(data, name, type) {
 	var a = document.createElement("a");
 	var file = new Blob([data], {"type": type}),
 		url = URL.createObjectURL(file);
 	a.href = url;
-    a.download = filename;
+    a.download = name;
     document.body.appendChild(a);
     a.click();
     setTimeout(function() {
@@ -301,15 +308,23 @@ function syncTimes(){
 	chrome.tabs.sendMessage(activeTabId, {message: "need_time"});		//to be continued when the current time is received
 	setTimeout(function(){
 		makeTimeLabels();
+		if(!syncLink.textContent.match('✔')) syncLink.textContent += " ✔";
+		syncDone.textContent = chrome.i18n.getMessage('tabDone');
+		filterLink.click()	;						//go on to filter tab
+		boxMsg3.textContent = chrome.i18n.getMessage('offsetApplied');
 		setTimeout(save2file,100);
-		filterLink.click()							//go on to filter tab
 	},100)
 }
 
 //shift all times according to offset in loaded skip file
 function applyOffset(){
+	if(!serviceName){
+		startLink.click();
+		setTimeout(function(){boxMsg0.classList.add("boxMsg"); boxMsg0.textContent = chrome.i18n.getMessage('moreStart')},100);
+		return
+	}
 	var offset = offsets[serviceName];
-	if(offset != undefined){						//there is an offset for the current source, so shift all times
+	if(typeof offset != 'undefined'){						//there is an offset for the current source, so shift all times
 		var	initialData = skipBox.value.trim().split('\n').slice(0,2),					//first two lines
 			shotTime = fromHMS(initialData[0]);
 		for(var i = 0; i < cuts.length; i++){
@@ -323,6 +338,8 @@ function applyOffset(){
 			skipBox.value = initialData.join('\n') + '\n\n' + skipBox.value
 		}
 
+		syncTab.style.display = 'none';					//close sync tab if it was open
+		syncLink.style.display = 'none';
 		filterLink.click();								//open filter tab
 		boxMsg3.textContent = chrome.i18n.getMessage('offsetApplied');
 
@@ -396,7 +413,7 @@ function getTimeIndex(){
 	}
 }
 
-var	deltaT = 0.0417;				//seconds for each frame at 24 fps
+const	deltaT = 1/24;				//seconds for each frame at 24 fps
 
 //called by forward buttons
 function fwdSkip(){
@@ -410,14 +427,14 @@ function fwdSkip(){
 			if(index != null){
 				skipBox.setSelectionRange(timeLabels[1][index],timeLabels[2][index]);
 				var selectedTime = fromHMS(timeLabels[0][index]);
-				var timeShift = fineMode.checked ? deltaT : deltaT*10;
+				var timeShift = fineMode.checked ? deltaT : deltaT*12;
 				chrome.tabs.sendMessage(activeTabId, {message: "shift_time", timeShift: timeShift});
 				isScrub = true;
 				chrome.tabs.sendMessage(activeTabId, {message: "need_time"});		
 				skipBox.focus()
 			}
 		}else{											//scrub by a small amount
-			var timeShift = fineMode.checked ? deltaT : deltaT*10;
+			var timeShift = fineMode.checked ? deltaT : deltaT*12;
 			chrome.tabs.sendMessage(activeTabId, {message: "shift_time", timeShift: timeShift})
 		}
 	}
@@ -435,14 +452,14 @@ function backSkip(){
 			if(index != null){
 				skipBox.setSelectionRange(timeLabels[1][index],timeLabels[2][index]);
 				var selectedTime = fromHMS(timeLabels[0][index]);
-				var timeShift = fineMode.checked ? deltaT : deltaT*10;
+				var timeShift = fineMode.checked ? deltaT : deltaT*12;
 				chrome.tabs.sendMessage(activeTabId, {message: "shift_time", timeShift: - timeShift, isSuper: isSuper});
 				isScrub = true;
 				chrome.tabs.sendMessage(activeTabId, {message: "need_time"});
 				skipBox.focus()
 			}
 		}else{											//scrub by a small amount
-			var timeShift = fineMode.checked ? deltaT : deltaT*10;
+			var timeShift = fineMode.checked ? deltaT : deltaT*12;
 			chrome.tabs.sendMessage(activeTabId, {message: "shift_time", timeShift: - timeShift, isSuper: isSuper})
 		}
 	}
@@ -462,7 +479,7 @@ function shiftProfSkips(isFwd){
 		initialData = skipBox.value.trim().split('\n').slice(0,2);					//first two lines
 	for(var i = 0; i < cuts.length; i++){
 		if(cuts[i].text.match(/profane word \(/)){									//do it only for auto-generated skips
-			timeShift = (isFine ? deltaT : deltaT*10)*(isFwd ? 1 : -1);
+			timeShift = (isFine ? deltaT : deltaT*12)*(isFwd ? 1 : -1);
 			cuts[i].startTime += timeShift;
 			cuts[i].endTime += timeShift
 		}
@@ -562,12 +579,12 @@ function sendData(){
 //save skips to file
 function save2file(){
 	if(screenShot.src == '' && timeLabels.length == 0) return;
+	if(typeof offsets[serviceName] == 'undefined') offsets[serviceName] = 0;
 	var sourceList = Object.keys(offsets);
-	if(sourceList.length == 0) offsets[serviceName] = 0;					//if never loaded before
 	sourceList.sort(function(a,b){return b.length - a.length;});		//sort alphabetically
-	if(!name) name = prompt(chrome.i18n.getMessage('fileName'));
-	download(skipBox.value + '\n\n' + JSON.stringify(offsets) + '\n\n' + screenShot.src, name + ' [' + sourceList.join('-') + '].skp', "text/plain");
-	boxMsg4.textContent = chrome.i18n.getMessage('fileSaved') + name + ' [' + sourceList.join('-') + '].skp ' + chrome.i18n.getMessage('fileSaved2')
+	if(!fileName) fileName = prompt(chrome.i18n.getMessage('fileName'));
+	download(skipBox.value + '\n\n' + JSON.stringify(offsets) + '\n\n' + screenShot.src, fileName + ' [' + sourceList.join('-') + '].skp', "text/plain");
+	boxMsg4.textContent = chrome.i18n.getMessage('fileSaved') + fileName + ' [' + sourceList.join('-') + '].skp ' + chrome.i18n.getMessage('fileSaved2')
 }
 
 //to move and resize superimposed shot
@@ -600,6 +617,10 @@ function checkKey(e) {
 skipFile.addEventListener('change', loadFileAsURL);
 
 exchangeBtn.addEventListener('click', function(){
+	window.open('https://videoskip.org/exchange')
+});
+
+exchangeBtn2.addEventListener('click', function(){
 	window.open('https://videoskip.org/exchange')
 });
 
@@ -677,16 +698,49 @@ showSyncBtn.addEventListener('click',function(){
 	}
 });
 
-rubricBtn.addEventListener('click',function(){
-	if(rubric.style.display == 'block'){
-		rubric.style.display = 'none'
-	}else{
-		rubric.style.display = 'block'
-	}
+showEditBtn.addEventListener('click',function(){
+	editTab.style.display = '';
+	editLink.style.display = '';
+	editLink.click()
 });
+
+checkBtn.addEventListener('click',checkDone);
 
 syncLink.style.display = 'none';
 syncTab.style.display = 'none';
+
+editLink.style.display = 'none';
+editTab.style.display = 'none';
+
+filterDone.style.display = 'none';
+
+showLoad();		//resets checkmarks on tabs
+
+loadAutoProf.addEventListener('click',function(){
+	autoProfanity.style.display = 'block';
+	loadAutoProf.style.display = 'none'
+});
+
+//to display as the mouse moves over the sliders
+const rubric = JSON.parse(chrome.i18n.getMessage('rubric').replace(/'/g,'"'));
+
+const sliders = filters.querySelectorAll('input');
+
+for(var i = 0; i < sliders.length; i++){
+	sliders[i].addEventListener('mousemove',showRubric);
+	sliders[i].addEventListener('mouseleave',hideRubric)
+}
+
+function showRubric(){
+	var category = this.id.slice(0,-3),
+		level = 3 - this.value;
+	if(level >= 3){rubricText.textContent = '';return};
+	rubricText.textContent = rubric[category][level]
+}
+
+function hideRubric(){
+	rubricText.textContent = ''
+}
 
 //check the two Fine mode boxes as one
 function fineSync(){
@@ -752,7 +806,7 @@ function showTab(){
       }
 	  //display appropriate messages
 	  if(this.id == 'loadLink'){
-		  boxMsg1.textContent = chrome.i18n.getMessage('nowLoad');
+		  boxMsg1.textContent = fileName ? fileName + chrome.i18n.getMessage('fileLoaded') : chrome.i18n.getMessage('nowLoad');
 	  }else if(this.id == 'syncLink'){
 		  boxMsg2.textContent = chrome.i18n.getMessage('nowSync');
 	  }else if(this.id == 'filterLink'){
@@ -815,19 +869,24 @@ function isSkipped(label){
 
 //set switches for edits present in skip file; used only when a file is loaded
 function setSwitches(){
-	var sliders = filters.querySelectorAll('input');
 	for(var i = 0; i < 6; i++) sliders[i].value = 0;
 	var noGrade = false;
 	for(var i = 0; i < cuts.length; i++){
 		if(cuts[i].text){
-			var label = cuts[i].text.toLowerCase().replace(/\(.*\)/g,'');			//ignore text in parentheses
-			if(isContained(label,/sex|nud/)) sexNum.value = 2;
-			if(isContained(label,/vio|gor/)) violenceNum.value = 2;
-			if(isContained(label,/pro|cur|hat/)) curseNum.value = 2;
-			if(isContained(label,/alc|dru|smo/)) boozeNum.value = 2;
-			if(isContained(label,/fri|sca|int/)) scareNum.value = 2;
-			if(isContained(label,/oth|bor/)) otherNum.value = 2;
-			if(!label.match(/\d/)) noGrade = true									//raise flag for ungraded edit
+			var label = cuts[i].text.toLowerCase().replace(/\(.*\)/g,''),			//ignore text in parentheses
+				grades = label.match(/\d/);
+			if(!grades){
+				noGrade = true;				//raise flag for ungraded edit
+				var grade = 4					//assume 4 if ungraded
+			}else{
+				var grade = parseInt(grades[0])
+			}
+			if(isContained(label,/sex|nud/)) sexNum.value = Math.max( 4 - grade, sexNum.value);
+			if(isContained(label,/vio|gor/)) violenceNum.value = Math.max( 4 - grade, violenceNum.value);
+			if(isContained(label,/pro|cur|hat/)) curseNum.value = Math.max( 4 - grade, curseNum.value);
+			if(isContained(label,/alc|dru|smo/)) boozeNum.value = Math.max( 4 - grade, boozeNum.value);
+			if(isContained(label,/fri|sca|int/)) scareNum.value = Math.max( 4 - grade, scareNum.value);
+			if(isContained(label,/oth|bor/)) otherNum.value = Math.max( 4 - grade, otherNum.value)
 		}
 	}
 	if(noGrade) setTimeout(function(){
@@ -856,12 +915,66 @@ function setActions(){
 	}
 }
 
+//shows Load tab (or not) depending on whether a serviceName exists, which implies a video was found; other checkmarks displayed or not
+function showLoad(){
+	if(serviceName){
+		sourceTitle.textContent = chrome.i18n.getMessage('videoOn') + serviceName;		//add service name to title
+		if(!startLink.textContent.match('✔')) startLink.textContent += " ✔";				//checkmark on first tab
+		startDone.textContent = chrome.i18n.getMessage('tabDone');
+		boxMsg0.textContent = '';
+		setTimeout(function(){loadLink.click()},0)							//start in Load tab if there is a video, Start tab otherwise, and reset everything
+	}else{
+		sourceTitle.textContent = chrome.i18n.getMessage('noVideo');
+		startLink.textContent = startLink.textContent.split(" ✔")[0];
+		startDone.textContent = '';
+		setTimeout(function(){startLink.click()},0)
+	}												
+	if(fileName){
+		if(!loadLink.textContent.match('✔')) loadLink.textContent += " ✔";
+		loadDone.textContent = chrome.i18n.getMessage('tabDone')
+	}else{
+		loadLink.textContent = loadLink.textContent.split(" ✔")[0];
+		loadDone.textContent = '';
+	}
+	syncLink.textContent = syncLink.textContent.split(" ✔")[0];	//reset the other tabs regardless
+	syncDone.textContent = '';
+	filterLink.textContent = filterLink.textContent.split(" ✔")[0];
+	filterDone.style.display = 'none';
+	checkBtn.style.display = '';
+	syncTab.style.display = 'none';
+	syncLink.style.display = 'none';
+	editTab.style.display = 'none';
+	editLink.style.display = 'none'
+}
+
+//checks that the other tabs are done and sends you there if not
+function checkDone(){
+	var startDone = !!startLink.textContent.match('✔'),
+		loadDone = !!loadLink.textContent.match('✔'),
+		syncDone = !!syncLink.textContent.match('✔');	
+	if(!startDone){
+		startLink.click();
+		boxMsg0.classList.add("boxMsg");
+		setTimeout(function(){boxMsg0.textContent = chrome.i18n.getMessage('moreStart')},100)
+	}else if(!loadDone){
+		loadLink.click();
+		setTimeout(function(){boxMsg1.textContent = chrome.i18n.getMessage('moreLoad')},100)
+	}else if(!syncDone && syncLink.style.display != 'none'){
+		syncLink.click();
+		setTimeout(function(){boxMsg2.textContent = chrome.i18n.getMessage('moreSync')},100)
+	}else{
+		filterLink.textContent += " ✔"
+		checkBtn.style.display = 'none';
+		filterDone.style.display = ''
+	}
+}
+
 //to get the time, screenshot, or other info from the content script
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
-	var syncFix = 0.043;							//use a time that is actually 1 frame earlier than reported (to correct messaging delays)
+	const syncFix = 1/24;							//use a time that is actually 1 frame earlier than reported (to correct messaging delays)
     if(request.message == "video_time") {
-		if(isSync){																						//re-sync all times
+		if(isSync){																				//re-sync all times
 			isSync = false;
 			var	initialData = skipBox.value.trim().split('\n').slice(0,2),					//first two lines
 				shotTime = fromHMS(initialData[0]),
@@ -872,14 +985,14 @@ chrome.runtime.onMessage.addListener(
 				cuts[i].endTime += seconds
 			}
 			chrome.tabs.sendMessage(activeTabId, {message: "skip_data", cuts: cuts, switches: switches});		//so the content script has it too
-			times2box();										//put shifted times in the box
+			times2box();												//put shifted times in the box
 	
 			if(shotTime != null){										//reconstruct initial data, if present
 				initialData[0] = toHMS(shotTime + seconds);
 				skipBox.value = initialData.join('\n') + '\n\n' + skipBox.value
 			}
 
-			for(var service in offsets){						//adjust offsets
+			for(var service in offsets){							//adjust offsets
 				offsets[service] -= seconds
 			}
 			offsets[serviceName] = 0;								//key for current source set to zero regardless
@@ -891,7 +1004,7 @@ chrome.runtime.onMessage.addListener(
 			isSilence = false;
 			sendData()
 
-		}else{																		//just put it in box
+		}else{															//just put it in box
 			writeIn(toHMS(request.time - syncFix));
 			if(cuts.length != 0) sendData()
 		}
@@ -915,12 +1028,16 @@ chrome.runtime.onMessage.addListener(
 		autoBtn.disabled = true;
 		boxMsg2.textContent = chrome.i18n.getMessage('autosyncFail')
 		
-	}else if(request.message == "are_you_there"){
-		if(serviceName == request.serviceName) chrome.runtime.sendMessage({message: "im_here"});
-		setTimeout(function(){resizeScr();window.moveTo(isFirefox ? 0 : 2500,0)},10)				//top right unless it's Firefox, which has a bug, so top left
+	}else if(request.message == "page_data"){
+		serviceName = request.serviceName;
+		activeTabId = request.activeTabId;
+		showLoad()
+		if(fileName) applyOffset()
 		
-	}else if(request.message == "video_here"){
-		if(request.hasControl){clearTimeout(killWindow); killWindow = null}
+	}else if(request.message == "script_here"){
+		clearTimeout(killWindow);
+		killWindow = null
+		
 	}
   }
 )

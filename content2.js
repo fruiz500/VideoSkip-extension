@@ -2,7 +2,7 @@
 var prevAction = '', cuts = [], speedMode = 1, subsClass = '', switches = [], mutedSubs = false;
 
 //subtitles in different services
-const subsClasses = {
+var subsClasses = {
 	youtube:'.caption-window',
 	amazon:'.atvwebplayersdk-captions-text',
 	imdb:'.atvwebplayersdk-captions-text',
@@ -22,7 +22,8 @@ const subsClasses = {
 	tubi:'#captionsComponent',		//actually not a class, but it should work
 	roku:'.vjs-text-track-cue',
 	peacock:'.video-player__subtitles',
-	kanopy:'.vjs-text-track-cue'
+	kanopy:'.vjs-text-track-cue',
+	apple:'#mySubtitles'				//added by content1
 };
 
 for(var name in subsClasses){
@@ -35,7 +36,11 @@ for(var name in subsClasses){
 //blanks/unblanks subtitles for different services
 function blankSubs(isBlank){
 	if(subsClass){
-		var subs = document.querySelector(subsClass);			//special cases
+		if(serviceName == 'apple'){
+			var subs = mySubtitles					//element defined in content1
+		}else{
+			var subs = document.querySelector(subsClass)			//special cases
+		}
 		if(subs) subs.style.opacity = isBlank ? 0 : ''
 
 	}else if(myVideo.textTracks.length > 0){						//HTML5 general case
@@ -111,8 +116,8 @@ function imageData(source){
 //get the absolute error between the screenShot and the video
 function errorCalc(){
 	var videoData = imageData(myVideo),
-		length = Math.min(shotData.length,videoData.length),
-		error = 0;
+		length = Math.min(shotData.length,videoData.length);
+	var	error = 0;
 	if(!videoData) return false;				//in case the service does not allow screenshots
 	for(var i = 0; i < length; i += 4){			//every pixel takes 4 data points: R, G, B, alpha, in the 0 to 255 range; alpha data ignored
 		error += Math.abs(videoData[i] - shotData[i])+ Math.abs(videoData[i+1] - shotData[i+1]) + Math.abs(videoData[i+2] - shotData[i+2])	//all channels abs
@@ -121,8 +126,8 @@ function errorCalc(){
 }
 
 var	errorData = [[],[]],
-	deltaT = 0.0417,
 	shotData,
+	deltaT = 1/24,
 	accel = 2;				//determined experimentally;
 
 //process to get the error between the video and the screenshot as a double array of times and errors, starting 2 seconds before current video time, and move to best
@@ -317,9 +322,7 @@ chrome.runtime.onMessage.addListener(
 
 	}else if(request.message == "auto_find"){
 		findShot()
-		
-	}else if(request.message == "is_video_there"){			//confirm with popup window that script is loaded
-		if(!!myVideo) chrome.runtime.sendMessage({message: "video_here", hasControl: !!myVideo.ontimeupdate})
+
 	}
   }
 )
