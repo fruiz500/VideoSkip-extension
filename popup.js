@@ -1,5 +1,5 @@
 const isFirefox = typeof InstallTrigger !== 'undefined',
-	height = isFirefox ? 490 : 470,
+	height = isFirefox ? 500 : 480,
 	width = isFirefox ? 530 : 490;
 const popupParams = "scrollbars=yes,resizable=yes,status=no,location=no,toolbar=no,menubar=no,width=" + width + ",height=" + height + ",top=100,left=2500";
 var activeTab, serviceName;
@@ -37,7 +37,7 @@ window.onload = function() {
 
 //open VSwindow. The delay somehow is needed so the focus takes hold. New window created only if closed previously
 		setTimeout(function(){
-			window.open('/_locales/' + chrome.i18n.getMessage('directory') + '/videoskip.html#' + activeTab.id,'VSwindow', popupParams).focus();
+			window.open('/_locales/' + chrome.i18n.getMessage('directory') + '/videoskip.html#0','VSwindow', popupParams).focus();
 		},400);
 		popText.textContent = chrome.i18n.getMessage('popupOpen');
 

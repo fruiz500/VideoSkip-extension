@@ -33,7 +33,6 @@ var	fileName = '',							//global variable with name of skip file, minus extensi
 var pageInfo = window.location.hash.slice(1).split('&'),		//sent with this page's name as the window opens, this contains ativeTabId + '&' + serviceName
 	activeTabId = parseInt(pageInfo[0]),		//sent with this page's name as the window opens
 	serviceName;
-if(pageInfo[1]) serviceName = pageInfo[1];		//serviceName also gets loaded later from a message. Can be left undefined
 
 const badAds = ["amazon","imdb","pluto"];		//list of services that change video timing with their ads
 if(badAds.indexOf(serviceName) != -1){
@@ -56,7 +55,7 @@ setTimeout(function(){window.resizeTo( window.outerWidth * startSize, window.out
 
 var resInt = setInterval(function(){
 	resizeScr()								//look for resizing every half second
-	if(!killWindow) killWindow = setTimeout(function(){window.close()},3000);		//close in 3 sec if no reply
+	if(!killWindow && activeTabId != 0) killWindow = setTimeout(function(){window.close()},3000);		//close in 3 sec if no reply
 	chrome.tabs.sendMessage(activeTabId, {message: "is_script_there"})		//poll content1 script
 },500);
 
@@ -616,13 +615,15 @@ function checkKey(e) {
 
 skipFile.addEventListener('change', loadFileAsURL);
 
-exchangeBtn.addEventListener('click', function(){
-	window.open('https://videoskip.org/exchange')
-});
+//loads other websites from a select option list
+function loadPage(){
+	const urls = ['https://videoskip.org/exchange', 'https://albatenia.com'];
+	if(this.value) window.open(urls[this.value])
+}
 
-exchangeBtn2.addEventListener('click', function(){
-	window.open('https://videoskip.org/exchange')
-});
+websites1.addEventListener('change', loadPage);
+
+websites2.addEventListener('change', loadPage);
 
 shotFile.addEventListener('change', loadShot);
 
@@ -1031,7 +1032,7 @@ chrome.runtime.onMessage.addListener(
 	}else if(request.message == "page_data"){
 		serviceName = request.serviceName;
 		activeTabId = request.activeTabId;
-		showLoad()
+		showLoad();
 		if(fileName) applyOffset()
 		
 	}else if(request.message == "script_here"){

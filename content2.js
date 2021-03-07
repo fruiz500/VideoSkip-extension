@@ -62,8 +62,8 @@ function isTainted(ctx) {
     try {
 		var pixels = ctx.getImageData(0, 0, canvas.width, canvas.height),
 			sum = 0;
-		for(var i = 0; i < pixels.data.length; i++){				//add all the values; black screen will give zero
-			sum += pixels.data[i]
+		for(var i = 0; i < pixels.data.length; i+=4){				//add all the pixel values, excluding alpha channel; black screen will give zero
+			sum += pixels.data[i] + pixels.data[i+1] + pixels.data[i+2]
 		}	
         return !sum;
     } catch(err) {
