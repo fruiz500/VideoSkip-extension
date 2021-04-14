@@ -10,13 +10,13 @@
 		"message": "Firefox has a bug that sometimes prevents VideoSkip from loading. Use a different browser if you see this"
 	},
 	"popupOpen": {
-		"message": "The VideoSkip window is by the upper right corner of the screen. If you don't see it, drag the right edge of the browser to expose some desktop ⇨"
-	},
-	"videoOn": {
-		"message": "VideoSkip active on "
+		"message": "The VideoSkip window is by the right side of the video. You can grab its top bar to move it, and collapse it by clicking its logo or the X button at upper left"
 	},
 	"noVideo": {
-		"message": "No video on page"
+		"message": "<p>VideoSkip helps you to skip over movie content that you'd rather not see.</p><p>You need two things:</p><h3>1. A movie to control.</h3><p>Make sure the movie is visible in the browser and playing (or stopped), and then <b>click the VideoSkip button on the browser again</b></p><div align='center'><button id='helpBtn' class='VSbutton' title='show instructions on new tab'>Help</button></div><br><h3>2. A file containing skips for this movie.</h3><p>You can get it from a friend, but here is a source.</p><div align='center'><button id='exchangeBtn' class='VSbutton' title='open the VideoSkip Exchange on new tab'>VideoSkip Exchange</button></div>"
+	},
+	"VSlogo": {
+		"message": "Click me to open VideoSkip"
 	},
 	"tabDone": {
 		"message": "Done  ✔"
@@ -34,7 +34,7 @@
 		"message": "Load here the .skp file containing the skips"
 	},
 	"nowSync": {
-		"message": "Move the time with the arrow buttons until video and screenshot match, then click Sync times"
+		"message": "Move the time with the arrow buttons below until video and screenshot match, then click Sync times. Superimpose the shot for better precision"
 	},
 	"nowFilter": {
 		"message": "Select the filter strength for each category"
@@ -59,6 +59,9 @@
 	},
 	"fileSaved2": {
 		"message": "Please share with other users"
+	},
+	"shotTaken": {
+		"message": "Screenshot loaded on the Sync tab"
 	},
 	"badService": {
 		"message": "This service does not allow taking screenshots. Take it from the OS and load it with the button"

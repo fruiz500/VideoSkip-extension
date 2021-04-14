@@ -10,13 +10,13 @@
 		"message": "Firefox tiene un problema que a veces le impide cargar a VideoSkip. Use otro navegador si ve este mensaje"
 	},
 	"popupOpen": {
-		"message": "La ventana de VideoSkip está en la esquina superior derecha de la pantalla. Si no la ve, reduzca el lado derecho de esta ventana para exponer el fondo de pantalla ⇨"
-	},
-	"videoOn": {
-		"message": "VideoSkip activo en "
+		"message": "La ventana de VideoSkip está en la parte derecha del vídeo. Puede moverla por la parte superior, o colapsarla haciando click en su logo o en la X de la esquina superior izquierda"
 	},
 	"noVideo": {
-		"message": "No hay vídeo en la página"
+		"message": "<p>VideoSkip le ayuda a saltarse partes de una película que preferiría no ver.</p><p>Necesita dos cosas:</p><h3>1. Una película que controlar.</h3><p>Asegúrese de que la película esté visible en el navegador y en marcha (o parada) antes de <b>presionar de nuevo el botón de VideoSkip</b></p><div align='center'><button id='helpBtn' class='VSbutton' title='mostrar instrucciones en nueva pestaña'>Ayuda</button></div><br><h3>2. Un archivo local para un título concreto.</h3><p>Lo puede obtener en el VideoSkip Exchange (en inglés)</p><div align='center'><button id='exchangeBtn' class='VSbutton' title='abrir el VideoSkip Exchange en nueva pestaña'>VideoSkip Exchange</button></div>"
+	},
+	"VSlogo": {
+		"message": "Pulse aquí para abrir VideoSkip"
 	},
 	"tabDone": {
 		"message": "Hecho  ✔"
@@ -34,7 +34,7 @@
 		"message": "Cargue aquí el archivo .skp que contiene las correcciones"
 	},
 	"nowSync": {
-		"message": "Corra el vídeo con los botones de flecha hasta que coincida a la captura, y haga clic en Sincronizar"
+		"message": "Corra el vídeo con los botones de flecha en esta ventana hasta que coincida con la captura, y haga clic en Sincronizar. Superponga la captura para mayor precisión"
 	},
 	"nowFilter": {
 		"message": "Seleccione la intensidad de filtrado en cada categoría"
@@ -60,6 +60,9 @@
 	"fileSaved2": {
 		"message": "Por favor, compártalo con otros usuarios"
 	},
+	"shotTaken": {
+		"message": "Captura cargada en la pestaña Sincro"
+	},
 	"badService": {
 		"message": "Este servicio no permite capturas de pantalla. Captúrela fuera del navegador y cárguela con el botón"
 	},
@@ -82,7 +85,7 @@
 		"message": "Se necesita una captura"
 	},
 	"categories": {
-		"message": "sexo,violencia,profanidad,sustancias,intenso,otro"
+		"message": "sexo,violencia,lenguage,sustancias,intenso,otro"
 	},
 	"noEditsLoaded": {
 		"message": "VideoSkip: no hay nada cargado"

@@ -1,0 +1,249 @@
+.VSreset {			/* to remove styling inherited from host page */
+	all: revert;
+}
+.VSp {
+	color: black;
+	font-size: 14px;
+	font-family: Arial;
+	width: 90%;
+}
+.VSimg {
+	height: auto;
+}
+.VScheck {
+	-moz-transform: scale(1.2);
+	-webkit-transform: scale(1.2);
+	-o-transform: scale(1.2);
+	padding: 0px;
+	cursor: pointer;
+	border: 1px solid #dedede;
+	color: black;
+}
+.VSrange {
+    width: 60px;
+    height: 8px;
+	-webkit-appearance: none;
+    -webkit-transform:rotate(-90deg);
+	background: #cecece;
+}
+.VSrange::-webkit-slider-runnable-track {
+    width: 60px;
+    height: 8px;
+    border: none;
+    border-radius: 3px;
+}
+.VSrange::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 36px;
+    width: 16px;
+    border-radius: 3px;
+    background: goldenrod;
+    margin-top: -15px;
+	cursor: pointer;
+}
+.VSrange::-moz-range-track {
+    width: 60px;
+    height: 8px;
+    border: none;
+    border-radius: 3px;
+}
+.VSrange::-moz-range-thumb {
+    height: 36px;
+    width: 16px;
+    border-radius: 3px;
+    background: goldenrod;
+	cursor: pointer;
+}
+.VSrange:focus {
+    outline: none;
+}
+.VStable {
+	width: 100%;
+	color: black;
+}
+.VStd {
+	align-content: center;
+	text-align: center;
+	color: black;
+	vertical-align: inherit;
+}
+.VSinfo {
+    background-color: palegreen;            
+}
+.VSerror {
+    background-color: red;
+    color: white;
+}
+.VShspacer {
+	width: 70px;
+	height: auto;
+	display:inline-block;
+}
+.VSmsg {
+	color: maroon;
+	font-weight: bold;
+	min-height: 30px;
+	display: block;
+	font-size: 16px;
+}
+.VSdoneLabel {
+	color: green;
+	font-size: x-large;
+	text-align: center;
+}
+.VSbutton {
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	font-family: Arial;
+	font-size: 16px;
+	padding: 12px;
+	text-decoration: none;
+	border: 0px;
+	color: #555555;
+	background: #dcdcdc;
+}
+.VSbutton:hover {
+	text-decoration: none;
+	cursor: pointer;
+	background: #bfbfbf;
+}
+.VSimptButton {
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	font-family: Arial;
+	font-size: 16px;
+	padding: 12px;
+	text-decoration: none;
+	border: 0px;
+	color: #555555;
+	background: #d2e4f3;
+}
+.VSimptButton:hover {
+	text-decoration: none;
+	cursor: pointer;
+	background: #c1dfff;
+}
+.VSsmall {
+	font-size: 14px;
+	padding: 9px;
+}
+.VSlabel {
+	display: inline;
+	font-weight: inherit;
+}
+.VSfineText {
+	font-size: small;
+	color: gray;
+}
+.VSclose-btn {
+  border: none; 
+  font-weight: bold; 
+  font-size: 2em; 
+  background: transparent; 
+  position: absolute; 
+  top: 2px;
+  left: 2px;
+  padding: .3em;
+  color: black;
+}
+ul#VStabs {
+	margin: 0;
+	text-align: center;
+	padding-top: 11px;
+	padding-bottom: 11px;
+	top: 0px;
+	left: 0px;
+	z-index: 1;
+	background-color: rgba(198,213,198,0.9);
+	border-top-left-radius: 10px;
+	border-top-right-radius: 10px;
+}
+ul#VStabs li {
+	display: inline;
+	width: auto;
+}
+ul#VStabs li a {
+	font-family: Arial;
+	font-size: 18px;
+	border: none;
+	text-decoration: none;
+	padding: 10px;
+	margin-left: -4px;
+	padding-bottom: 11px;
+	color: #42454a;
+	background-color: rgba(198,213,198,0.9);
+}
+ul#VStabs li a:hover {
+	background-color: rgba(196,179,196,0.9);
+}
+ul#VStabs li a.selected {
+	font-weight: bold;
+	border: none;
+	color: #000;
+	background-color: rgba(255,255,255,0.6);
+	border-top-left-radius: 15px;
+	border-top-right-radius: 15px;
+}
+div.VStabContent {
+	border: none;
+	max-width: 1000px;
+	margin-left: auto;
+	margin-right: auto;
+	background-color: rgba(255,255,255,0.9);
+	border-bottom-left-radius: 10px;
+	border-bottom-right-radius: 10px;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+div.VStabContent.hide {
+	display: none;
+}
+#VStitle {
+	font-size: 20px;
+}
+#VSskipBox {
+	height: 250px;
+	width: 99%;
+	background: #fffffc;
+	border-bottom-left-radius: 10px;
+	border-bottom-right-radius: 10px;
+	color: black;
+}
+#VSskipFile {
+	display: none;
+}
+#VSshotFile {
+	display: none;
+}
+#VSsubFile {
+	display: none;
+}
+#VSeditControls {
+	display: none;
+}
+#VSsyncControls {
+	visibility: hidden;
+}
+#VSsyncTab {
+	overflow: hidden;
+}
+#VSblockList {
+	display: none;
+}
+#VSrubricText {
+	min-height: 50px;
+	padding-top: 6px;
+	display: block;
+	color: black;
+}
+#VSautoProfanity {
+	display: none;
+}
+#VSsuccessBanner {
+	display: none;
+}
+#VSlogo {
+	display: none;
+}
