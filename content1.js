@@ -46,15 +46,26 @@ if(!!myVideo){													//add overlay image for superimpose function
 
 	myVideo.ontimeupdate = function(){						//apply skips to video when it gets to them. THIS IS THE HEART OF THE EXTENSION
 		if(typeof(cuts) == "undefined" || !cuts) return;
-		var action = '', startTime, endTime;
-		for(var i = 0; i < cuts.length; i++){
-			startTime = cuts[i].startTime;						//times in seconds
+		var action = '', tempAction = '', startTime, endTime;
+		for(var i = 0; i < cuts.length; i++){			//find out what action to take, according to timing and setting in cuts object
+			startTime = cuts[i].startTime;
 			endTime = cuts[i].endTime;
 			if(myVideo.currentTime > startTime && myVideo.currentTime < endTime){
-				action = cuts[i].action;
-				break
+				tempAction = cuts[i].action
 			}else{
-				action = ''
+				tempAction = ''
+			}
+			if(tempAction == 'skip'){					//retain the strongest action valid for the current time. Hierarchy: skip > fast > blank > blur > mute
+				action = 'skip';
+				break							//can't get any stronger, so stop looking for this time
+			}else if(tempAction == 'fast'){
+				action = (action == 'skip') ? 'skip' : 'fast'
+			}else if(tempAction == 'blank'){
+				action = ((action == 'skip') || (action == 'fast')) ? action : 'blank'
+			}else if(tempAction == 'blur'){
+				action = ((action == 'skip') || (action == 'fast') || (action == 'blank')) ? action : 'blur'	
+			}else if(tempAction == 'mute'){
+				action = ((action == 'skip') || (action == 'fast') || (action == 'blank') || (action == 'blur')) ? action : 'mute'
 			}
 		}
 
