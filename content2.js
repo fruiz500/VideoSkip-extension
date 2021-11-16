@@ -31,6 +31,7 @@ var VStabs = document.getElementById('VStabs'),
 	VSmsg2 = document.getElementById('VSmsg2'),
 	VSmsg3 = document.getElementById('VSmsg3'),
 	VSmsg4 = document.getElementById('VSmsg4'),
+	VSsyncMsg = document.getElementById('VSsyncMsg'),
 	VSskipFile = document.getElementById('VSskipFile'),
 	VSscreenShot = document.getElementById('VSscreenShot'),
 	VSfilters = document.getElementById('VSfilters'),
@@ -344,12 +345,12 @@ function showSettings(){
 
 //move interface to good position
 function replaceInterface(){
-	var top = myVideo.offsetTop + 80;
+	var top = (serviceName == 'netflix') ? 80 : (myVideo.offsetTop + 80);					//Netflix video element has weird offsets
 	if(top < 80) top = 80;
 	VSstatus.style.top = top + 'px';																					//reposition elements
-	VSstatus.style.left = myVideo.offsetLeft + myVideo.offsetWidth - VSwidth + 'px';
+	VSstatus.style.left = ((serviceName == 'netflix') ? 0 : myVideo.offsetLeft) + myVideo.offsetWidth - VSwidth + 'px';
 	VSinterface.style.top = top + 50 + 'px';
-	VSinterface.style.left = myVideo.offsetLeft + myVideo.offsetWidth - VSwidth + 'px';
+	VSinterface.style.left = ((serviceName == 'netflix') ? 0 : myVideo.offsetLeft) + myVideo.offsetWidth - VSwidth + 'px';
 	if(VSlogo.style.display == 'none' && VScontrol.style.display == 'none') VSlogo.style.display = 'block'		//return from full screen
 }
 
@@ -480,7 +481,7 @@ function autoBeepGen(subs){
 	cuts = PF_SRT.parse(VSskipBox.value);
 	cuts.sort(function(a, b){return a.startTime - b.startTime;});
 	times2box();
-	VSskipBox.value = initialData.join('\n') + '\n\n' + VSskipBox.value;
+	if(initalData) VSskipBox.value = initialData.join('\n') + '\n\n' + VSskipBox.value;
 	VScurseNum.value = 3;
 	setActions();
 	makeTimeLabels()
@@ -691,21 +692,21 @@ function syncTimes(){
 
 //shift all times according to offset in loaded skip file; different enough from previous to justify a new function
 function applyOffset(){
+	var	initialData = VSskipBox.value.trim().split('\n').slice(0,2),			//first two lines
+		shotTime = fromHMS(initialData[0]);
 	var offset = offsets[serviceName];
 	if(typeof offset != 'undefined'){									//there is an offset for the current source, so shift all times
-		var	initialData = VSskipBox.value.trim().split('\n').slice(0,2),			//first two lines
-			shotTime = fromHMS(initialData[0]);
 		for(var i = 0; i < cuts.length; i++){
 			cuts[i].startTime += offset;
 			cuts[i].endTime += offset
 		}
-		setActions();
-		makeTimeLabels();
 		times2box();													//put shifted times in the box
 		if(shotTime){													//reconstruct initial data, if present, shifting the shot time as well
 			initialData[0] = toHMS(shotTime + offset);
 			VSskipBox.value = initialData.join('\n') + '\n\n' + VSskipBox.value
 		}
+		setActions();
+		makeTimeLabels();
 		VSsyncTab.style.display = 'none';								//close sync tab if it was open
 		VSsyncLink.style.display = 'none';
 		VSmsg3.textContent = chrome.i18n.getMessage('offsetApplied');
@@ -717,9 +718,10 @@ function applyOffset(){
 		offsets[serviceName] = 0;										//initialize offset
 		setActions();
 		makeTimeLabels();
-		scrub2shot();
+		goToTime(shotTime);
 		VSsyncTab.style.display = '';
 		VSsyncLink.style.display = '';
+		VSsyncMsg.textContent = initialData[1];
 		VSsyncLink.click()												//go to sync tab
 	}
 }
@@ -870,9 +872,7 @@ function shiftProfSkips(isFwd){
 		}
 	}
 	times2box();
-	if(initialData){														//reconstruct initial data, if present
-		VSskipBox.value = initialData.join('\n') + '\n\n' + VSskipBox.value
-	}
+	if(initialData) VSskipBox.value = initialData.join('\n') + '\n\n' + VSskipBox.value
 }
 
 //scrub to first time in the box, unless a time is selected

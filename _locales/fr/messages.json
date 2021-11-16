@@ -1,0 +1,110 @@
+{
+"manifest_descr": {
+"message": "Ignore/désactive/supprime les parties sélectionnées des vidéos en streaming"
+},
+"directory": {
+"message": "fr"
+},
+"firefoxError": {
+"message": "Firefox a un bug qui empêche parfois le chargement de VideoSkip. Utilisez un autre navigateur si vous voyez ceci"
+},
+"popupOpen": {
+"message": "La fenêtre VideoSkip se trouve sur le côté droit de la vidéo. Vous pouvez saisir sa barre supérieure pour la déplacer et la réduire en cliquant sur son logo ou sur le bouton X en haut à gauche"
+},
+"noVideo": {
+"message": "<p>VideoSkip vous aide à ignorer le contenu d'un film que vous préférez ne pas voir.</p><p>Vous avez besoin de deux choses :</p><h3>1. Un film à contrôler. </h3><p>Assurez-vous que le film est visible dans le navigateur et en cours de lecture (ou arrêté), puis <b>cliquez à nouveau sur le bouton VideoSkip du navigateur</b></p><div align='center '><button id='helpBtn' class='VSbutton' title='show instructions on new tab'>Aide</button></div><br><h3>2. Un fichier contenant des sauts pour ce film.< /h3><p>Vous pouvez l'obtenir d'un ami, mais voici une source.</p><div align='center'><button id='exchangeBtn' class='VSbutton' title='ouvrir le VideoSkip Échange sur nouvel onglet'>VideoSkip Exchange</button></div>"
+},
+"VSlogo": {
+"message": "Cliquez-moi pour ouvrir VideoSkip"
+},
+"tabDone": {
+"message": "Terminé ✔"
+},
+"badAds": {
+"message": " injecte des publicités d'une manière qui provoque l'échec du filtrage. Rechargez la page jusqu'à ce que le film commence sans publicité, et assurez-vous qu'il n'y a pas de publicité au milieu du film"
+},
+"wrongFile": {
+"message": "Type de fichier incorrect"
+},
+"fileLoaded": {
+"message": " chargé"
+},
+"nowLoad": {
+"message": "Chargez ici le fichier .skp contenant les sauts"
+},
+"nowSync": {
+"message": "Déplacez l'heure avec les boutons fléchés ci-dessous jusqu'à ce que la vidéo et la capture d'écran correspondent, puis cliquez sur Synchroniser les heures. Superposez la capture pour une meilleure précision"
+},
+"nowFilter": {
+"message": "Sélectionnez la force du filtre pour chaque catégorie"
+},
+"nowEdit": {
+"message": "Modifier les sauts ici"
+},
+"offsetApplied": {
+"message": "Le fichier s'est chargé et les curseurs de catégorie sont configurés pour ignorer tout ce qui est signalé. Ajustez-les et VOUS ÊTES PRÊTS"
+},
+"unGraded": {
+"message": "AVERTISSEMENT : ce fichier contient des modifications non notées, qui ne fonctionneront que si son curseur est défini sur Élevé"
+},
+"shotLoaded": {
+"message": "Capture d'écran chargée"
+},
+"shotCanceled": {
+"message": "Capture d'écran annulée"
+},
+"fileSaved": {
+"message": "Fichier enregistré avec le nom "
+},
+"fileSaved2": {
+"message": "Partager avec d'autres utilisateurs"
+},
+"shotTaken": {
+"message": "Capture d'écran chargée dans l'onglet Sync"
+},
+"badService": {
+"message": "Ce service ne permet pas de prendre des captures d'écran. Prenez-les depuis le système d'exploitation et chargez-le avec le bouton"
+},
+"autosyncDone": {
+"message": "Recherche automatique de prise de vue effectuée. Vous devrez peut-être la répéter ou ajuster avec les flèches temporelles. Cliquez ensuite sur Synchroniser les heures"
+},
+"autosyncFail": {
+"message": "Ce service n'autorise pas les captures d'écran, donc la recherche automatique de photos n'est pas possible"
+},
+"noTimeInBox": {
+"message": "Doit avoir au moins une fois dans la case avant de cliquer"
+},
+"noSuperpose": {
+"message": "Rien à superposer"
+},
+"fileName": {
+"message": "Entrez le nom du fichier. L'extension .skp sera ajoutée"
+},
+"screenshotFirst": {
+"message": "Vous devez d'abord avoir une capture d'écran"
+},
+"categories": {
+"message": "sexe,violence,blasphème,drogue,intense,autre"
+},
+"noEditsLoaded": {
+"message": "VideoSkip : aucune modification chargée"
+},
+"noFiltersEngaged": {
+"message": "VideoSkip : aucun filtre activé"
+},
+"VideoSkipOn": {
+"message": "Passer la vidéo sur : "
+},
+"moreStart": {
+"message": "Vous devez toujours connecter le film. Cliquez sur le bouton VideoSkip du navigateur lorsque le film s'affiche sur la page"
+},
+"moreLoad": {
+"message": "Vous devez toujours charger un fichier à ignorer avec le bouton Charger"
+},
+"moreSync": {
+"message": "Vous devez toujours synchroniser la capture d'écran avec le bouton Sync times"
+},
+"rubric": {
+"message": "{'sex':['Contenu à moyen, plus: Baisers hétérosexuels. Conversation impliquant le sexe. Nudité dorsale ou distante','Contenu à faible, plus: sexe implicite. Situations homosexuelles. Baisers passionnés. Nudité frontale','Sexe explicite. Sodomie. Bestialité. Violation sexuelle. Pornographie. Abus de mineurs'],'violence':['Contenu à moyen plus: Coups de main ou de fouet. Tirer à distance. Gifle. Châtiment corporel','Contenu à faible, plus: Suicide. Démembrement. Tirs à courte distance ou à sang froid. Couteaux','Sadisme. Masochisme. Torture. Gore conçu pour choquer'],'curse':['Contenu à moyen, plus: mots sales en général. Injures','Contenu à faible, plus: blasphème idiomatique. Injures raciales','Blasphème intentionnel. Satanisme'],'booze':['Contenu à moyen, plus: Consommation de substances autre qu`accessoire. Comportement de toxicomanie','Contenu à faible, plus: Utilisation par voie intraveineuse. Préparation de drogues. Utilisation chez les adolescents','Contenu conçu pour inciter à l`abus de substances'],'scare':['Sinistre. Angoissant. Émotionnellement difficile pour les enfants','Choquant ou émotionnellement difficile pour les adolescents','Choquant pour les adultes'],'other':['Contenu léger','Contenu modéré','Contenu intense']}"
+}
+}
