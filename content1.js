@@ -2,7 +2,7 @@
 var myVideo = null;
 var isFirefox = typeof InstallTrigger !== 'undefined',
 	VSheight = isFirefox ? 0 : 0,
-	VSwidth = isFirefox ? 480 : 460;
+	VSwidth = isFirefox ? 500 : 480;
 
 //returns true if an element is visible.
 function isVisible (ele) {
@@ -60,12 +60,12 @@ if(!!myVideo){													//add overlay image for superimpose function
 				break							//can't get any stronger, so stop looking for this time
 			}else if(tempAction == 'fast'){
 				action = (action == 'skip') ? 'skip' : 'fast'
-			}else if(tempAction == 'blank'){
-				action = ((action == 'skip') || (action == 'fast')) ? action : 'blank'
-			}else if(tempAction == 'blur'){
-				action = ((action == 'skip') || (action == 'fast') || (action == 'blank')) ? action : 'blur'	
+			}else if(tempAction.includes('blank')){
+				action = ((action == 'skip') || (action == 'fast')) ? action : tempAction
+			}else if(tempAction.includes('blur')){
+				action = ((action == 'skip') || (action == 'fast') || (action == 'blank')) ? action : tempAction			//may include position for local blur	
 			}else if(tempAction == 'mute'){
-				action = ((action == 'skip') || (action == 'fast') || (action == 'blank') || (action == 'blur')) ? action : 'mute'
+				action = ((action == 'skip') || (action == 'fast')) ? action : (((action == 'blank') || (action == 'blur')) ? 'skip' : 'mute')
 			}
 		}
 
@@ -79,10 +79,18 @@ if(!!myVideo){													//add overlay image for superimpose function
 			return
 		}else if(action == 'skip'){				//skip range
 			goToTime(endTime)
-		}else if(action == 'blank'){				//blank screeen
+		}else if(action == 'blank'){				//blank whole screeen
 			myVideo.style.opacity =  0
+		}else if(action.includes('blank')){				//localized blank
+				var position = action.match(/\[.*\]/);
+				if(position) moveBlurBox(JSON.parse(position[0]));
+				VSblurBox.style.backgroundColor = 'black'
 		}else if(action == 'blur'){				//blur screeen
-			myVideo.style.filter =  'blur(30px)'
+			myVideo.style.filter =  'blur(20px)'
+		}else if(action.includes('blur')){				//localized blur
+				var position = action.match(/\[.*\]/);
+				if(position) moveBlurBox(JSON.parse(position[0]));
+				if(isFirefox) VSblurBox.style.backgroundColor = '#622e09'
 		}else if(action == 'fast'){				//fast forward
 			myVideo.playbackRate = 16
 		}else if(action == 'mute'){				//mute sound & subs
@@ -92,6 +100,8 @@ if(!!myVideo){													//add overlay image for superimpose function
 			myVideo.style.filter = '';
 			myVideo.playbackRate = 1;
 			myVideo.muted = false;
+			VSblurBox.style.display = 'none';
+			VSblurBox.style.backgroundColor = ''
 		}
 		prevAction = action
   	}
@@ -119,12 +129,22 @@ if(!!myVideo){													//add overlay image for superimpose function
 	VSstatus.style.backgroundColor = "rgba(0, 0, 0, 0.33)";
 	myVideo.parentNode.insertBefore(VSstatus,myVideo)
   }
+  
+  if(!VSblurBox){
+	var VSblurBox = document.createElement('div');			//for local blur and blank
+	VSblurBox.style.position = 'absolute';
+	VSblurBox.style.zIndex = myVideo.style.zIndex + 2 | 2;
+	VSblurBox.style.border = "none";
+	VSblurBox.style.borderRadius = "500px";
+	VSblurBox.style.backdropFilter = "blur(20px)";
+	myVideo.parentNode.insertBefore(VSblurBox,myVideo)
+  }
  
   if(!VSinterface){										//this is the interface, containing a clickable logo, and the interface proper
 	var VSinterface = document.createElement('div');
 	VSinterface.style.position = 'absolute';
-	VSinterface.style.top = (myVideo.offsetTop < 0 ? 130 : myVideo.offsetTop + 130) + 'px';
-	VSinterface.style.left = myVideo.offsetLeft + myVideo.offsetWidth - VSwidth + 'px';
+	VSinterface.style.top = ((myVideo.offsetTop < 0 || serviceName == "netflix") ? 130 : myVideo.offsetTop + 130) + 'px';		//Netflix adds spurious offsets
+	VSinterface.style.left = (serviceName == "netflix" ? 0 : myVideo.offsetLeft) + myVideo.offsetWidth - VSwidth + 'px';
 	VSinterface.style.zIndex = '9999';
 	VSinterface.style.width = VSwidth + 'px';
 	VSinterface.style.height = VSheight + 'px';

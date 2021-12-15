@@ -33,7 +33,7 @@
 "message": "Chargez ici le fichier .skp contenant les sauts"
 },
 "nowSync": {
-"message": "Déplacez l'heure avec les boutons fléchés ci-dessous jusqu'à ce que la vidéo et la capture d'écran correspondent, puis cliquez sur Synchroniser les heures. Superposez la capture pour une meilleure précision"
+"message": "Déplacez l'heure avec les boutons fléchés ci-dessous jusqu'à ce que la vidéo et la capture d'écran correspondent, puis cliquez sur Synchroniser les heures. Superposez la capture pour une meilleure précision. Alors vous pouvez la déplacer avec la souris"
 },
 "nowFilter": {
 "message": "Sélectionnez la force du filtre pour chaque catégorie"
@@ -103,6 +103,9 @@
 },
 "moreSync": {
 "message": "Vous devez toujours synchroniser la capture d'écran avec le bouton Sync times"
+},
+"moreFilter": {
+"message": "Tous les curseurs sont désactivés, aucun filtrage n'aura donc lieu"
 },
 "rubric": {
 "message": "{'sex':['Contenu à moyen, plus: Baisers hétérosexuels. Conversation impliquant le sexe. Nudité dorsale ou distante','Contenu à faible, plus: sexe implicite. Situations homosexuelles. Baisers passionnés. Nudité frontale','Sexe explicite. Sodomie. Bestialité. Violation sexuelle. Pornographie. Abus de mineurs'],'violence':['Contenu à moyen plus: Coups de main ou de fouet. Tirer à distance. Gifle. Châtiment corporel','Contenu à faible, plus: Suicide. Démembrement. Tirs à courte distance ou à sang froid. Couteaux','Sadisme. Masochisme. Torture. Gore conçu pour choquer'],'curse':['Contenu à moyen, plus: mots sales en général. Injures','Contenu à faible, plus: blasphème idiomatique. Injures raciales','Blasphème intentionnel. Satanisme'],'booze':['Contenu à moyen, plus: Consommation de substances autre qu`accessoire. Comportement de toxicomanie','Contenu à faible, plus: Utilisation par voie intraveineuse. Préparation de drogues. Utilisation chez les adolescents','Contenu conçu pour inciter à l`abus de substances'],'scare':['Sinistre. Angoissant. Émotionnellement difficile pour les enfants','Choquant ou émotionnellement difficile pour les adolescents','Choquant pour les adultes'],'other':['Contenu léger','Contenu modéré','Contenu intense']}"

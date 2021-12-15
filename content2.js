@@ -354,9 +354,12 @@ function replaceInterface(){
 	if(VSlogo.style.display == 'none' && VScontrol.style.display == 'none') VSlogo.style.display = 'block'		//return from full screen
 }
 
-//make it draggable, from W3schools
-var pos1, pos2, pos3, pos4;
-function dragMouseDown(e) {
+//to make elements draggable, from W3schools
+function dragElement(elmnt) {
+  var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+    elmnt.onmousedown = dragMouseDown;
+
+  function dragMouseDown(e) {
     e = e || window.event;
     e.preventDefault();
     // get the mouse cursor position at startup:
@@ -364,9 +367,14 @@ function dragMouseDown(e) {
     pos4 = e.clientY;
     document.onmouseup = closeDragElement;
     // call a function whenever the cursor moves:
-    document.onmousemove = elementDrag;
-}
-function elementDrag(e) {
+	if((VSaltMode.checked != !!e.altKey) && (elmnt == VSblurBox || elmnt == VSshot)){				//alt combinations resizes, regular moves
+		document.onmousemove = elementResize
+	}else{
+    	document.onmousemove = elementDrag
+	}
+  }
+
+  function elementDrag(e) {
     e = e || window.event;
     e.preventDefault();
     // calculate the new cursor position:
@@ -375,18 +383,58 @@ function elementDrag(e) {
     pos3 = e.clientX;
     pos4 = e.clientY;
     // set the element's new position:
-    VSinterface.style.top = (VSinterface.offsetTop - pos2) + "px";
-    VSinterface.style.left = (VSinterface.offsetLeft - pos1) + "px";
-}
-function closeDragElement() {
+	if(elmnt == VSlogo || elmnt == VStabs){			//drag whole interface
+		VSinterface.style.top = (VSinterface.offsetTop - pos2) + "px";
+    	VSinterface.style.left = (VSinterface.offsetLeft - pos1) + "px";
+	}else{
+		elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+    	elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+	}
+  }
+  
+  function elementResize(e) {
+    e = e || window.event;
+    e.preventDefault();
+    // calculate the new cursor position:
+    pos1 = pos3 - e.clientX;
+    pos2 = pos4 - e.clientY;
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    //get the element center
+	var centerX = elmnt.offsetLeft + elmnt.clientWidth / 2,
+		centerY = elmnt.offsetTop + elmnt.clientHeight / 2;
+    // set the element's new size, four cases depending of where the mouse is:
+	if(pos3 >= centerX && pos4 >= centerY){							//lower right
+    	elmnt.style.height = (elmnt.clientHeight - pos2) + "px";
+    	elmnt.style.width = (elmnt.clientWidth - pos1) + "px";
+	}else if(pos3 < centerX && pos4 >= centerY){						//lower left
+		elmnt.style.height = (elmnt.clientHeight - pos2) + "px";
+    	elmnt.style.width = (elmnt.clientWidth + pos1) + "px";
+		elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+	}else if(pos3 >= centerX && pos4 < centerY){						//upper right
+		elmnt.style.height = (elmnt.clientHeight + pos2) + "px";
+    	elmnt.style.width = (elmnt.clientWidth - pos1) + "px";
+		elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+	}else{																//upper left
+		elmnt.style.height = (elmnt.clientHeight + pos2) + "px";
+    	elmnt.style.width = (elmnt.clientWidth + pos1) + "px";
+		elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+		elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+	}
+  }
+
+  function closeDragElement() {
     // stop moving when mouse button is released:
     document.onmouseup = null;
     document.onmousemove = null;
+  }
 }
 
-//apply the above to these elements
-VSlogo.onmousedown = dragMouseDown;
-document.getElementById('VStabs').onmousedown = dragMouseDown;
+//apply the above to the blur box, the screenshot, and the interface
+dragElement(VSblurBox);
+dragElement(VSshot);
+dragElement(VSlogo);
+dragElement(VStabs);
 
 //to close the interface panel from the X or the logo
 function closePanel(){
@@ -474,7 +522,7 @@ function autoBeepGen(subs){
 	for(var i = 0; i < subObj.length; i++){
 		var word = subObj[i].text.toLowerCase().match(blockListExp);
 		if(word){	//word found in block list; add extra .3s buffer in case there are two in a row
-			writeIn(toHMS(subObj[i].startTime - 0.15) + ' --> ' + toHMS(subObj[i].endTime + 0.15) + '\nprofane word 1 (' + word[0] + ')\n\n')
+			writeIn(toHMS(subObj[i].startTime - 0.15) + ' --> ' + toHMS(subObj[i].endTime + 0.15) + '\nprofane word 1 (' + word[0] + ')\n\n',false)
 		}
 	}
 	var	initialData = VSskipBox.value.trim().split('\n').slice(0,2);		//first two lines containing screenshot timing
@@ -764,6 +812,15 @@ function writeSilence(){
 	writeIn(toHMS(myVideo.currentTime - 0.7) + ' --> ' + toHMS(myVideo.currentTime) + '\profane word 1\n\n',false)
 }
 
+//insert box position as percentage of video dimensions
+function writePosition(){
+	if(isBlur){
+		var x = getBlurPos();
+		for(var i = 0; i < 4; i++) x[i] = x[i].toPrecision(4);
+		writeIn('[' + x[0] + ',' + x[1] + ',' + x[2] + ',' + x[3] + ']',false)
+	}
+}
+
 //gets index of a particular HMS time in the box, by location; returns null if the cursor is not on a time label
 function getTimeIndex(){
 	var start = VSskipBox.selectionStart,
@@ -929,6 +986,66 @@ function toggleTopShot(){
 	}
 }
 
+//similar to the previous, to put a blur box on the video. New in version 0.5
+var isBlur = false;
+
+function toggleBlurBox(){
+	if(isBlur){
+		isBlur = false;
+		VSblurBox.style.display = 'none'
+	}else{
+		isBlur = true;
+		VSblurBox.style.display = '';
+		VSblurBox.style.height = myVideo.clientHeight / 3 + 'px';
+		VSblurBox.style.width = VSblurBox.style.height;
+		VSblurBox.style.top = myVideo.offsetTop + myVideo.clientHeight / 3 + 'px';
+		VSblurBox.style.left = myVideo.offsetLeft + myVideo.clientWidth / 2 - parseInt(VSblurBox.style.width.slice(0,-2)) / 2 + 'px';
+		if(isFirefox) VSblurBox.style.backgroundColor = '#622e09'
+	}
+}
+
+var videoX1, videoX2, videoY1, videoY2;									//coordinates of the actual video corners without black bars
+
+//get real video position, excluding black bars
+function getVideoPos(){
+	var	frameRatio = myVideo.clientWidth / myVideo.clientHeight,					//includes the bars
+		trueRatio = myVideo.videoWidth / myVideo.videoHeight;						//without black bars
+	if(frameRatio <= trueRatio){			//possible black bars at top and bottom
+		videoX1 = myVideo.offsetLeft;
+		videoX2 = videoX1 + myVideo.clientWidth;
+		videoY1 = myVideo.offsetTop + myVideo.clientHeight / 2 - (myVideo.clientWidth / trueRatio) / 2;
+		videoY2 = videoY1 + myVideo.clientWidth / trueRatio;
+	}else{									//possible black bars at left and right
+		videoY1 = myVideo.offsetTop;
+		videoY2 = videoY1 + myVideo.clientHeight;
+		videoX1 = myVideo.offsetLeft + myVideo.clientWidth / 2 - (myVideo.clientHeight * trueRatio) / 2;
+		videoX2 = videoX1 + myVideo.clientHeight * trueRatio;
+	}
+}
+
+//move blur box to relative position in array
+function moveBlurBox(position){
+	getVideoPos();							//first get the true position of the video, minus black bars	
+	VSblurBox.style.display = '';
+	VSblurBox.style.height = (videoY2 - videoY1) * (position[3] - position[1]) / 100 + 'px';			//resize and move the box
+	VSblurBox.style.width = (videoX2 - videoX1) * (position[2] - position[0]) / 100 + 'px';
+	VSblurBox.style.top = videoY1 + (videoY2 - videoY1) * position[1] / 100 + 'px';
+	VSblurBox.style.left = videoX1 + (videoX2 - videoX1) * position[0] / 100 + 'px'
+}
+
+var blurPos;			//array containing blur box position, so it stays when going back and forth from full screen
+
+//gets position of blur box as percent of video dimensions
+function getBlurPos(){
+	getVideoPos();
+	var x1 = parseInt(VSblurBox.style.left.slice(0,-2) - videoX1) / (videoX2 - videoX1) * 100,
+		y1 = parseInt(VSblurBox.style.top.slice(0,-2) - videoY1) / (videoY2 - videoY1) * 100,
+		x2 = x1 + parseInt(VSblurBox.style.width.slice(0,-2)) / (videoX2 - videoX1) * 100,
+		y2 = y1 + parseInt(VSblurBox.style.height.slice(0,-2)) / (videoY2 - videoY1) * 100;
+	return [x1,y1,x2,y2]
+}
+//end of new in 0.5
+
 var timeLabels = [];
 
 //remakes array timeLabels containing HMS times, plus their positions in the box [HMS time, start, end]
@@ -976,47 +1093,6 @@ function save2file(){
 	if(!fileName) fileName = prompt(chrome.i18n.getMessage('fileName'));
 	download(VSskipBox.value + '\n\n' + JSON.stringify(offsets) + '\n\n' + VSscreenShot.src, fileName + ' [' + sourceList.join('-') + '].skp', "text/plain");
 	VSmsg4.textContent = chrome.i18n.getMessage('fileSaved') + fileName + ' [' + sourceList.join('-') + '].skp ' + chrome.i18n.getMessage('fileSaved2')
-}
-
-//to move and resize superimposed shot
-document.onkeydown = checkKey;
-
-function checkKey(e) {
-	if(isSuper){												//this only works when a screenshot is superimposed on the video
-    	e = e || window.event;
-		var isFine = VSfineMode.checked != !!e.shiftKey;		//XOR of the two things
-    	if(VSaltMode.checked != !!e.altKey){					//alt combinations moves, regular resizes, hold shift for fine movement
-			if(e.keyCode == '38'){
-				VSshot.style.top = parseInt(VSshot.style.top.slice(0,-2)) - (isFine ? 1 : 10) + 'px'
-			}else if(e.keyCode == '40'){
-				VSshot.style.top = parseInt(VSshot.style.top.slice(0,-2)) + (isFine ? 1 : 10) + 'px'
-			}else if(e.keyCode == '37'){
-				VSshot.style.left = parseInt(VSshot.style.left.slice(0,-2)) - (isFine ? 1 : 10) + 'px'
-			}else if(e.keyCode == '39'){
-				VSshot.style.left = parseInt(VSshot.style.left.slice(0,-2)) + (isFine ? 1 : 10) + 'px'
-			}
-		}else{													//resize shot
-			var increment = isFine ? 1 : 5,
-				increment2 = increment*VSshot.width/VSshot.height;
-			if(e.keyCode == '38'){	
-				VSshot.height += increment * 2;
-				VSshot.style.top = parseInt(VSshot.style.top.slice(0,-2)) - increment + 'px';
-				VSshot.width += increment2 * 2;
-				VSshot.style.left = parseInt(VSshot.style.left.slice(0,-2)) - increment2 + 'px'
-			}else if(e.keyCode == '40'){
-				VSshot.height -= increment * 2;
-				VSshot.style.top = parseInt(VSshot.style.top.slice(0,-2)) + increment + 'px';
-				VSshot.width -= increment2 * 2;
-				VSshot.style.left = parseInt(VSshot.style.left.slice(0,-2)) +  increment2 + 'px'
-			}else if(e.keyCode == '37'){
-				VSshot.width -= increment * 2;
-				VSshot.style.left = parseInt(VSshot.style.left.slice(0,-2)) + increment + 'px'
-			}else if(e.keyCode == '39'){
-				VSshot.width += increment * 2;
-				VSshot.style.left = parseInt(VSshot.style.left.slice(0,-2)) - increment + 'px'
-			}
-		}	
-	}
 }
 
 //to display as the mouse moves over the sliders
@@ -1200,19 +1276,28 @@ function setActions(){
 			var ignore = cuts[i].text.includes('//'),										//ignore skip containing // in text
 				label = cuts[i].text.toLowerCase().replace(/\(.*\)/g,''),				//ignore text in parentheses
 				isAudio = isContained(label,/aud|sou|spe|wor/),
-				isVideo = isContained(label,/vid|ima|img/),
-				isBlur = isContained(label,/blu/),
-				isFast = isContained(label,/fas/);
+				isVideo = isContained(label,/vid|ima|img|bla/),
+				isBlurred = isContained(label,/blu/),
+				isFast = isContained(label,/fas/),
+				position = label.match(/\[.*\]/);				//position formatted as array within square brackets
 			if(ignore){
 				cuts[i].action = ''
-			}else if(!isAudio && !isVideo && !isBlur && !isFast){
+			}else if(!isAudio && !isVideo && !isBlurred && !isFast){
 				cuts[i].action = isSkipped(label) ? 'skip' : ''	
 			}else if(isAudio){
 				cuts[i].action = isSkipped(label) ? 'mute' : ''
 			}else if(isVideo){
-				cuts[i].action = isSkipped(label) ? 'blank' : ''
-			}else if(isBlur){
-				cuts[i].action = isSkipped(label) ? 'blur' : ''
+				if(position){
+					cuts[i].action = isSkipped(label) ? 'blank ' + position[0]: ''		//localized blank
+				}else{
+					cuts[i].action = isSkipped(label) ? 'blank' : ''
+				}
+			}else if(isBlurred){
+				if(position){
+					cuts[i].action = isSkipped(label) ? 'blur ' + position[0]: ''		//localized blur
+				}else{
+					cuts[i].action = isSkipped(label) ? 'blur' : ''
+				}
 			}else if(isFast){
 				cuts[i].action = isSkipped(label) ? 'fast' : ''
 			}
@@ -1236,13 +1321,17 @@ function showLoad(){
 //checks that the other tabs are done and sends you there if not
 function checkDone(){
 	var	loadDone = !!VSloadLink.textContent.match('✔'),
-		syncDone = !!VSsyncLink.textContent.match('✔');	
+		syncDone = !!VSsyncLink.textContent.match('✔'),
+		filterDone = false;
+	for(var i = 0; i < sliderValues.length; i++) filterDone = filterDone || (sliderValues[i] != '0');
 	if(!loadDone){
 		VSloadLink.click();
 		ready(function(){VSmsg1.textContent = chrome.i18n.getMessage('moreLoad')})
 	}else if(!syncDone && VSsyncLink.style.display != 'none'){
 		VSsyncLink.click();
 		ready(function(){VSmsg2.textContent = chrome.i18n.getMessage('moreSync')})
+	}else if(!filterDone){
+		ready(function(){VSmsg3.textContent = chrome.i18n.getMessage('moreFilter')})
 	}else{
 		VSfilterLink.textContent += " ✔"
 		document.getElementById('VScheckBtn').style.display = 'none';
@@ -1295,9 +1384,11 @@ VSsubFile.addEventListener('change', loadSub);
 
 document.getElementById('VStimeBtn').addEventListener('click', writeTime);
 
-document.getElementById('VSarrowBtn').addEventListener('click', function(){writeIn(' --> ')});
+document.getElementById('VSarrowBtn').addEventListener('click', function(){writeIn(' --> ')},false);
 
 document.getElementById('VSbeepBtn').addEventListener('click', writeSilence);
+
+document.getElementById('VSposBtn').addEventListener('click', writePosition);
 
 document.getElementById('VShelpBtn').addEventListener('click', function(){
 	window.open(chrome.runtime.getURL('/_locales/' + chrome.i18n.getMessage('directory') + '/help.html'))
@@ -1354,6 +1445,8 @@ document.getElementById('VSmoveBtn').addEventListener('click',toggleTopShot);
 
 document.getElementById('VSsyncBtn').addEventListener('click',syncTimes);
 
+document.getElementById('VSblurBoxBtn').addEventListener('click',toggleBlurBox);
+
 document.getElementById('VSshowSyncBtn').addEventListener('click',function(){
 	if(VSsyncTab.style.display == ''){
 		VSsyncTab.style.display = 'none';
@@ -1378,6 +1471,8 @@ VSsyncTab.style.display = 'none';
 
 VSeditLink.style.display = 'none';
 VSeditTab.style.display = 'none';
+
+VSblurBox.style.display = 'none';
 
 VSfilterDone.style.display = 'none';
 

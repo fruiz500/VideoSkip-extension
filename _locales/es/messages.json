@@ -33,7 +33,7 @@
 		"message": "Cargue aquí el archivo .skp que contiene las correcciones"
 	},
 	"nowSync": {
-		"message": "Corra el vídeo con los botones de flecha en esta ventana hasta que coincida con la captura, y haga clic en Sincronizar. Superponga la captura para mayor precisión"
+		"message": "Corra el vídeo con los botones de flecha en esta ventana hasta que coincida con la captura, y haga clic en Sincronizar. Superponga la captura para mayor precisión. Puede moverla con el ratón"
 	},
 	"nowFilter": {
 		"message": "Seleccione la intensidad de filtrado en cada categoría"
@@ -103,6 +103,9 @@
 	},
 	"moreSync": {
 		"message": "Le falta sincronizar la captura con el botón de Sincronizar"
+	},
+	"moreFilter": {
+		"message": "Todos los controles están desactivados. No se realizará ningún filtrado"
 	},
 	"rubric": {
 		"message": "{'sex': ['Contenido filtrado en Medio, más: Beso heterosexual. Conversación sobre el sexo. Desnudez dorsal o distante','Contenido filtrado en Bajo, más: Sexo implícito. Situaciones homosexuales. Besos con pasión. Desnudez frontal','Sexo explícito. Sodomía. Bestialidad. Violación sexual. Pornografía. Abuso de menores'],'violence': ['Contenido filtrado en Medio, más: Golpes a mano o fusta. Disparos a distancia. Bofetadas. Castigo corporal','Contenido filtrado en Bajo, más: Suicidio. Desmembración. Disparos a quemarropa o a sangre fría. Lucha sangrienta con armas blancas','Sadismo. Masoquismo. Tortura. Contenido diseñado para crear shock'],'curse': ['Contenido filtrado en Medio, más: Palabras soeces en general. Maldiciones','Contenido filtrado en Bajo, más: Blasfemia idiomática. Epítetos racistas','Blasfemia intencional. Satanismo'],'booze': ['Contenido filtrado en Medio, más: Uso de sustancias no incidental. Comportamiento adictivo','Contenido filtrado en Bajo, más: Uso intravenoso. Preparación de drogas. Uso por adolescentes','Contenido diseñado para incitar al abuso de sustancias'],'scare': ['Que da miedo a niños. Duro emocionalmente para niños','Estremecedor o duro emocionalmente para jóvenes','Estremecedor para adultos'],'other': ['Contenido ligero','Contenido moderado','Contenido intenso']}"
