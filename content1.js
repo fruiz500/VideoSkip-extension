@@ -105,40 +105,6 @@ if(!!myVideo){													//add overlay image for superimpose function
 		}
 		prevAction = action
   	}
-	
-  if(!VSshot){
-	var VSshot = document.createElement('img');				//superimposed screenshot
-	VSshot.style.position = 'absolute';
-	VSshot.style.top = myVideo.style.top | 0;
-	VSshot.style.left = myVideo.style.left | 0;
-	VSshot.style.opacity = '50%';
-	VSshot.style.zIndex = myVideo.style.zIndex + 1 | 1;
-	VSshot.style.display = 'none';
-	myVideo.parentNode.insertBefore(VSshot,myVideo)
-  }
-  
-  if(!VSstatus){
-	var VSstatus = document.createElement('span');			//to display filter settings on fullscreen
-	VSstatus.style.position = 'absolute';
-	VSstatus.style.zIndex = myVideo.style.zIndex + 2 | 2;
-	VSstatus.style.display = 'none';
-	VSstatus.textContent = "This is the status";
-	VSstatus.style.fontSize = "xx-large";
-	VSstatus.style.color = "white";
-	VSstatus.style.fontFamily = "sans-serif";
-	VSstatus.style.backgroundColor = "rgba(0, 0, 0, 0.33)";
-	myVideo.parentNode.insertBefore(VSstatus,myVideo)
-  }
-  
-  if(!VSblurBox){
-	var VSblurBox = document.createElement('div');			//for local blur and blank
-	VSblurBox.style.position = 'absolute';
-	VSblurBox.style.zIndex = myVideo.style.zIndex + 2 | 2;
-	VSblurBox.style.border = "none";
-	VSblurBox.style.borderRadius = "500px";
-	VSblurBox.style.backdropFilter = "blur(20px)";
-	myVideo.parentNode.insertBefore(VSblurBox,myVideo)
-  }
  
   if(!VSinterface){										//this is the interface, containing a clickable logo, and the interface proper
 	var VSinterface = document.createElement('div');
@@ -175,7 +141,12 @@ if(!!myVideo){													//add overlay image for superimpose function
     	if (this.readyState == 4 && this.status == 200) {
        		VScontrol.innerHTML = req.responseText;
 			VSinterface.appendChild(VScontrol);
-			document.body.appendChild(VSinterface);				//not necessarily next to the video
+
+			if(serviceName == 'amazon'){
+				myVideo.closest(".webPlayerSDKContainer").appendChild(VSinterface)		//this one closer to the video, because amazon won't show it otherwise
+			}else{
+				document.body.appendChild(VSinterface)					//not necessarily next to the video
+			}
 
 //now tell the popup to inject the CSS and the rest of the script; the last key is to avoid injecting the rest of the script multiple times
 			chrome.runtime.sendMessage({message: "video_found", isLoaded: typeof(blankSubs) != "undefined"})
@@ -185,6 +156,41 @@ if(!!myVideo){													//add overlay image for superimpose function
   }else{
 	  chrome.runtime.sendMessage({message: "video_found", isLoaded: typeof(blankSubs) != "undefined"})
   }
+  
+  if(!VSshot){
+	var VSshot = document.createElement('img');				//superimposed screenshot
+	VSshot.style.position = 'absolute';
+	VSshot.style.top = myVideo.style.top | 0;
+	VSshot.style.left = myVideo.style.left | 0;
+	VSshot.style.opacity = '50%';
+	VSshot.style.zIndex = myVideo.style.zIndex + 1 | 1;
+	VSshot.style.display = 'none';
+	myVideo.parentNode.insertBefore(VSshot,myVideo)
+  }
+  
+  if(!VSstatus){
+	var VSstatus = document.createElement('span');			//to display filter settings on fullscreen
+	VSstatus.style.position = 'absolute';
+	VSstatus.style.zIndex = myVideo.style.zIndex + 2 | 2;
+	VSstatus.style.display = 'none';
+	VSstatus.textContent = "This is the status";
+	VSstatus.style.fontSize = "xx-large";
+	VSstatus.style.color = "white";
+	VSstatus.style.fontFamily = "sans-serif";
+	VSstatus.style.backgroundColor = "rgba(0, 0, 0, 0.33)";
+	myVideo.parentNode.insertBefore(VSstatus,myVideo)
+  }
+  
+  if(!VSblurBox){
+	var VSblurBox = document.createElement('div');			//for local blur and blank
+	VSblurBox.style.position = 'absolute';
+	VSblurBox.style.zIndex = myVideo.style.zIndex + 2 | 2;
+	VSblurBox.style.border = "none";
+	VSblurBox.style.borderRadius = "500px";
+	VSblurBox.style.backdropFilter = "blur(20px)";
+	myVideo.parentNode.insertBefore(VSblurBox,myVideo)
+  }
+  
   if(typeof(openPanel) != "undefined") openPanel()
 }
 

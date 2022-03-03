@@ -48,6 +48,7 @@ var VStabs = document.getElementById('VStabs'),
 	VSfineMode2 = document.getElementById('VSfineMode2'),
 	VSshotFile = document.getElementById('VSshotFile'),
 	VSshotFileBtn = document.getElementById('VSshotFileBtn'),
+	VSshotFileLabel = document.getElementById('VSshotFileLabel'),
 	VSsaveFile = document.getElementById('VSsaveFile'),
 	VSskipBox = document.getElementById('VSskipBox');
 
@@ -461,6 +462,11 @@ if(badAds.indexOf(serviceName) != -1){
 	alert(serviceName + chrome.i18n.getMessage('badAds'))	//warn user about movies with ads from this service
 }
 
+const badTrailers = ["apple"];					//list of services that change video timing with trailers
+if(badTrailers.indexOf(serviceName) != -1){
+	alert(serviceName + chrome.i18n.getMessage('badTrailers'))	//warn user about movies with trailers from this service
+}
+
 const ua = navigator.userAgent.toLowerCase(); 		//to choose fastest filter method, per https://jsben.ch/5qRcU
 if (ua.indexOf('safari') != -1) { 
   if (ua.indexOf('chrome') == -1){ var isSafari = true
@@ -571,8 +577,9 @@ function resizedShot(dataURIin, wantedHeight){		//width will be calculated to ma
 		canvas.height = inputHeight;
 
 		ctx.drawImage(this, 0, 0, inputWidth, inputHeight);
-
+		
 	//Cropping process starts here
+	if(VSblackBands.checked){
 		var inputData = ctx.getImageData(0,0,canvas.width,canvas.height),
 			data = inputData.data,
 			pixels = inputWidth * inputHeight,
@@ -611,9 +618,16 @@ function resizedShot(dataURIin, wantedHeight){		//width will be calculated to ma
 			trueHeight = trueBottom - trueTop;
 		
 	//resize canvas
+		canvas.height = wantedHeight;	
 		canvas.width = wantedHeight * trueWidth / trueHeight;
-		canvas.height = wantedHeight;
-		ctx.drawImage(img, trueLeft, trueTop, trueRight-trueLeft, trueBottom-trueTop, 0, 0, canvas.width, canvas.height);
+		ctx.drawImage(img, trueLeft, trueTop, trueRight-trueLeft, trueBottom-trueTop, 0, 0, canvas.width, canvas.height)
+		
+	}else{																	//no black bars: only resize	
+		canvas.height = wantedHeight;					
+		canvas.width = wantedHeight * inputWidth / inputHeight;
+		ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+	}
+		
 		VSscreenShot.src = canvas.toDataURL('image/jpeg');						
 	};
 
@@ -1077,7 +1091,7 @@ function takeShot(){
 		VSsyncTab.style.display = ''
 	}else{																		//this if the service refuses
 		VSmsg4.textContent = chrome.i18n.getMessage('badService');
-		VSshotFileBtn.style.display = 'inline-block';
+		VSshotFileLabel.style.display = 'inline-block';
 		VSautoBtn.style.display = 'none'
 	}
 	writeIn(toHMS(myVideo.currentTime - syncFix),false);								//insert time regardless
@@ -1419,7 +1433,7 @@ for(var i = 0; i < sliders.length; i++){
 
 document.getElementById('VSshotBtn').addEventListener('click',takeShot);
 
-document.getElementById('VSshotFileBtn').style.display = 'none';
+document.getElementById('VSshotFileLabel').style.display = 'none';
 
 document.getElementById('VSbackBtn').addEventListener('click',backSkip);
 
@@ -1481,6 +1495,17 @@ showLoad();		//resets checkmarks on tabs
 document.getElementById('VSloadAutoProf').addEventListener('click',function(){
 	VSautoProfanity.style.display = 'block';
 	this.style.display = 'none'
+});
+
+document.getElementById('VSloadSync').addEventListener('click',function(){
+	var	initialData = VSskipBox.value.trim().split('\n').slice(0,2),			//first two lines
+		shotTime = fromHMS(initialData[0]);
+	goToTime(shotTime);
+	VSsyncTab.style.display = '';
+	VSsyncLink.style.display = '';
+	VSsyncMsg.textContent = initialData[1];
+	this.style.display = 'none';
+	VSsyncLink.click()				
 });
 
 "end of injected content2"			//add this so it becomes the "result" and Firefox is happy
