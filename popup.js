@@ -4,7 +4,7 @@
         @licstart  The following is the entire license notice for the
         JavaScript code in this page.
 
-        Copyright (C) 2021  Francisco Ruiz
+        Copyright (C) 2022  Francisco Ruiz
 
         The JavaScript code in this page is free software: you can
         redistribute it and/or modify it under the terms of the GNU
@@ -29,6 +29,8 @@ var isFirefox = typeof InstallTrigger !== 'undefined',
 	height = isFirefox ? 525 : 480,
 	width = isFirefox ? 530 : 490;
 
+var tabId = '';
+
 setTimeout(function(){
 	startTab.innerHTML = chrome.i18n.getMessage('noVideo');
 	helpBtn.addEventListener('click',function(){window.open('/_locales/' + chrome.i18n.getMessage('directory') + '/help.html')});
@@ -38,16 +40,15 @@ setTimeout(function(){
 chrome.runtime.onMessage.addListener(
 	function(request, sender, sendResponse) {
 		if(request.message == "video_found"){				//reply from content1 script
-
 			//load CSS and 2nd content script programmatically (needs activeTab permission)
 			if(!request.isLoaded){
-				chrome.tabs.insertCSS(null,{
-					file: '/content.css',
-					allFrames: false
+				chrome.scripting.insertCSS({
+						target: {tabId: tabId},
+						files: ['/content.css']
 				});
-				chrome.tabs.executeScript({
-					file: '/content2.js',
-					allFrames: false
+				chrome.scripting.executeScript({
+					target: {tabId: tabId},
+					files: ['/content2.js']
 				})
 			}
 			popText.textContent = chrome.i18n.getMessage('popupOpen');
@@ -59,19 +60,12 @@ chrome.runtime.onMessage.addListener(
 
 window.onload = function() {
 	chrome.tabs.query({active: true, currentWindow: true, windowType: "normal"}, function(tabs) {
+		tabId = tabs[0].id;
 
-//load 1st content script programmatically (needs activeTab permission) Firefox sometimes throws an error, hence the try block
-		try{
-			chrome.tabs.executeScript({
-				file: '/content1.js',
-				allFrames: false
-			})
-		}catch(err){								//show error message after other messages
-			setTimeout(function(){
-				popText.textContent = chrome.i18n.getMessage('firefoxError');
-				popText.style.display = 'block';
-				startTab.style.display = 'none'
-			},500)
-		}
+//load 1st content script programmatically (needs activeTab permission)
+		chrome.scripting.executeScript({
+			target: {tabId: tabId},
+			files: ['/content1.js']
+		})
 	});
 }

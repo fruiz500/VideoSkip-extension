@@ -3,8 +3,8 @@
   "short_name": "VideoSkip",
   "description": "__MSG_manifest_descr__",
   "default_locale": "en",
-  "version": "0.5.2",
-  "manifest_version": 2,
+  "version": "0.5.5",
+  "manifest_version": 3,
   "icons": {
     "16": "img/icon24.png",
     "38": "img/icon64.png",
@@ -12,13 +12,19 @@
     "128": "img/icon128.png"
   },
   "permissions": [
-	"activeTab"
+	  "activeTab",
+    "scripting"
   ],
-  "web_accessible_resources": [
-    "_locales/*",
-	"img/icon64.png"
-  ],
-  "browser_action": {
+  "web_accessible_resources": [{
+    "resources": [
+      "_locales/*",
+	    "img/icon64.png",
+      "go2netflix.js"
+    ],
+    "matches": ["<all_urls>"],
+    "extension_ids": []
+  }],
+  "action": {
     "default_icon": "img/icon64.png",
     "default_popup": "popup.html"
   }
