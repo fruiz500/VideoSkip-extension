@@ -74,12 +74,13 @@ var subsClasses = {
     roku:'.vjs-text-track-cue',
     peacock:'.video-player__subtitles',
     kanopy:'.vjs-text-track-cue',
-    apple:'#mySubtitles'				//added by content1
+    apple:'#mySubtitles',				//added by content1
+    hoopla: '.clpp-text-cue'
 };
 
-for(var name in subsClasses){
-    if(serviceName.includes(name)){
-        subsClass = subsClasses[name];
+for(var service in subsClasses){
+    if(serviceName.includes(service)){
+        subsClass = subsClasses[service];
         break
     }
 }
@@ -497,6 +498,8 @@ function loadFileAsURL(){
         }else{
             VSmsg1.textContent = chrome.i18n.getMessage('wrongFile')
         }
+        VSskipFile.type = '';
+        VSskipFile.type = 'file'            //reset file input
     };
     fileReader.readAsText(fileToLoad)
 }
@@ -509,10 +512,12 @@ function loadSub(){
         var URLFromFileLoaded = fileLoadedEvent.target.result;
         var extension = fileToLoad.name.slice(-4);
         if(extension == ".vtt" || extension == ".srt"){						//allow only .vtt and .srt formats
-            var subs = URLFromFileLoaded;										//get subs in text format, to be edited
+            var subs = URLFromFileLoaded;									//get subs in text format, to be edited
             subs = subs.replace(/(\d),(\d)/g,'$1.$2');						//convert decimal commas to periods
             autoBeepGen(subs)
         }
+        VSssubFile.type = '';
+        VSsubFile.type = 'file'            //reset file input
     };
     fileReader.readAsText(fileToLoad)
 }
@@ -1011,8 +1016,8 @@ function toggleBlurBox(){
         VSblurBox.style.width = VSblurBox.style.height;
         VSblurBox.style.top = myVideo.offsetTop + myVideo.clientHeight / 3 + 'px';
         VSblurBox.style.left = myVideo.offsetLeft + myVideo.clientWidth / 2 - parseInt(VSblurBox.style.width.slice(0,-2)) / 2 + 'px';
-        if(isFirefox || serviceName == 'amazon'){
-            VSblurBox.style.filter = "blur(25px)";
+        if(serviceName == 'amazon'){
+            VSblurBox.style.filter = "blur(20px)";
             VSblurBox.style.backgroundColor = 'black';
         }else{
             VSblurBox.style.backdropFilter = "blur(20px)"
@@ -1291,7 +1296,7 @@ function setActions(){
         if(cuts[i].text){
             var ignore = cuts[i].text.includes('//'),										//ignore skip containing // in text
                 label = cuts[i].text.toLowerCase().replace(/\(.*\)/g,''),				//ignore text in parentheses
-                isAudio = isContained(label,/aud|sou|spe|wor/),
+                isAudio = isContained(label,/aud|sou|spe|wor|mut/),
                 isVideo = isContained(label,/vid|ima|img|bla/),
                 isBlurred = isContained(label,/blu/),
                 isFast = isContained(label,/fas/),

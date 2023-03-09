@@ -3,7 +3,7 @@
   "short_name": "VideoSkip",
   "description": "__MSG_manifest_descr__",
   "default_locale": "en",
-  "version": "0.5.5",
+  "version": "0.5.7",
   "manifest_version": 3,
   "icons": {
     "16": "img/icon24.png",
