@@ -1071,10 +1071,10 @@ var timeLabels = [];
 
 //remakes array timeLabels containing HMS times, plus their positions in the box [HMS time, start, end]
 function makeTimeLabels(){
-    timeLabels = [[],[],[]];						//string, startPosition, endPosition
+    timeLabels = [[],[],[]];						        //string, startPosition, endPosition
     var	text = VSskipBox.value,
         string, start, end = 0;
-    var matches = text.match(/\d+[\d:.]+/g);
+    var matches = text.replace(/\[.*\]/g,'').match(/\d+[\d:.]+/g);		//remove local blur positions
     if(matches){
         for(var i = 0; i < matches.length; i++){
             string = matches[i];
@@ -1107,6 +1107,13 @@ function takeShot(){
 
 //save skips to file
 function save2file(){
+    //first check that all skips have a category
+	for(var i = 0; i < cuts.length; i++){
+		if(!isContained(cuts[i].text.toLowerCase().replace(/\(.*\)/g,''),/sex|nud|vio|gor|pro|cur|hat|alc|dru|smo|fri|sca|int|oth|bor/)){
+			VSmsg4.textContent = chrome.i18n.getMessage('skipNumber') + (i+1) + chrome.i18n.getMessage('noCategory');
+			return
+		}
+	}
     if(VSscreenShot.src == '' && timeLabels.length == 0) return;
     if(typeof offsets[serviceName] == 'undefined') offsets[serviceName] = 0;
     var sourceList = Object.keys(offsets);

@@ -27,5 +27,10 @@
   "action": {
     "default_icon": "img/icon64.png",
     "default_popup": "popup.html"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "{7033b98e-b562-441c-8da0-c136df8dcdcd}"
+    }
   }
 }

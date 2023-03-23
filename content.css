@@ -91,6 +91,9 @@
 	font-size: x-large;
 	text-align: center;
 }
+.VScenter {
+	text-align: center;
+}
 .VSbutton {
 	-webkit-border-radius: 10px;
 	-moz-border-radius: 10px;
