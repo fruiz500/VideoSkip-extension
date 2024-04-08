@@ -1,5 +1,5 @@
 # VideoSkip-extension
-Same as VideoSkip, but as a Chrome/Firefox extension so it can edit videos streaming from many sources.
+Same as VideoSkip, but as a Chrome/Firefox/Edge extension so it can edit videos streaming from many sources.
 
 VideoSkip has the ability to filter out several types of objectionable content from streaming services. It can skip sections entirely, or simply mute the sound or blank the video, at user's discretion. VideoSkip runs on almost any browser and uses the Parents Guide categories from IMDB.com. Users can exchange video-specific filter settings via .skp text files formatted similarly to .vtt captions.They can also edit those settings right within the app.
 
@@ -15,7 +15,7 @@ Edge: https://microsoftedge.microsoft.com/addons/detail/videoskip/enikjnojafmkja
 
 There's also a promotional page at https://videoskip.weebly.com
 
-The VideoSkip Exchange, where users can get and contribute skip files for popular feature films, is live at https://videoskip.org/exchange
+The VideoSkip Exchange, where users can get and contribute skip files for popular feature films, is live at https://videoskip.org
 
 VideoSkip uses localization to support multiple languages. We begin with English and Spanish, but we need your help to add other languages. Just do it and send us a pull request.
 

@@ -24,28 +24,28 @@
     <td><img id='VSlogo2' src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAqFBMVEUAAAAlroglroglrokkroklrockroojrIgjroAAqqolroglroglroglroglrogkr4gkroglroclrocmrogmroglroj///8zs4/Q7uX3/Pv7/f0psIrB6N2Q1sJ7zrdxy7JPvp9BuZctsY2j3c3w+vfr+PXl9vHg9O7Z8erS7+bJ6+Kt4dJnx6xexKdWwKNGu5s7t5WE0ry45di15Nea2siY2ceG0r2B0LrlIjXaAAAAFXRSTlMA17+McmNNHQsD+fjy6uXLtqRoPLB3Qi66AAABwUlEQVRYw5TU2XKCQBCF4QYGGGQn9igucctmNmPW93+zxKmKjTONwnfPXxR9CmgjA+GVrpMkjlt6IpDQS1gVMZ6IiyqEjqTIkZULCZdFfoatMj+CCwIHz3ICOCd08SI3hFZXKXaQXkELf4CdDHzgRB525kXM80PsYWgXPOzFA4OPPfnG9x9gT4OTW4Qp9paGQPR+Fvs1cpbzFb+oxn7xz7pW96/ImKn6GjnB8YJ6/yOl1ORripaxUmr2hjYnogvowMHDkg2om0X7JWTWCKjJfGoFtPcRmjKpAwIpcDDesQF1+4wmoQO5EVD13g5oT+ZL5HoD+B8gjys2oO5ejMJhCxUT0IejQMPmdCsVABRMgA5nBoytFAAy5gP6cBQgk8/GmWIJAVLA8DGyAtZWAhBcgA5nBKytCPBaAnQ4CpDt7vhjKfkAHY4NqPobtRJcCvA2W0WsrbjgUKBFrYi1FQcSCvT2g5j8ll7HRgDAMAgDJ3Hl/XekpKL6BXKXxAaJD+Ar8CPyN/Ig8SjzMvE6a6BwpHGoaqxzsXi1ebl6vTtgFHFuIM4PxGHIUsxT0FTUZdh23HfhcOVx6XLtc/F09XX5Zv0PKycRGhVF96oAAAAASUVORK5CYII='><span id='VSloadDone' class='VSdoneLabel'></span></td>
     </tr>
 </table>
-    <p class='VSp'>First you need a skip file. You can get it from a friend, from the VideoSkip Exchange launched with the first button below, or make your own with the second button.</p>
+    <p class='VSp'>First you need a skip file. You can get it from a friend, from a source launched with the first button below, or make your own with the second button.</p>
     <br>
 	<div class='VScenter'>
-       <!--select class='VSbutton' name='websites2' id='websites2'>
+       <select class='VSbutton' name='VSwebsites' id='VSwebsites'>
           <option value='' selected='selected'>Select source:</option>
           <option value='0'>VideoSkip Exchange</option>
           <option value='1'>Albatenia</option>
-        </select-->
-    <button id='VSexchangeBtn'class='VSbutton' title='open the VideoSkip Exchange on new tab'>VideoSkip Exchange</button>
+        </select>
+    <!--button id='VSexchangeBtn'class='VSbutton' title='open the VideoSkip Exchange on new tab'>VideoSkip Exchange</button-->
     &nbsp;&nbsp;&nbsp;
     <button id='VSshowEditBtn' class='VSbutton' title='open edit tab'>Edit skips</button>
     </div>
 	<br>
     <div id='VSmsg1' class='VSmsg'>Now load here the .skp file containing the skips:</div>
     <div class='VScenter'>
-    <label for='VSskipFile' class='VSlabel'><span class='VSimptButton' id='VSskipFileBtn' title='load .skp file'>Load skip file</span></label>
+    <label for='VSskipFile' class='VSlabel'><span class='VSimptButton VSbutton' id='VSskipFileBtn' title='load .skp file'>Load skip file</span></label>
 	<input type='file' id='VSskipFile'/>
     &nbsp;&nbsp;&nbsp;
     <button id='VShelpBtn' class='VSbutton' title='show instructions on new tab'>Help</button>
     </div>
     <br>
-    <p class='VSp'>v 0.5 &nbsp;&#169; F. Ruiz 2023 &#8226; The performance of the motion picture is altered from the performance intended by the director or copyright holder of the motion picture.</p>
+    <p class='VSsmPrt'>v 0.5 &nbsp;&#169; F. Ruiz 2024 &#8226; The performance of the motion picture is altered from the performance intended by the director or copyright holder of the motion picture.</p>
 </div>
 
 <div class='VStabContent' id='VSsyncTab'>
@@ -66,7 +66,7 @@
     <br><br>
 <table class='VStable'>
 	<tr>
-    <td><button id='VSsyncBtn'class='VSimptButton' title='change all times when video and shot match'>Sync times</button></td>
+    <td><button id='VSsyncBtn'class='VSimptButton VSbutton' title='change all times when video and shot match'>Sync times</button></td>
     <td><span class='VShspacer'></span></td>
     <td><span id='VSsyncDone' class='VSdoneLabel'></span></td>
     </tr>
@@ -89,7 +89,7 @@
     <th class='VStd'>Other</th>
     </tr>
     <tr>
-    <td><span title='High filtering: for children'>High</span><br><span title='Medium filtering: for teens and sensitive adults'>Medium</span><br><span title='Low filtering: for adults only'>Low</span><br><span title='No filtering at all'>Off</span></td>
+    <td class='VStd'><span title='High filtering: for children'>High</span><br><span title='Medium filtering: for teens and sensitive adults'>Medium</span><br><span title='Low filtering: for adults only'>Low</span><br><span title='No filtering at all'>Off</span></td>
     <td class='VStd'><input id='VSsexNum' type='range' class='VSrange' min='0' max='3' step='1' value='0'></td>
     <td class='VStd'><input id='VSviolenceNum' type='range' class='VSrange' min='0' max='3' step='1' value='0'></td>
     <td class='VStd'><input id='VScurseNum' type='range' class='VSrange' min='0' max='3' step='1' value='0'></td>

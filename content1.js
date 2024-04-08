@@ -37,6 +37,15 @@ if(visibleVideos.length > 0){
     if(serviceName == 'apple') var mySubtitles = myVideo.nextSibling    //apple does not use a special class for subtitles
 }
 
+//puts interface at end of body DOM
+function addInterface(){
+    if(serviceName == 'amazon'){
+        myVideo.closest(".webPlayerSDKContainer").appendChild(VSinterface);		//this one closer to the video, because amazon won't show it otherwise
+    }else{
+        document.body.appendChild(VSinterface)					//not necessarily next to the video
+    }
+}
+
 //things that won't load well from the 2nd content script
 
 if(!!myVideo){													//add overlay image for superimpose function
@@ -107,8 +116,9 @@ if(!!myVideo){													//add overlay image for superimpose function
 
   if(!VSinterface){										//this is the interface, containing a clickable logo, and the interface proper
     var VSinterface = document.createElement('div');
-    VSinterface.style.position = 'absolute';
-    VSinterface.style.top = ((myVideo.offsetTop < 0 || serviceName == "netflix") ? 130 : myVideo.offsetTop + 130) + 'px';		//Netflix adds spurious offsets
+    VSinterface.id = 'VSbox';
+    VSinterface.style.position = 'fixed';
+    VSinterface.style.top = '130px';
     VSinterface.style.left = (serviceName == "netflix" ? 0 : myVideo.offsetLeft) + myVideo.offsetWidth - VSwidth + 'px';
     VSinterface.style.zIndex = '9999';
     VSinterface.style.width = VSwidth + 'px';
@@ -141,13 +151,12 @@ if(!!myVideo){													//add overlay image for superimpose function
                VScontrol.innerHTML = req.responseText;
             VSinterface.appendChild(VScontrol);
 
-            if(serviceName == 'amazon'){
-                myVideo.closest(".webPlayerSDKContainer").appendChild(VSinterface);		//this one closer to the video, because amazon won't show it otherwise
+            if(serviceName == 'amazon'){		//this one closer to the video, because amazon won't show it otherwise
                 myVideo.closest(".webPlayerSDKContainer").appendChild(VSshot);
                 myVideo.closest(".webPlayerSDKContainer").appendChild(VSblurBox)
-            }else{
-                document.body.appendChild(VSinterface)					//not necessarily next to the video
             }
+
+            addInterface();                     //not necessarily close to the video; being at the end tends to be on top
 
 //now tell the popup to inject the CSS and the rest of the script; the last key is to avoid injecting the rest of the script multiple times
             chrome.runtime.sendMessage({message: "video_found", isLoaded: typeof(blankSubs) != "undefined"})

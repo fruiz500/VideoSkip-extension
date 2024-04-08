@@ -270,17 +270,25 @@ window.onresize = function(){
             VSstatus.style.display = 'none';
         },3300);
         ready(function(){
-            replaceInterface();
             var fullElement = document.fullscreenElement;
-            if(fullElement && fullElement.firstChild != VSinterface){								//copy interface to fullscreen element if not done before
-                if(!serviceName.includes('apple')) fullElement.insertBefore(VSinterface, fullElement.firstChild)		//don't move interface for appleTV+
+            if(fullElement && fullElement.firstChild != VSinterface){			//copy interface to fullscreen element if not done before
+                document.getElementById('VSbox').remove();
+                fullElement.appendChild(VSinterface);
             }
+            replaceInterface();
+            resetStyles();
+            reBlackTxt()
         })
     }else{									//no longer fullscreen
-        VSstatus.style.display = 'none';
-        ready(replaceInterface)
+        VSstatus.style.display = 'none';     
+        ready(function(){
+            document.getElementById('VSbox').remove();
+            document.body.appendChild(VSinterface);
+            replaceInterface();
+            resetStyles()
+        })
     }
-    reGrayBtns()		//fixes kanopy bug
+    reGrayBtns();		//fixes kanopy bug
 }
 
 window.onmousemove = function(){
@@ -339,12 +347,10 @@ function showSettings(){
 
 //move interface to good position
 function replaceInterface(){
-    var top = (serviceName == 'netflix') ? 80 : (myVideo.offsetTop + 80);					//Netflix video element has weird offsets
-    if(top < 80) top = 80;
-    VSstatus.style.top = top + 'px';																					//reposition elements
+    VSstatus.style.top = '80px';																		//reposition elements
     VSstatus.style.left = ((serviceName == 'netflix') ? 0 : myVideo.offsetLeft) + myVideo.offsetWidth - VSwidth + 'px';
-    VSinterface.style.top = top + 50 + 'px';
-    VSinterface.style.left = ((serviceName == 'netflix') ? 0 : myVideo.offsetLeft) + myVideo.offsetWidth - VSwidth + 'px';
+    document.getElementById('VSbox').style.top = '130px';
+    document.getElementById('VSbox').style.left = ((serviceName == 'netflix') ? 0 : myVideo.offsetLeft) + myVideo.offsetWidth - VSwidth + 'px';
     if(VSlogo.style.display == 'none' && VScontrol.style.display == 'none') VSlogo.style.display = 'block'		//return from full screen
 }
 
@@ -355,12 +361,14 @@ function dragElement(elmnt) {
 
   elmnt.addEventListener('contextmenu', function(e) {					//disable right-click menu
         e.preventDefault();
+        e.stopPropagation();
         return false;
   }, false);
 
   function dragMouseDown(e) {
     e = e || window.event;
     e.preventDefault();
+    e.stopPropagation();
     // get the mouse cursor position at startup:
     pos3 = e.clientX;
     pos4 = e.clientY;
@@ -376,6 +384,7 @@ function dragElement(elmnt) {
   function elementDrag(e) {
     e = e || window.event;
     e.preventDefault();
+    e.stopPropagation();
     // calculate the new cursor position:
     pos1 = pos3 - e.clientX;
     pos2 = pos4 - e.clientY;
@@ -394,6 +403,7 @@ function dragElement(elmnt) {
   function elementResize(e) {
     e = e || window.event;
     e.preventDefault();
+    e.stopPropagation();
     // calculate the new cursor position:
     pos1 = pos3 - e.clientX;
     pos2 = pos4 - e.clientY;
@@ -1380,6 +1390,11 @@ function reGrayBtns(){
     var elements = VSinterface.querySelectorAll('.VSbutton');
     for(var i = 0; i < elements.length; i++){elements[i].style.color = '#555555'; elements[i].style.background = '#dcdcdc'}
 }
+//same but for text
+function reBlackTxt(){
+    var elements = VSinterface.querySelectorAll('.VSp, .VStd, .VSmsg, .VSsmPrt');
+    for(var i = 0; i < elements.length; i++){elements[i].style.color = 'black'}
+}
 
 //now connect functions to the buttons and do other tasks concerning the interface
 
@@ -1392,19 +1407,19 @@ VSlogo2.addEventListener('click', closePanel);
 
 VSskipFile.addEventListener('change', loadFileAsURL);
 
-/*
-//loads other websites from a select option list. This is on reserve until there are more websites
+//loads other websites from a select option list
 function loadPage(){
-    const urls = ['https://videoskip.org/exchange', 'https://albatenia.com'];
+    const urls = ['https://videoskip.org', 'https://albatenia.com'];
     if(this.value) window.open(urls[this.value])
 }
 
-websites.addEventListener('change', loadPage);
-*/
+VSwebsites.addEventListener('change', loadPage);
 
+/*   //old exchange button with only one option
 document.getElementById('VSexchangeBtn').addEventListener('click', function(){
     window.open('https://videoskip.org/exchange')
 });
+*/
 
 VSshotFile.addEventListener('change', loadShot);
 

@@ -24,15 +24,15 @@
     <td><img id='VSlogo2' src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAqFBMVEUAAAAlroglroglrokkroklrockroojrIgjroAAqqolroglroglroglroglrogkr4gkroglroclrocmrogmroglroj///8zs4/Q7uX3/Pv7/f0psIrB6N2Q1sJ7zrdxy7JPvp9BuZctsY2j3c3w+vfr+PXl9vHg9O7Z8erS7+bJ6+Kt4dJnx6xexKdWwKNGu5s7t5WE0ry45di15Nea2siY2ceG0r2B0LrlIjXaAAAAFXRSTlMA17+McmNNHQsD+fjy6uXLtqRoPLB3Qi66AAABwUlEQVRYw5TU2XKCQBCF4QYGGGQn9igucctmNmPW93+zxKmKjTONwnfPXxR9CmgjA+GVrpMkjlt6IpDQS1gVMZ6IiyqEjqTIkZULCZdFfoatMj+CCwIHz3ICOCd08SI3hFZXKXaQXkELf4CdDHzgRB525kXM80PsYWgXPOzFA4OPPfnG9x9gT4OTW4Qp9paGQPR+Fvs1cpbzFb+oxn7xz7pW96/ImKn6GjnB8YJ6/yOl1ORripaxUmr2hjYnogvowMHDkg2om0X7JWTWCKjJfGoFtPcRmjKpAwIpcDDesQF1+4wmoQO5EVD13g5oT+ZL5HoD+B8gjys2oO5ejMJhCxUT0IejQMPmdCsVABRMgA5nBoytFAAy5gP6cBQgk8/GmWIJAVLA8DGyAtZWAhBcgA5nBKytCPBaAnQ4CpDt7vhjKfkAHY4NqPobtRJcCvA2W0WsrbjgUKBFrYi1FQcSCvT2g5j8ll7HRgDAMAgDJ3Hl/XekpKL6BXKXxAaJD+Ar8CPyN/Ig8SjzMvE6a6BwpHGoaqxzsXi1ebl6vTtgFHFuIM4PxGHIUsxT0FTUZdh23HfhcOVx6XLtc/F09XX5Zv0PKycRGhVF96oAAAAASUVORK5CYII='><span id='VSloadDone' class='VSdoneLabel'></span></td>
     </tr>
 </table>
-    <p class='VSp'>Primeiro você precisa de um arquivo skip. Você pode obtê-lo com um amigo, no VideoSkip Exchange - com o primeiro botão abaixo, ou fazer o seu próprio arquivo com o segundo botão.</p>
+    <p class='VSp'>Primeiro você precisa de um arquivo skip. Você pode obtê-lo com um amigo, na fonte carregada com o primeiro botão abaixo, ou fazer o seu próprio arquivo com o segundo botão.</p>
     <br>
 	<div class='VScenter'>
-       <!--select class='VSbutton' name='websites2' id='websites2'>
+       <select class='VSbutton' name='VSwebsites' id='VSwebsites'>
           <option value='' selected='selected'>Selecione a fonte:</option>
           <option value='0'>VideoSkip Exchange</option>
           <option value='1'>Albatenia</option>
-        </select-->
-    <button id='VSexchangeBtn'class='VSbutton' title='Abrir o VideoSkip Exchange em uma nova aba'>VideoSkip Exchange</button>
+        </select>
+    <!--button id='VSexchangeBtn'class='VSbutton' title='Abrir o VideoSkip Exchange em uma nova aba'>VideoSkip Exchange</button-->
     &nbsp;&nbsp;&nbsp;
     <button id='VSshowEditBtn' class='VSbutton' title='Abrir aba de edição'>Editar </button>
     </div>
@@ -45,7 +45,7 @@
     <button id='VShelpBtn' class='VSbutton' title='Mostre as instruções em nova aba'>Ajuda</button>
     </div>
     <br>
-    <p class='VSp'>v 0.5 &nbsp;&#169; F. Ruiz 2023 &#8226; A performance do filme é alterada em relação à performance pretendida pelo diretor ou detentor dos direitos autorais do filme.</p>
+    <p class='VSmPrt'>v 0.5 &nbsp;&#169; F. Ruiz 2024 &#8226; A performance do filme é alterada em relação à performance pretendida pelo diretor ou detentor dos direitos autorais do filme.</p>
 </div>
 
 <div class='VStabContent' id='VSsyncTab'>
@@ -90,9 +90,7 @@
     <th class='VStd'>Outro</th>
     </tr>
     <tr>
-    <td>Alto<br>
-    <span title='Filtragem média: para adolescentes e adultos sensíveis'>Médio</span><br>
-    Baixo<br><span title='Sem filtro'>Off</span></td>
+    <td class='VStd'>Alto<br><span title='Filtragem média: para adolescentes e adultos sensíveis'>Médio</span><br>Baixo<br><span title='Sem filtro'>Off</span></td>
     <td class='VStd'><input id='VSsexNum' type='range' class='VSrange' min='0' max='3' step='1' value='0'></td>
     <td class='VStd'><input id='VSviolenceNum' type='range' class='VSrange' min='0' max='3' step='1' value='0'></td>
     <td class='VStd'><input id='VScurseNum' type='range' class='VSrange' min='0' max='3' step='1' value='0'></td>
