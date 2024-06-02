@@ -21,7 +21,7 @@
 		"message": "Hecho  ✔"
 	},
 	"badAds": {
-		"message": " introduce anuncios que interfieren con el filtrado. Recargue la página hasta que la película comience sin anuncios, y asegúrese de que no haya anuncios en medio de ella"
+		"message": " introduce anuncios que interfieren con la sincronización del filtrado. Los saltos pueden suceder en momentos inexactos"
 	},
 	"badTrailers": {
 		"message": " a veces tiene trailers antes de las películas que alteran la sincronización. Puede asegurarse de que los saltos están sincronizados haciendo clic en el título debajo de los deslizadores de categoría"

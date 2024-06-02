@@ -21,7 +21,7 @@
 		"message": "Feito  ✔"
 	},
 	"badAds": {
-		"message": " insere anúncios de uma maneira que faz com que a filtragem falhe. Recarregue a página até que o filme comece sem anúncios e certifique-se de que não haja anúncios no meio do filme"
+		"message": " insere anúncios de uma maneira que faz com que a filtragem falhe. Os avanços podem ser imprecisos"
 	},
 	"badTrailers": {
 		"message": " por vezes tem trailers antes de filmes que alteram o timing. Pode querer certificar-se de que os saltos estão em sincronia clicando no título abaixo dos selectores de categoria"

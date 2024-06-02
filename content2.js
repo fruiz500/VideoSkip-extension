@@ -56,7 +56,6 @@ var VStabs = document.getElementById('VStabs'),
 var subsClasses = {
     youtube:'.caption-window',
     amazon:'.atvwebplayersdk-captions-text',
-    imdb:'.atvwebplayersdk-captions-text',
     netflix:'.player-timedtext',
     sling:'.bmpui-ui-subtitle-overlay',
     redbox:'.cc-text-container',
@@ -257,8 +256,8 @@ function goToTime(time){
         script.src = chrome.runtime.getURL('go2netflix.js?') + new URLSearchParams({seconds: time});     //Manifest v3 admits injected scripts only via file
         document.documentElement.appendChild(script);
         script.remove();
-    }else{								//everyone else is HTML5 compliant
-        myVideo.currentTime = time
+    }else{								//everyone else is HTML5 compliant, except perhaps for ad time
+        myVideo.currentTime = (badAds.indexOf(serviceName) != -1) ? time + adSeconds : time
     }
 }
 
@@ -465,7 +464,7 @@ VSlogo.addEventListener('click',openPanel);
 
 const sliders = VSfilters.querySelectorAll('input');		//slider elements as an array
 
-const badAds = ["amazon","imdb","pluto"];					//list of services that change video timing with their ads
+const badAds = ["amazon", "pluto"];					//list of services that change video timing with their ads
 if(badAds.indexOf(serviceName) != -1){
     alert(serviceName + chrome.i18n.getMessage('badAds'))	//warn user about movies with ads from this service
 }
@@ -496,7 +495,8 @@ function loadFileAsURL(){
             fileName = fileToLoad.name.slice(0,-4).replace(/ \[[a-z0-9\-]*\]/,'');	//remove extension and service list
             VSskipBox.value = data1[0].trim();
             if(data1[1]) offsets = JSON.parse('{' + data1[1].trim());				//make offsets object
-            if(data[1]) VSscreenShot.src = 'data:image/jpeg;base64,' + data[1];	//extract screenshot
+            if(data[1]) VSscreenShot.src = 'data:image/jpeg;base64,' + data[1];	    //extract screenshot
+            resizedShot(VSscreenShot.src, 240, true);                               //remove black bands, if any
             if(!VSloadLink.textContent.match('✔')) VSloadLink.textContent += " ✔";
             VSloadDone.textContent = chrome.i18n.getMessage('tabDone');
             VSlogo2.style.display = 'none';
@@ -559,7 +559,7 @@ function loadShot(){
         fileReader = new FileReader();
     fileReader.onload = function(fileLoadedEvent){
         var URLFromFileLoaded = fileLoadedEvent.target.result;
-        resizedShot(URLFromFileLoaded, 240)		//resize to standard height 240 px into screenshot, asynchronous function
+        resizedShot(URLFromFileLoaded, 240, VSblackBands.checked)		//resize to standard height 240 px into screenshot, asynchronous function
     };
     if(fileToLoad){
         fileReader.readAsDataURL(fileToLoad);
@@ -571,8 +571,8 @@ function loadShot(){
     }
 }
 
-// Takes a data URI and returns the Data URI corresponding to the resized image at the wanted size. Adapted from a function by Pierrick Martellière at StackOverflow
-function resizedShot(dataURIin, wantedHeight){		//width will be calculated to maintain aspect ratio
+// Takes a data URI and returns the Data URI corresponding to the resized image at the wanted size. Black band removal optional. Adapted from a function by Pierrick Martellière at StackOverflow
+function resizedShot(dataURIin, wantedHeight, removeBands){		//width will be calculated to maintain aspect ratio
     // We create an image to receive the Data URI
     var img = document.createElement('img');
 
@@ -591,7 +591,7 @@ function resizedShot(dataURIin, wantedHeight){		//width will be calculated to ma
         ctx.drawImage(this, 0, 0, inputWidth, inputHeight);
 
     //Cropping process starts here
-    if(VSblackBands.checked){
+    if(removeBands){
         var inputData = ctx.getImageData(0,0,canvas.width,canvas.height),
             data = inputData.data,
             pixels = inputWidth * inputHeight,
@@ -737,7 +737,7 @@ function syncTimes(){
     }
     var	initialData = VSskipBox.value.trim().split('\n').slice(0,2),				//first two lines
         shotTime = fromHMS(initialData[0]),
-        seconds = shotTime ? myVideo.currentTime - shotTime : 0;
+        seconds = shotTime ? trueTime() - shotTime : 0;
     seconds -= syncFix;																//apply fix
     for(var i = 0; i < cuts.length; i++){
         cuts[i].startTime += seconds;
@@ -830,12 +830,12 @@ function writeIn(string,isScrub){
 
 //insert things in box
 function writeTime(){
-    writeIn(toHMS(myVideo.currentTime),false)
+    writeIn(toHMS(trueTime()),false)
 }
 
 //insert quick silence
 function writeSilence(){
-    writeIn(toHMS(myVideo.currentTime - 0.7) + ' --> ' + toHMS(myVideo.currentTime) + '\profane word 1\n\n',false)
+    writeIn(toHMS(trueTime() - 0.7) + ' --> ' + toHMS(trueTime()) + '\profane word 1\n\n',false)
 }
 
 //insert box position as percentage of video dimensions
@@ -861,10 +861,10 @@ function shiftTime(increment){
     if(myVideo.paused){
         if(serviceName == 'netflix'){										//Netflix does not allow super-short increments
             if(Math.abs(increment) < 0.1) increment = (increment < 0) ? -0.055 : 0.055;
-            goToTime(myVideo.currentTime + increment);
+            goToTime(trueTime() + increment);
             myVideo.pause()
         }else{
-            goToTime(myVideo.currentTime + increment)
+            goToTime(trueTime() + increment)
         }
     }else{
         myVideo.pause()
@@ -885,7 +885,7 @@ function fwdSkip(){
                 var selectedTime = fromHMS(timeLabels[0][index]);
                 var timeShift = VSfineMode.checked ? deltaT : deltaT*12;
                 shiftTime(timeShift);
-                writeIn(toHMS(myVideo.currentTime),true);
+                writeIn(toHMS(trueTime()),true);
                 VSskipBox.focus()
             }
         }else{																//scrub by a small amount
@@ -909,7 +909,7 @@ function backSkip(){
                 var selectedTime = fromHMS(timeLabels[0][index]);
                 var timeShift = VSfineMode.checked ? - deltaT : - deltaT*12;
                 shiftTime(timeShift);
-                writeIn(toHMS(myVideo.currentTime),true);
+                writeIn(toHMS(trueTime()),true);
                 VSskipBox.focus()
             }
         }else{																//scrub by a small amount
@@ -1111,7 +1111,7 @@ function takeShot(){
         VSshotFileLabel.style.display = 'inline-block';
         VSautoBtn.style.display = 'none'
     }
-    writeIn(toHMS(myVideo.currentTime - syncFix),false);								//insert time regardless
+    writeIn(toHMS(trueTime() - syncFix),false);								//insert time regardless
     ready(makeTimeLabels)
 }
 
@@ -1394,6 +1394,17 @@ function reGrayBtns(){
 function reBlackTxt(){
     var elements = VSinterface.querySelectorAll('.VSp, .VStd, .VSmsg, .VSsmPrt');
     for(var i = 0; i < elements.length; i++){elements[i].style.color = 'black'}
+}
+
+//if the service is Amazon or Pluto, start 1-second timer to determine difference between myVideo.currentTime, which includes ads, and the time shown in the movie
+if(badAds.indexOf(serviceName) != -1){
+    setInterval(function(){
+        if(serviceName == 'amazon'){
+            adSeconds = myVideo.currentTime - fromHMS(document.querySelector('.atvwebplayersdk-timeindicator-text').textContent.split(' ')[0])
+        }else if(serviceName == 'pluto'){
+            adSeconds = myVideo.currentTime - fromHMS(document.querySelector("[class^=clock]").textContent)
+        }
+    },1000)                  //to be done once every second
 }
 
 //now connect functions to the buttons and do other tasks concerning the interface

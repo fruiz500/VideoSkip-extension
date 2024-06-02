@@ -21,7 +21,7 @@
 		"message": "Done  ✔"
 	},
 	"badAds": {
-		"message": " injects ads in a way that causes filtering to fail. Reload the page until the movie starts with no ads, and make sure there are no ads in the middle of the movie"
+		"message": " injects ads in a way that alters the timing of the video. Skip timing may be inaccurate"
 	},
 	"badTrailers": {
 		"message": " sometimes has trailers before movies that alter the timing. You may want to make sure that skips are in sync by clicking the title below the category sliders"

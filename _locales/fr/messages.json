@@ -21,7 +21,7 @@
         "message": "Terminé ✔"
     },
     "badAds": {
-        "message": " injecte des publicités d'une manière qui provoque l'échec du filtrage. Rechargez la page jusqu'à ce que le film commence sans publicité, et assurez-vous qu'il n'y a pas de publicité au milieu du film"
+        "message": " injecte des publicités de manière à modifier la synchronisation de la vidéo. Le temps de saut peut être inexact"
     },
     "badTrailers": {
         "message": " a parfois des bandes-annonces avant les films qui modifient le timing. Vous pouvez vous assurer que les sauts sont synchronisés en cliquant sur le titre sous les curseurs de catégorie"
