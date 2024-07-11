@@ -74,7 +74,8 @@ var subsClasses = {
     peacock:'.video-player__subtitles',
     kanopy:'.vjs-text-track-cue',
     apple:'#mySubtitles',				//added by content1
-    hoopla: '.clpp-text-cue'
+    hoopla: '.clpp-text-cue',
+    cwtv: '.jw-text-track-cue'
 };
 
 for(var service in subsClasses){
@@ -205,7 +206,7 @@ function findShot(){
         var endTime = myVideo.currentTime,
             startTime = endTime - 1.5;
         goToTime(startTime);
-        myVideo.muted = true;
+        myVideo.volume = 0;
         myVideo.playbackRate = accel;
         myVideo.play();
         var collection = setInterval(function () {		//collect data every deltaT seconds
@@ -224,7 +225,7 @@ function findShot(){
             myVideo.pause();
             myVideo.playbackRate = 1;
             goToTime(minTime(errorData) + deltaT/2*accel);					//scrub video to position of minimum error, plus extra time as fix
-            myVideo.muted = false;
+            myVideo.volume = 1;
             VSfineMode.checked = true;
             VSfineMode2.checked = true;
             VSmsg2.textContent = chrome.i18n.getMessage('autosyncDone')
@@ -924,17 +925,17 @@ function fFwdToggle(){
     VSskipBox.selectionStart = VSskipBox.selectionEnd;					//clear selection, if any
     if(myVideo.paused){													//if paused, restart at normal speed
         speedMode = 1;
-        myVideo.muted = false;
+        myVideo.volume = 1;
         myVideo.playbackRate = 1
         myVideo.play()
     }else{																	//if playing, toggle speed
         if(speedMode == 1){
             speedMode = 2;
-            myVideo.muted = true;
+            myVideo.volume = 0;
             myVideo.playbackRate = 16
         }else{
             speedMode = 0;
-            myVideo.muted = false;
+            myVideo.volume = 1;
             myVideo.playbackRate = 1;
             myVideo.pause()
         }

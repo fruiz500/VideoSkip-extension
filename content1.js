@@ -82,46 +82,48 @@ if(!!myVideo){													//add overlay image for superimpose function
             }else if(tempAction.includes('blur')){
                 action = ((action == 'skip') || (action == 'fast') || (action == 'blank')) ? action : tempAction			//may include position for local blur
             }else if(tempAction == 'mute'){
-                action = ((action == 'skip') || (action == 'fast')) ? action : (((action == 'blank') || (action == 'blur')) ? 'skip' : 'mute')
+                action += 'mute'		//add mute rather than replace
             }
         }
 
-        if(action == 'mute'){				//mute/unmute subtitles regardless of previous action, in case the subs element changes in the middle of the interval
+        if(action.includes('mute')){				//mute/unmute subtitles regardless of previous action, in case the subs element changes in the middle of the interval
             blankSubs(true)
-        }else if(action != 'mute'){		//reset to normal
+        }else{		                            //reset to normal
             blankSubs(false)
         }
 
         if(action == prevAction){					//apply action to the DOM if there's a change
             return
-        }else if(action == 'skip'){				//skip range
+        }else if(action == 'skip' || action == 'skipmute'){				//skip range
             goToTime(endTime)
-        }else if(action == 'blank'){				//blank whole screeen
+        }else if(action == 'blank' || action == 'blankmute'){				//blank whole screeen
             myVideo.style.opacity =  0
         }else if(action.includes('blank')){				//localized blank
             var position = action.match(/\[.*\]/);
             if(position) moveBlurBox(JSON.parse(position[0]));
             VSblurBox.style.backgroundColor = 'black'
-        }else if(action == 'blur'){				//blur screeen
+        }else if(action == 'blur' || action == 'blurmute'){				//blur screeen
             myVideo.style.filter =  'blur(20px)'
         }else if(action.includes('blur')){				//localized blur
             var position = action.match(/\[.*\]/);
             if(position) moveBlurBox(JSON.parse(position[0]));
 			if(serviceName == 'amazon') VSblurBox.style.backgroundColor = 'black';
             isBlur = true
-        }else if(action == 'fast'){				//fast forward
+        }else if(action == 'fast' || action == 'fastmute'){				//fast forward
             myVideo.playbackRate = 16
-        }else if(action == 'mute'){				//mute sound & subs
-            myVideo.muted = true
         }else{										//back to normal
-            myVideo.style.opacity =  '';
+            myVideo.style.opacity = '';
             myVideo.style.filter = '';
             myVideo.playbackRate = 1;
-            myVideo.muted = false;
             VSblurBox.style.display = 'none';
             isBlur = false
         }
-        prevAction = action
+        if(action.includes('mute')){				//mute sound & subs, .muted tag doesn't work
+            myVideo.volume = 0;
+            prevAction = action
+        }else{
+            myVideo.volume = 1
+        }
       }
 
   if(!VSinterface){										//this is the interface, containing a clickable logo, and the interface proper
