@@ -119,11 +119,11 @@ if(!!myVideo){													//add overlay image for superimpose function
             isBlur = false
         }
         if(action.includes('mute')){				//mute sound & subs, .muted tag doesn't work
-            myVideo.volume = 0;
-            prevAction = action
+            myVideo.volume = 0
         }else{
             myVideo.volume = 1
         }
+        prevAction = action
       }
 
   if(!VSinterface){										//this is the interface, containing a clickable logo, and the interface proper
