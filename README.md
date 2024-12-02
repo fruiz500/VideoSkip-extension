@@ -19,4 +19,4 @@ The VideoSkip Exchange, where users can get and contribute skip files for popula
 
 VideoSkip uses localization to support multiple languages. We begin with English, Spanish, French, and Portuguese but we need your help to add other languages. Just do it and send us a pull request.
 
-The code is released under GPL v3.
+The code is released under the GNU General Public License (GNU GPL) version 3 or any later version.
