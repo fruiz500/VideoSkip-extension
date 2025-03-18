@@ -13,32 +13,28 @@ var splitName = window.location.hostname.split('.'),								//get the main name 
     serviceName = splitName[splitName.length - 2] == 'co' ? splitName[splitName.length - 3] : splitName[splitName.length - 2];
 if(serviceName == '0' || serviceName == '') serviceName = 'local';
 
-if(serviceName == 'disneyplus'){						//disney+ puts videos in shadow DOM, which requires this hack
-	var myVideo = document.querySelector('disney-web-player').shadowRoot.querySelector('video')
-}else{	
-    //for all other services, find the video on the page proper, or inside 1st-level iframes
-    var myVideos = new Array;
-    myVideos.push(document.querySelectorAll("video"));			//top level
-    var iframes = document.querySelectorAll("iframe");
-    for(var i = 0; i < iframes.length; i++){				//look into each iframe, only one level down
-        try{
-            myVideos.push(iframes[i].contentWindow.document.querySelectorAll('video'))		//this will give an error is the iframe is crossorigin, hence the try statement
-        }catch(err){}
-    }
+//find the video on the page proper, or inside 1st-level iframes
+var myVideos = new Array;
+myVideos.push(document.querySelectorAll("video"));			//top level
+var iframes = document.querySelectorAll("iframe");
+for(var i = 0; i < iframes.length; i++){				//look into each iframe, only one level down
+    try{
+        myVideos.push(iframes[i].contentWindow.document.querySelectorAll('video'))		//this will give an error is the iframe is crossorigin, hence the try statement
+    }catch(err){}
+}
 
-    //filter only the videos that are visible
-    var visibleVideos = new Array;
-    for(var i = 0; i < myVideos.length; i++){
-        for(var j = 0; j < myVideos[i].length; j++){
-            if(isVisible(myVideos[i][j])){
-                visibleVideos.push(myVideos[i][j])
-            }
+//filter only the videos that are visible
+var visibleVideos = new Array;
+for(var i = 0; i < myVideos.length; i++){
+    for(var j = 0; j < myVideos[i].length; j++){
+        if(isVisible(myVideos[i][j])){
+            visibleVideos.push(myVideos[i][j])
         }
     }
-    if(visibleVideos.length > 0){
-        myVideo = visibleVideos[visibleVideos.length-1];		//select last video that is theoretically visible (Amazon Prime fix)
-        if(serviceName == 'apple' || serviceName == 'disneyplus') var mySubtitles = myVideo.nextSibling    //apple does not use a special class for subtitles, neither does Disney+
-    }
+}
+if(visibleVideos.length > 0){
+    myVideo = visibleVideos[visibleVideos.length-1];		//select last video that is theoretically visible (Amazon Prime fix)
+    if(serviceName == 'apple' || serviceName == 'disneyplus') var mySubtitles = myVideo.nextSibling    //apple does not use a special class for subtitles, neither does Disney+
 }
 
 //puts interface at end of body DOM
