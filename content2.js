@@ -88,7 +88,7 @@ for(var service in subsClasses){
 //blanks/unblanks subtitles for different services
 function blankSubs(isBlank){
     if(subsClass){
-        if(serviceName == 'apple'){
+        if(serviceName == 'apple' || serviceName == 'disneyplus'){
             var subs = mySubtitles					//element defined in content1
         }else{
             var subs = document.querySelector(subsClass)		//special cases
@@ -475,6 +475,11 @@ if(badTrailers.indexOf(serviceName) != -1){
     alert(serviceName + chrome.i18n.getMessage('badTrailers'))	//warn user about movies with trailers from this service
 }
 
+const badScrub = ["disneyplus"];					//list of services that change video timing when scrubbing
+if(badScrub.indexOf(serviceName) != -1){
+    alert(serviceName + chrome.i18n.getMessage('badScrub'))	//warn user about scrubbing with this service
+}
+
 const ua = navigator.userAgent.toLowerCase(); 		//to choose fastest filter method, per https://jsben.ch/5qRcU
 if (ua.indexOf('safari') != -1) {
   if (ua.indexOf('chrome') == -1){ var isSafari = true
@@ -770,7 +775,8 @@ function applyOffset(){
     var	initialData = VSskipBox.value.trim().split('\n').slice(0,2),			//first two lines
         shotTime = fromHMS(initialData[0]);
     var offset = offsets[serviceName];
-    if(typeof offset != 'undefined'){									//there is an offset for the current source, so shift all times
+    if(typeof offset != 'undefined' || serviceName == 'disneyplus'){	//there is an offset for the current source, so shift all times. Disney+ has a permanent 20 sec offset
+        if(typeof offset == 'undefined' && serviceName == 'disneyplus') offset = 20;
         for(var i = 0; i < cuts.length; i++){
             cuts[i].startTime += offset;
             cuts[i].endTime += offset

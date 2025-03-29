@@ -34,7 +34,7 @@ for(var i = 0; i < myVideos.length; i++){
 }
 if(visibleVideos.length > 0){
     myVideo = visibleVideos[visibleVideos.length-1];		//select last video that is theoretically visible (Amazon Prime fix)
-    if(serviceName == 'apple' || serviceName == 'disneyplus') var mySubtitles = myVideo.nextSibling    //apple does not use a special class for subtitles, neither does Disney+
+    if(serviceName == 'apple' || serviceName == 'disneyplus') var mySubtitles = myVideo.nextSibling    //apple does not use a special class for subtitles, neither did Disney+ originally
 }
 
 //puts interface at end of body DOM
@@ -57,7 +57,8 @@ if(!!myVideo){													//add overlay image for superimpose function
      return (badAds.indexOf(serviceName) != -1) ? myVideo.currentTime - adSeconds : myVideo.currentTime
     }
 
-    myVideo.ontimeupdate = function(){						//apply skips to video when it gets to them. THIS IS THE HEART OF THE EXTENSION
+    //apply skips to video when it gets to them. THIS IS THE HEART OF THE EXTENSION
+    myVideo.ontimeupdate = function(){
         if(typeof(cuts) == "undefined" || !cuts) return;
         var action = '', tempAction = '', startTime, endTime;
         for(var i = 0; i < cuts.length; i++){			//find out what action to take, according to timing and setting in cuts object

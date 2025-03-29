@@ -26,6 +26,9 @@
 	"badTrailers": {
 		"message": " a veces tiene trailers antes de las películas que alteran la sincronización. Puede asegurarse de que los saltos están sincronizados haciendo clic en el título debajo de los deslizadores de categoría"
 	},
+	"badScrub": {
+		"message": " reinicia la temporización del vídeo cuando se mueve el mando. Si lo ha hecho, debe volver al principio y reproducir de nuevo el vídeo para que los saltos se produzcan en los momentos correctos"
+	},
 	"wrongFile": {
 		"message": "Tipo de archivo erróneo"
 	},

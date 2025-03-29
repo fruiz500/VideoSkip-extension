@@ -23,6 +23,9 @@
     "badAds": {
         "message": " injecte des publicités de manière à modifier la synchronisation de la vidéo. Le temps de saut peut être inexact"
     },
+    "badScrub": {
+		"message": " réinitialise la synchronisation de la vidéo lorsque la poignée de défilement est déplacée. Si vous l'avez fait, vous devez revenir au début et rejouer la vidéo pour que les sauts se fassent au bon moment"
+	},
     "badTrailers": {
         "message": " a parfois des bandes-annonces avant les films qui modifient le timing. Vous pouvez vous assurer que les sauts sont synchronisés en cliquant sur le titre sous les curseurs de catégorie"
     },

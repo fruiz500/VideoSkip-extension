@@ -26,6 +26,9 @@
 	"badTrailers": {
 		"message": " sometimes has trailers before movies that alter the timing. You may want to make sure that skips are in sync by clicking the title below the category sliders"
 	},
+	"badScrub": {
+		"message": " resets video timing when the scrub handle is moved. If you have done so, you must go back to the beginning and play the video again so skips take place at the correct moments"
+	},
 	"wrongFile": {
 		"message": "Wrong file type"
 	},
