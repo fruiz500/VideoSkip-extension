@@ -2,17 +2,20 @@ body {
 	margin-left: 10%;
 	margin-right: 10%;
 	font-size: medium;
-	font-family: Arial;
+	font-family: Arial, sans-serif;
 }
+
 .helpitem {
 	font-size: 14pt;
 	cursor: pointer;
 	padding: 14px;
 	margin: 0;
 }
+
 .helpitem:hover {
 	background-color: #eeeeee;
 }
+
 .helptext {
 	font-size: medium;
 	max-height: 0;

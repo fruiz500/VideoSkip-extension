@@ -1,258 +1,324 @@
-.VSreset {			/* to remove styling inherited from host page */
-	all: revert;
+/* to remove styling inherited from host page */
+:root {
+    --bg-color: #f8fafc;
+    --panel-bg: #ffffff;
+    --border-color: #cbd5e1;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --accent-gold: #d97706;
+    --accent-hover: #b45309;
+    --btn-bg: #f1f5f9;
+    --btn-hover: #e2e8f0;
+    --impt-bg: #2563eb;
+    --impt-hover: #1d4ed8;
 }
+
+.VSreset {
+    all: revert;
+}
+
 .VSp {
-	color: black;
-	font-size: 14px;
-	font-family: Arial;
-	width: 90%;
+    color: var(--text-main);
+    font-size: 14px;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    width: 90%;
 }
+
 .VSsmPrt {
-	color: black;
-	font-size: 10px;
-	font-family: Arial;
-	width: 90%;
+    color: var(--text-muted);
+    font-size: 10px;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    width: 90%;
 }
+
 .VSimg {
-	height: auto;
+    height: auto;
 }
+
 .VScheck {
-	-moz-transform: scale(1.2);
-	-webkit-transform: scale(1.2);
-	-o-transform: scale(1.2);
-	padding: 0px;
-	cursor: pointer;
-	border: 1px solid #dedede;
-	color: black;
+    transform: scale(1.2);
+    padding: 0;
+    cursor: pointer;
+    border: 1px solid var(--border-color);
+    accent-color: var(--accent-gold);
+    color: var(--text-main);
 }
+
 .VSrange {
     width: 60px;
     height: 8px;
-	-webkit-appearance: none;
-    -webkit-transform:rotate(-90deg);
-	background: #cecece;
+    appearance: none;
+    -webkit-appearance: none;
+    transform: rotate(-90deg);
+    background: var(--border-color);
+    border-radius: 4px;
 }
+
 .VSrange::-webkit-slider-runnable-track {
     width: 60px;
     height: 8px;
     border: none;
-    border-radius: 3px;
+    border-radius: 4px;
 }
+
 .VSrange::-webkit-slider-thumb {
     -webkit-appearance: none;
     height: 36px;
     width: 16px;
-    border-radius: 3px;
-    background: goldenrod;
-    margin-top: -15px;
-	cursor: pointer;
+    border-radius: 4px;
+    background: var(--accent-gold);
+    margin-top: -14px;
+    cursor: pointer;
+    transition: background 0.2s;
 }
+
+.VSrange::-webkit-slider-thumb:hover {
+    background: var(--accent-hover);
+}
+
 .VSrange::-moz-range-track {
     width: 60px;
     height: 8px;
     border: none;
-    border-radius: 3px;
+    border-radius: 4px;
 }
+
 .VSrange::-moz-range-thumb {
     height: 36px;
     width: 16px;
-    border-radius: 3px;
-    background: goldenrod;
-	cursor: pointer;
+    border-radius: 4px;
+    background: var(--accent-gold);
+    cursor: pointer;
+    transition: background 0.2s;
 }
+
+.VSrange::-moz-range-thumb:hover {
+    background: var(--accent-hover);
+}
+
 .VSrange:focus {
     outline: none;
 }
+
 .VStable {
-	width: 100%;
-	color: black;
+    width: 100%;
+    color: var(--text-main);
 }
+
 .VStd {
-	align-content: center;
-	text-align: center;
-	color: black;
-	vertical-align: inherit;
+    align-content: center;
+    text-align: center;
+    color: var(--text-main);
+    vertical-align: inherit;
 }
+
 .VSinfo {
-    background-color: palegreen;            
+    background-color: #d1fae5;
+    color: #065f46;
+    border-radius: 6px;
 }
+
 .VSerror {
-    background-color: red;
-    color: white;
+    background-color: #fee2e2;
+    color: #991b1b;
+    border-radius: 6px;
 }
+
 .VShspacer {
-	width: 70px;
-	height: auto;
-	display:inline-block;
+    width: 70px;
+    height: auto;
+    display: inline-block;
 }
+
 .VSmsg {
-	color: maroon;
-	font-weight: bold;
-	min-height: 30px;
-	display: block;
-	font-size: 16px;
+    color: #2563eb;
+    font-weight: bold;
+    min-height: 30px;
+    display: block;
+    font-size: 16px;
 }
+
 .VSdoneLabel {
-	color: green;
-	font-size: x-large;
-	text-align: center;
+    color: #059669;
+    font-size: x-large;
+    text-align: center;
 }
+
 .VScenter {
-	text-align: center;
+    text-align: center;
 }
+
 .VSbutton {
-	-webkit-border-radius: 10px;
-	-moz-border-radius: 10px;
-	border-radius: 10px;
-	font-family: Arial;
-	font-size: 16px;
-	padding: 12px;
-	text-decoration: none;
-	border: 0px;
-	color: #555555;
-	background: #dcdcdc;
+    border-radius: 8px;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 10px 14px;
+    text-decoration: none;
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    background: var(--btn-bg);
+    transition: background 0.2s, border-color 0.2s;
 }
+
 .VSbutton:hover {
-	text-decoration: none;
-	cursor: pointer;
-	background: #bfbfbf;
+    text-decoration: none;
+    cursor: pointer;
+    background: var(--btn-hover);
+    border-color: var(--text-muted);
 }
+
 .VSimptButton {
-	-webkit-border-radius: 10px;
-	-moz-border-radius: 10px;
-	border-radius: 10px;
-	font-family: Arial;
-	font-size: 16px;
-	padding: 12px;
-	text-decoration: none;
-	border: 0px;
-	color: #555555;
-	background: #d2e4f3;
+    border-radius: 8px;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 10px 14px;
+    text-decoration: none;
+    border: 1px solid #1d4ed8;
+    color: #ffffff;
+    background: var(--impt-bg);
+    transition: background 0.2s;
 }
+
 .VSimptButton:hover {
-	text-decoration: none;
-	cursor: pointer;
-	background: #c1dfff;
+    text-decoration: none;
+    cursor: pointer;
+    background: var(--impt-hover);
 }
+
 .VSsmall {
-	font-size: 14px;
-	padding: 9px;
+    font-size: 14px;
+    padding: 8px 12px;
 }
+
 .VSlabel {
-	display: inline;
-	font-weight: inherit;
+    display: inline;
+    font-weight: inherit;
 }
+
 .VSfineText {
-	font-size: small;
-	color: gray;
+    font-size: small;
+    color: var(--text-muted);
 }
+
 .VSclose-btn {
-  border: none; 
-  font-weight: bold; 
-  font-size: 2em; 
-  background: transparent; 
-  position: absolute; 
-  top: 2px;
-  left: 2px;
-  padding: .3em;
-  color: black;
+    border: none; 
+    font-weight: bold; 
+    font-size: 2em; 
+    background: transparent; 
+    position: absolute; 
+    top: 2px;
+    left: 2px;
+    padding: .3em;
+    color: var(--text-main);
+    cursor: pointer;
 }
+
 ul#VStabs {
-	margin: 0;
-	text-align: center;
-	padding-top: 11px;
-	padding-bottom: 11px;
-	top: 0px;
-	left: 0px;
-	z-index: 1;
-	background-color: rgba(198,213,198,0.9);
-	border-top-left-radius: 10px;
-	border-top-right-radius: 10px;
+    margin: 0;
+    text-align: center;
+    padding-top: 11px;
+    padding-bottom: 11px;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    background-color: rgba(226, 232, 240, 0.95); /* modern slate tab bar */
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
 }
+
 ul#VStabs li {
-	display: inline;
-	width: auto;
+    display: inline;
+    width: auto;
 }
+
 ul#VStabs li a {
-	font-family: Arial;
-	font-size: 18px;
-	border: none;
-	text-decoration: none;
-	padding: 10px;
-	margin-left: -4px;
-	padding-bottom: 11px;
-	color: #42454a;
-	background-color: rgba(198,213,198,0.9);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+    border: none;
+    text-decoration: none;
+    padding: 10px 12px 11px;
+    margin-left: -4px;
+    color: var(--text-muted);
+    background-color: transparent;
+    transition: color 0.2s;
 }
+
 ul#VStabs li a:hover {
-	background-color: rgba(196,179,196,0.9);
+    color: var(--text-main);
 }
+
 ul#VStabs li a.selected {
-	font-weight: bold;
-	border: none;
-	color: #000;
-	background-color: rgba(255,255,255,0.6);
-	border-top-left-radius: 15px;
-	border-top-right-radius: 15px;
+    font-weight: 600;
+    border: none;
+    color: var(--text-main);
+    background-color: rgba(255, 255, 255, 0.95);
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
 }
+
 div.VStabContent {
-	border: none;
-	max-width: 1000px;
-	margin-left: auto;
-	margin-right: auto;
-	background-color: rgba(255,255,255,0.9);
-	border-bottom-left-radius: 10px;
-	border-bottom-right-radius: 10px;
-	padding-left: 10px;
-	padding-right: 10px;
+    border: none;
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: rgba(255, 255, 255, 0.95);
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
+
 div.VStabContent.hide {
-	display: none;
+    display: none;
 }
+
 #VStitle {
-	font-size: 20px;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-main);
 }
+
 #VSskipBox {
-	height: 250px;
-	width: 99%;
-	background: #fffffc;
-	border-bottom-left-radius: 10px;
-	border-bottom-right-radius: 10px;
-	color: black;
+    height: 250px;
+    width: 99%;
+    background: var(--panel-bg);
+    border: 1px solid var(--border-color);
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    color: var(--text-main);
+    font-family: monospace;
+    font-size: 14px;
+    padding: 8px;
+    box-sizing: border-box;
 }
-#VSskipFile {
-	display: none;
-}
-#VSshotFile {
-	display: none;
-}
-#VSsubFile {
-	display: none;
-}
-#VSeditControls {
-	display: none;
-}
-#VSsyncControls {
-	visibility: hidden;
-}
-#VSsyncTab {
-	overflow: hidden;
-}
-#VSblockList {
-	display: none;
-}
-#VSrubricText {
-	min-height: 50px;
-	padding-top: 6px;
-	display: block;
-	color: black;
-}
-#VSautoProfanity {
-	display: none;
-}
-#VSsuccessBanner {
-	display: none;
-}
+
+#VSskipFile,
+#VSshotFile,
+#VSsubFile,
+#VSeditControls,
+#VSblockList,
+#VSautoProfanity,
+#VSsuccessBanner,
 #VSlogo {
-	display: none;
+    display: none;
+}
+
+#VSsyncControls {
+    visibility: hidden;
+}
+
+#VSsyncTab {
+    overflow: hidden;
+}
+
+#VSrubricText {
+    min-height: 50px;
+    padding-top: 6px;
+    display: block;
+    color: var(--text-muted);
+    font-style: italic;
 }

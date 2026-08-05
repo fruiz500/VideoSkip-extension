@@ -9,7 +9,7 @@
 		"message": "O Firefox tem um bug que às vezes impede o VideoSkip de carregar. Use um navegador diferente se você ver isso"
 	},
 	"popupOpen": {
-		"message": "A janela VideoSkip fica do lado direito do vídeo. Você pode agarrar sua barra superior para movê-la e recolhê-la clicando em seu logotipo ou no botão X no canto superior esquerdo"
+		"message": "A janela VideoSkip fica do lado direito do vídeo. Você pode agarrar sua barra superior para movê-la e recolhê-la clicando em seu logotipo ou no botão X no canto superior esquerdo. Pode ser necessário usar tela cheia para vê-la"
 	},
 	"noVideo": {
 		"message": "<p>O VideoSkip ajuda você a pular o conteúdo de filmes que você prefere não ver.</p> <p>Você precisa de duas coisas:</p><h3>1. Um filme para controlar.</h3><p> Certifique-se de que o filme esteja visível no navegador e em reprodução (ou parado) e, em seguida, <b>clique no botão VideoSkip no navegador novamente</b></p><div align = 'center'><button id='helpBtn' class='VSbutton' title='mostrar instruções na nova guia'>Ajuda</button></div><br><h3>2. Um arquivo contendo pulos para este filme.</h3> <p>Você pode obtê-lo com um amigo, mas aqui está também uma fonte.</p><div align='center'><button id='exchangeBtn' class='VSbutton' title='abra o VideoSkip Exchange em uma nova guia'>VideoSkip Exchange</button></div>"
@@ -24,7 +24,7 @@
 		"message": " insere anúncios de uma maneira que faz com que a filtragem falhe. Os avanços podem ser imprecisos"
 	},
 	"badTrailers": {
-		"message": " por vezes tem trailers antes de filmes que alteram o timing. Pode querer certificar-se de que os saltos estão em sincronia clicando no título abaixo dos selectores de categoria"
+		"message": " por vezes tem trailers antes de filmes que alteram o timing. Pode querer certificar-se de que os saltos estão em sincronia clicando no título abaixo dos selectores de categoria. Pode ser necessário usar tela cheia para ver a interface do VideoSkip"
 	},
 	"badScrub": {
 		"message": " redefine o tempo do vídeo quando a alça do scrub é movida. Se tiver feito isso, você deverá voltar ao início e reproduzir o vídeo novamente para que os pulos ocorram nos momentos corretos"

@@ -9,7 +9,7 @@
         "message": "Firefox a un bug qui empêche parfois le chargement de VideoSkip. Utilisez un autre navigateur si vous voyez ceci"
     },
     "popupOpen": {
-        "message": "La fenêtre VideoSkip se trouve sur le côté droit de la vidéo. Vous pouvez saisir sa barre supérieure pour la déplacer et la réduire en cliquant sur son logo ou sur le bouton X en haut à gauche"
+        "message": "La fenêtre VideoSkip se trouve sur le côté droit de la vidéo. Vous pouvez saisir sa barre supérieure pour la déplacer et la réduire en cliquant sur son logo ou sur le bouton X en haut à gauche. Vous devrez peut-être passer en plein écran pour la voir"
     },
     "noVideo": {
         "message": "<p>VideoSkip vous aide à ignorer le contenu d'un film que vous préférez ne pas voir.</p><p>Vous avez besoin de deux choses:</p><h3>1. Un film à contrôler. </h3><p>Assurez-vous que le film est visible dans le navigateur et en cours de lecture (ou arrêté), puis <b>cliquez à nouveau sur le bouton VideoSkip du navigateur</b></p><div align='center '><button id='helpBtn' class='VSbutton' title='show instructions on new tab'>Aide</button></div><br><h3>2. Un fichier contenant des sauts pour ce film.< /h3><p>Vous pouvez l'obtenir d'un ami, mais voici une source.</p><div align='center'><button id='exchangeBtn' class='VSbutton' title='ouvrir le VideoSkip Échange sur nouvel onglet'>VideoSkip Exchange</button></div>"
@@ -27,7 +27,7 @@
 		"message": " réinitialise la synchronisation de la vidéo lorsque la poignée de défilement est déplacée. Si vous l'avez fait, vous devez revenir au début et rejouer la vidéo pour que les sauts se fassent au bon moment"
 	},
     "badTrailers": {
-        "message": " a parfois des bandes-annonces avant les films qui modifient le timing. Vous pouvez vous assurer que les sauts sont synchronisés en cliquant sur le titre sous les curseurs de catégorie"
+        "message": " a parfois des bandes-annonces avant les films qui modifient le timing. Vous pouvez vous assurer que les sauts sont synchronisés en cliquant sur le titre sous les curseurs de catégorie. Vous devrez peut-être passer en plein écran pour voir l'interface VideoSkip"
     },
     "wrongFile": {
         "message": "Type de fichier incorrect"

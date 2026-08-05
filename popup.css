@@ -1,25 +1,26 @@
 body {
 	width: 500px;
-	font-family: Arial;
+	font-family: Arial, sans-serif;
 	font-size: 14px;
 }
+
 .VSbutton {
-	-webkit-border-radius: 10px;
-	-moz-border-radius: 10px;
 	border-radius: 10px;
-	font-family: Arial;
+	font-family: Arial, sans-serif;
 	font-size: 14px;
 	padding: 12px;
 	text-decoration: none;
-	border: 0px;
+	border: 0;
 	color: #555555;
 	background: #e8e8e8;
 }
+
 .VSbutton:hover {
 	text-decoration: none;
 	cursor: pointer;
 	background: #bfbfbf;
 }
+
 #popText {
 	display: none;
 }
