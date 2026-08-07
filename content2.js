@@ -1097,18 +1097,20 @@ function toggleBlurBox() {
     }
 }
 
-let videoX1, videoX2, videoY1, videoY2;									//coordinates of the actual video corners without black bars
+let videoX1 = 0, videoX2 = 0, videoY1 = 0, videoY2 = 0; // Coordinates of the actual video corners without black bars
 
-//get real video position, excluding black bars
+// Get real video position, excluding black bars
 function getVideoPos() {
-    const frameRatio = myVideo.clientWidth / myVideo.clientHeight,					//includes the bars
-        trueRatio = myVideo.videoWidth / myVideo.videoHeight;						//without black bars
-    if (frameRatio <= trueRatio) {			//possible black bars at top and bottom
+    if (!myVideo) return;
+    const frameRatio = myVideo.clientWidth / myVideo.clientHeight; // Includes the bars
+    const trueRatio = (myVideo.videoWidth && myVideo.videoHeight) ? (myVideo.videoWidth / myVideo.videoHeight) : frameRatio; // Fallback to frameRatio if metadata uninitialized
+
+    if (frameRatio <= trueRatio) { // Possible black bars at top and bottom
         videoX1 = myVideo.offsetLeft;
         videoX2 = videoX1 + myVideo.clientWidth;
         videoY1 = myVideo.offsetTop + myVideo.clientHeight / 2 - (myVideo.clientWidth / trueRatio) / 2;
         videoY2 = videoY1 + myVideo.clientWidth / trueRatio;
-    } else {									//possible black bars at left and right
+    } else { // Possible black bars at left and right
         videoY1 = myVideo.offsetTop;
         videoY2 = videoY1 + myVideo.clientHeight;
         videoX1 = myVideo.offsetLeft + myVideo.clientWidth / 2 - (myVideo.clientHeight * trueRatio) / 2;
@@ -1116,14 +1118,21 @@ function getVideoPos() {
     }
 }
 
-//move blur box to relative position in array
+// Move blur box to relative position in array
 function moveBlurBox(position) {
-    getVideoPos();							//first get the true position of the video, minus black bars
+    if (!position || position.length < 4 || !myVideo) return;
+    getVideoPos(); // First get the true position of the video, minus black bars
+
+    const height = (videoY2 - videoY1) * (position[3] - position[1]) / 100;
+    const width = (videoX2 - videoX1) * (position[2] - position[0]) / 100;
+    const top = videoY1 + (videoY2 - videoY1) * position[1] / 100;
+    const left = videoX1 + (videoX2 - videoX1) * position[0] / 100;
+
     VSblurBox.style.display = '';
-    VSblurBox.style.height = (videoY2 - videoY1) * (position[3] - position[1]) / 100 + 'px';			//resize and move the box
-    VSblurBox.style.width = (videoX2 - videoX1) * (position[2] - position[0]) / 100 + 'px';
-    VSblurBox.style.top = videoY1 + (videoY2 - videoY1) * position[1] / 100 + 'px';
-    VSblurBox.style.left = videoX1 + (videoX2 - videoX1) * position[0] / 100 + 'px';
+    VSblurBox.style.height = height + 'px';
+    VSblurBox.style.width = width + 'px';
+    VSblurBox.style.top = top + 'px';
+    VSblurBox.style.left = left + 'px';
 }
 
 let timeLabels = [];
@@ -1447,14 +1456,39 @@ function reBlackTxt() {
 }
 
 //if the service is Amazon or Pluto, start 1-second timer to determine difference between myVideo.currentTime, which includes ads, and the time shown in the movie
+let cachedAdSeconds = 0;
+
 if (badAds.indexOf(serviceName) != -1) {
     setInterval(function () {
-        if (serviceName == 'amazon') {
-            adSeconds = myVideo.currentTime - fromHMS(document.querySelector('.atvwebplayersdk-timeindicator-text').textContent.split(' ')[0]);
-        } else if (serviceName == 'pluto') {
-            adSeconds = myVideo.currentTime - fromHMS(document.querySelector("[class^=clock]").textContent);
+        try {
+            if (serviceName == 'amazon') {
+                // 1. Trigger a synthetic mousemove on the player container to keep UI time bindings fresh
+                const playerContainer = myVideo.closest('.atvwebplayersdk-video-surface') || myVideo.parentNode;
+                if (playerContainer) {
+                    playerContainer.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, cancelable: true }));
+                }
+
+                // 2. Query the time elements
+                const timeElements = document.querySelectorAll('.f4cgkp5, .atvwebplayersdk-timeindicator-text, [class*="timeindicator-text"]');
+
+                if (timeElements && timeElements.length > 0) {
+                    const rawTimeText = timeElements[0].textContent.trim().split(' ')[0];
+                    if (rawTimeText && rawTimeText.includes(':')) {
+                        cachedAdSeconds = myVideo.currentTime - fromHMS(rawTimeText);
+                    }
+                }
+                adSeconds = cachedAdSeconds;
+
+            } else if (serviceName == 'pluto') {
+                const clockEl = document.querySelector("[class^=clock]");
+                if (clockEl && clockEl.textContent) {
+                    adSeconds = myVideo.currentTime - fromHMS(clockEl.textContent.trim());
+                }
+            }
+        } catch (err) {
+            // Guard against runtime exceptions during DOM transitions
         }
-    }, 1000);                  //to be done once every second
+    }, 1000);
 }
 
 //now connect functions to the buttons and do other tasks concerning the interface

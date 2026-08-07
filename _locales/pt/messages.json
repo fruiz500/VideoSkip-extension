@@ -21,7 +21,7 @@
 		"message": "Feito  ✔"
 	},
 	"badAds": {
-		"message": " insere anúncios de uma maneira que faz com que a filtragem falhe. Os avanços podem ser imprecisos"
+		"message": " insere anúncios de uma maneira que faz com que a filtragem falhe. Os avanços podem ser imprecisos. Para obter melhores resultados, mova o mouse após a exibição dos anúncios"
 	},
 	"badTrailers": {
 		"message": " por vezes tem trailers antes de filmes que alteram o timing. Pode querer certificar-se de que os saltos estão em sincronia clicando no título abaixo dos selectores de categoria. Pode ser necessário usar tela cheia para ver a interface do VideoSkip"

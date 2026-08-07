@@ -1,8 +1,9 @@
 // this script is injected and executes as soon as the browser action button is clicked
 let myVideo = null;
+let adSeconds = 0;
 const isFirefox = typeof InstallTrigger !== 'undefined';
 const VSheight = isFirefox ? 0 : 0;
-const VSwidth = isFirefox ? 500 : 485;
+const VSwidth = isFirefox ? 540 : 540;
 
 // Declare UI components globally so addInterface and content2.js can access them
 let VSinterface = document.getElementById('VSbox');
@@ -61,7 +62,6 @@ if (!!myVideo) {													//add overlay image for superimpose function
     myVideo.crossOrigin = 'anonymous';						//in case it helps
 
     //function to adjust for ad times
-    const adSeconds = 0;
     function trueTime() {
         return (badAds.indexOf(serviceName) != -1) ? myVideo.currentTime - adSeconds : myVideo.currentTime;
     }

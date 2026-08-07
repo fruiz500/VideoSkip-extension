@@ -149,16 +149,18 @@
 }
 
 .VSbutton {
-    border-radius: 8px;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    font-size: 15px;
-    font-weight: 500;
-    padding: 10px 14px;
-    text-decoration: none;
-    border: 1px solid var(--border-color);
-    color: var(--text-main);
-    background: var(--btn-bg);
-    transition: background 0.2s, border-color 0.2s;
+	border-radius: 10px;
+	font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+	font-size: 16px;
+	font-weight: bold; /* Ensures arrow glyphs render with uniform bold stroke weight */
+	line-height: 1;
+	padding: 12px;
+	text-decoration: none;
+	border: 0;
+	color: #555555;
+	background: #dcdcdc;
+	-webkit-font-smoothing: antialiased; /* Prevents webkit subpixel variance between directional glyphs */
+	-moz-osx-font-smoothing: grayscale;
 }
 
 .VSbutton:hover {

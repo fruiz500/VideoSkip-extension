@@ -21,7 +21,7 @@
         "message": "Terminé ✔"
     },
     "badAds": {
-        "message": " injecte des publicités de manière à modifier la synchronisation de la vidéo. Le temps de saut peut être inexact"
+        "message": " injecte des publicités de manière à modifier la synchronisation de la vidéo. Le temps de saut peut être inexact. Pour de meilleurs résultats, déplacez la souris après la diffusion des publicités"
     },
     "badScrub": {
 		"message": " réinitialise la synchronisation de la vidéo lorsque la poignée de défilement est déplacée. Si vous l'avez fait, vous devez revenir au début et rejouer la vidéo pour que les sauts se fassent au bon moment"

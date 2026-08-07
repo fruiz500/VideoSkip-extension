@@ -21,7 +21,7 @@
 		"message": "Done  ✔"
 	},
 	"badAds": {
-		"message": " injects ads in a way that alters the timing of the video. Skip timing may be inaccurate."
+		"message": " injects ads in a way that alters the timing of the video. Skip timing may be inaccurate. For best results, move the mouse after ads play"
 	},
 	"badTrailers": {
 		"message": " sometimes has trailers before movies that alter the timing. You may want to make sure that skips are in sync by clicking the title below the category sliders. You may need to go fullscreen to see the VideoSkip interface"
