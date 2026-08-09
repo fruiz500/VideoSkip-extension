@@ -11,6 +11,26 @@ let prevAction = '',
 const deltaT = 1 / 24,			//seconds for one frame at 24 fps
     accel = 2;				//determined experimentally;
 
+//to fix timing in Amazon Prime video and Pluto
+let probedMovieTime = null;
+let lastProbeTimestamp = 0;
+
+window.addEventListener('message', function (event) {
+    if (event.source !== window) return;
+    if (!event.data || event.data.type !== 'VS_AMAZON_TIME_UPDATE') return;
+
+    const { internalTime, adSeconds: calculatedAdSeconds } = event.data;
+
+    if (typeof internalTime === 'number' && !isNaN(internalTime)) {
+        probedMovieTime = internalTime;
+        lastProbeTimestamp = Date.now();
+    }
+
+    if (typeof calculatedAdSeconds === 'number' && !isNaN(calculatedAdSeconds)) {
+        adSeconds = calculatedAdSeconds;
+    }
+});
+
 //directly defined global variables for DOM elements. Needed by Firefox
 const VStabs = document.getElementById('VStabs'),
     VSloadLink = document.getElementById('VSloadLink'),
@@ -87,26 +107,7 @@ for (const service in subsClasses) {
 
 //blanks/unblanks subtitles for different services
 function blankSubs(isBlank) {
-    let handledViaTracks = false;
-
-    // 1. Check native HTML5 textTracks first
-    if (myVideo && myVideo.textTracks && myVideo.textTracks.length > 0) {
-        for (let i = 0; i < myVideo.textTracks.length; i++) {
-            if (myVideo.textTracks[i].mode === 'showing' || myVideo.textTracks[i].dataset_previousMode === 'showing') {
-                handledViaTracks = true;
-                if (isBlank) {
-                    myVideo.textTracks[i].dataset_previousMode = 'showing';
-                    myVideo.textTracks[i].mode = 'disabled';
-                } else {
-                    myVideo.textTracks[i].mode = 'showing';
-                    delete myVideo.textTracks[i].dataset_previousMode;
-                }
-            }
-        }
-    }
-
-    // 2. Fall back to DOM elements only if native text tracks aren't active/present
-    if (!handledViaTracks && subsClass) {
+    if (subsClass) {
         let subs;
         if (serviceName == 'apple' || serviceName == 'disneyplus') {
             subs = mySubtitles;					//element defined in content1
@@ -116,6 +117,9 @@ function blankSubs(isBlank) {
         if (subs) {
             subs.style.opacity = isBlank ? 0 : '';					//blank/unblank subs here
         }
+
+    } else if (myVideo.textTracks.length > 0) {						//HTML5 general case
+        myVideo.textTracks[0].mode = isBlank ? 'disabled' : 'showing';
     }
 }
 
@@ -268,13 +272,22 @@ function minTime(errorData) {
 
 //moves play to requested time
 function goToTime(time) {
-    if (serviceName == 'netflix') {		//Netflix will crash with the normal seek instruction. By Dmitry Paloskin at StackOverflow. Must be executed in page context
+    if (!myVideo) return;
+
+    if (serviceName == 'netflix') {     //Netflix will crash with the normal seek instruction. By Dmitry Paloskin at StackOverflow. Must be executed in page context
         const script = document.createElement('script');
         script.src = chrome.runtime.getURL('go2netflix.js?') + new URLSearchParams({ seconds: time });     //Manifest v3 admits injected scripts only via file
         document.documentElement.appendChild(script);
         script.remove();
-    } else {								//everyone else is HTML5 compliant, except perhaps for ad time
-        myVideo.currentTime = (badAds.indexOf(serviceName) != -1) ? time + adSeconds : time;
+    } else {                                //everyone else is HTML5 compliant, except perhaps for ad time
+        const targetTime = (badAds.indexOf(serviceName) != -1) ? time + adSeconds : time;
+        myVideo.currentTime = targetTime;
+
+        if (serviceName === 'amazon') {
+            // Dispatch synthetic events so Amazon's React player registers the manual seek
+            myVideo.dispatchEvent(new Event('seeking'));
+            myVideo.dispatchEvent(new Event('timeupdate'));
+        }
     }
 }
 
@@ -556,56 +569,22 @@ function loadSub() {
     fileReader.readAsText(fileToLoad);
 }
 
-//makes silenced profanity skips timed to subtitles with words in blockList (Multilingual)
+//makes silenced profanity skips timed to subtitles with words in blockList
 function autoBeepGen(subs) {
-    // 1. Build strict word-boundary regex with a multilingual grammatical suffix matcher (EN, ES, FR, PT)
-    const rawWords = VSblockList.textContent.split(',').map(w => w.trim()).filter(w => w.length > 0);
-    const escapedWords = rawWords.map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
-
-    // Multilingual suffix pattern covering English, Spanish, French, and Portuguese word forms
-    const suffixPattern = '(?:[a-z])?(?:s|es|e|a|o|os|as|d|ed|ing|er|ers|y|ant|é|ée|ando|endo|ado|ido)?';
-    const blockListExp = new RegExp('\\b(' + escapedWords.join('|') + ')' + suffixPattern + '\\b', 'i');
-
-    const subObj = PF_SRT.parse(subs);              //similar in structure to cuts, with keys: startTime, endTime, text, action (empty)
-
-    // 2. Safely extract existing cuts and header/screenshot metadata
-    const currentBoxLines = VSskipBox.value.trim().split('\n');
-    let initialData = [];
-    if (currentBoxLines.length >= 2 && !currentBoxLines[0].includes('-->')) {
-        initialData = currentBoxLines.slice(0, 2);
-    }
-
-    // 3. Generate new cuts in memory
-    const generatedCuts = [];
+    const blockListExp = new RegExp(VSblockList.textContent.replace(/, +/g, '|'), "g");
+    const subObj = PF_SRT.parse(subs);				//similar in structure to cuts, with keys: startTime, endTime, text, action (empty)
+    writeIn('\n\n');
     for (let i = 0; i < subObj.length; i++) {
-        const match = subObj[i].text.match(blockListExp);
-        if (match) {
-            generatedCuts.push({
-                startTime: subObj[i].startTime - 0.15,
-                endTime: subObj[i].endTime + 0.15,
-                text: 'profane word 1 (' + match[0].toLowerCase() + ')',
-                action: 'mute'
-            });
+        const word = subObj[i].text.toLowerCase().match(blockListExp);
+        if (word) {	//word found in block list; add extra .3s buffer in case there are two in a row
+            writeIn(toHMS(subObj[i].startTime - 0.15) + ' --> ' + toHMS(subObj[i].endTime + 0.15) + '\nprofane word 1 (' + word[0] + ')\n\n', false);
         }
     }
-
-    // 4. Merge existing cuts with new cuts and sort chronologically in memory
-    const allCuts = cuts.concat(generatedCuts);
-    allCuts.sort(function (a, b) { return a.startTime - b.startTime; });
-    cuts = allCuts;
-
-    // 5. Serialize back to text format for the VSskipBox
-    let newBoxText = '';
-    if (initialData.length > 0) {
-        newBoxText += initialData.join('\n') + '\n\n';
-    }
-
-    for (let i = 0; i < cuts.length; i++) {
-        newBoxText += toHMS(cuts[i].startTime) + ' --> ' + toHMS(cuts[i].endTime) + '\n' + cuts[i].text + '\n\n';
-    }
-
-    // 6. Update DOM and UI state exactly once
-    VSskipBox.value = newBoxText.trim();
+    const initialData = VSskipBox.value.trim().split('\n').slice(0, 2);		//first two lines containing screenshot timing
+    cuts = PF_SRT.parse(VSskipBox.value);
+    cuts.sort(function (a, b) { return a.startTime - b.startTime; });
+    times2box();
+    if (initialData) VSskipBox.value = initialData.join('\n') + '\n\n' + VSskipBox.value;
     VScurseNum.value = 3;
     setActions();
     makeTimeLabels();
@@ -1097,20 +1076,18 @@ function toggleBlurBox() {
     }
 }
 
-let videoX1 = 0, videoX2 = 0, videoY1 = 0, videoY2 = 0; // Coordinates of the actual video corners without black bars
+let videoX1, videoX2, videoY1, videoY2;									//coordinates of the actual video corners without black bars
 
-// Get real video position, excluding black bars
+//get real video position, excluding black bars
 function getVideoPos() {
-    if (!myVideo) return;
-    const frameRatio = myVideo.clientWidth / myVideo.clientHeight; // Includes the bars
-    const trueRatio = (myVideo.videoWidth && myVideo.videoHeight) ? (myVideo.videoWidth / myVideo.videoHeight) : frameRatio; // Fallback to frameRatio if metadata uninitialized
-
-    if (frameRatio <= trueRatio) { // Possible black bars at top and bottom
+    const frameRatio = myVideo.clientWidth / myVideo.clientHeight,					//includes the bars
+        trueRatio = myVideo.videoWidth / myVideo.videoHeight;						//without black bars
+    if (frameRatio <= trueRatio) {			//possible black bars at top and bottom
         videoX1 = myVideo.offsetLeft;
         videoX2 = videoX1 + myVideo.clientWidth;
         videoY1 = myVideo.offsetTop + myVideo.clientHeight / 2 - (myVideo.clientWidth / trueRatio) / 2;
         videoY2 = videoY1 + myVideo.clientWidth / trueRatio;
-    } else { // Possible black bars at left and right
+    } else {									//possible black bars at left and right
         videoY1 = myVideo.offsetTop;
         videoY2 = videoY1 + myVideo.clientHeight;
         videoX1 = myVideo.offsetLeft + myVideo.clientWidth / 2 - (myVideo.clientHeight * trueRatio) / 2;
@@ -1118,21 +1095,25 @@ function getVideoPos() {
     }
 }
 
-// Move blur box to relative position in array
+//move blur box to relative position in array
 function moveBlurBox(position) {
-    if (!position || position.length < 4 || !myVideo) return;
-    getVideoPos(); // First get the true position of the video, minus black bars
-
-    const height = (videoY2 - videoY1) * (position[3] - position[1]) / 100;
-    const width = (videoX2 - videoX1) * (position[2] - position[0]) / 100;
-    const top = videoY1 + (videoY2 - videoY1) * position[1] / 100;
-    const left = videoX1 + (videoX2 - videoX1) * position[0] / 100;
-
+    getVideoPos();							//first get the true position of the video, minus black bars
     VSblurBox.style.display = '';
-    VSblurBox.style.height = height + 'px';
-    VSblurBox.style.width = width + 'px';
-    VSblurBox.style.top = top + 'px';
-    VSblurBox.style.left = left + 'px';
+    VSblurBox.style.height = (videoY2 - videoY1) * (position[3] - position[1]) / 100 + 'px';			//resize and move the box
+    VSblurBox.style.width = (videoX2 - videoX1) * (position[2] - position[0]) / 100 + 'px';
+    VSblurBox.style.top = videoY1 + (videoY2 - videoY1) * position[1] / 100 + 'px';
+    VSblurBox.style.left = videoX1 + (videoX2 - videoX1) * position[0] / 100 + 'px';
+}
+
+//gets position of blur box as percent of video dimensions
+function getBlurPos() {
+    getVideoPos();
+    var x1 = parseInt(VSblurBox.style.left.slice(0, -2) - videoX1) / (videoX2 - videoX1) * 100,
+        y1 = parseInt(VSblurBox.style.top.slice(0, -2) - videoY1) / (videoY2 - videoY1) * 100,
+        x2 = x1 + parseInt(VSblurBox.style.width.slice(0, -2)) / (videoX2 - videoX1) * 100,
+        y2 = y1 + parseInt(VSblurBox.style.height.slice(0, -2)) / (videoY2 - videoY1) * 100;
+    return [x1, y1, x2, y2]
+    VSblurBox.style.left = videoX1 + (videoX2 - videoX1) * position[0] / 100 + 'px';
 }
 
 let timeLabels = [];
@@ -1169,7 +1150,7 @@ function takeShot() {
         VSshotFileLabel.style.display = 'inline-block';
         VSautoBtn.style.display = 'none';
     }
-    writeIn(toHMS(trueTime() - syncFix), false);								//insert time regardless
+    writeIn(toHMS(trueTime() - syncFix) + '\n', false);								//insert time regardless
     ready(makeTimeLabels);
 }
 
@@ -1456,37 +1437,15 @@ function reBlackTxt() {
 }
 
 //if the service is Amazon or Pluto, start 1-second timer to determine difference between myVideo.currentTime, which includes ads, and the time shown in the movie
-let cachedAdSeconds = 0;
-
-if (badAds.indexOf(serviceName) != -1) {
+// This is now handled via a call to React, so nothing is done here. Kept in case other services need hacks
+if (typeof badAds !== 'undefined' && badAds.indexOf(serviceName) !== -1) {
     setInterval(function () {
         try {
-            if (serviceName == 'amazon') {
-                // 1. Trigger a synthetic mousemove on the player container to keep UI time bindings fresh
-                const playerContainer = myVideo.closest('.atvwebplayersdk-video-surface') || myVideo.parentNode;
-                if (playerContainer) {
-                    playerContainer.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, cancelable: true }));
-                }
+            if (!myVideo) return;
 
-                // 2. Query the time elements
-                const timeElements = document.querySelectorAll('.f4cgkp5, .atvwebplayersdk-timeindicator-text, [class*="timeindicator-text"]');
-
-                if (timeElements && timeElements.length > 0) {
-                    const rawTimeText = timeElements[0].textContent.trim().split(' ')[0];
-                    if (rawTimeText && rawTimeText.includes(':')) {
-                        cachedAdSeconds = myVideo.currentTime - fromHMS(rawTimeText);
-                    }
-                }
-                adSeconds = cachedAdSeconds;
-
-            } else if (serviceName == 'pluto') {
-                const clockEl = document.querySelector("[class^=clock]");
-                if (clockEl && clockEl.textContent) {
-                    adSeconds = myVideo.currentTime - fromHMS(clockEl.textContent.trim());
-                }
-            }
+            // Other services using DOM polling can go here...
         } catch (err) {
-            // Guard against runtime exceptions during DOM transitions
+            // Guard against temporary DOM unmounting or undefined elements
         }
     }, 1000);
 }

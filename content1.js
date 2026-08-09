@@ -31,6 +31,21 @@ if (host == 'localhost') {        //this is a local file, so we can't get the ho
     }
 }
 
+//hack for Amazon and Pluto timing
+function injectAmazonProbe() {
+    if (serviceName === 'amazon' || serviceName === 'pluto') {
+        console.log('[VideoSkip] Injecting amazonProbe.js for service:', serviceName);
+        const script = document.createElement('script');
+        script.src = chrome.runtime.getURL('amazonProbe.js');
+        document.documentElement.appendChild(script);
+        script.remove();
+    } else {
+        console.log('[VideoSkip] Probe skipped. serviceName is:', typeof serviceName !== 'undefined' ? serviceName : 'undefined');
+    }
+}
+
+injectAmazonProbe();
+
 //find the video on the page proper, or inside 1st-level iframes
 const myVideos = [];
 myVideos.push(document.querySelectorAll("video"));			//top level
@@ -63,7 +78,15 @@ if (!!myVideo) {													//add overlay image for superimpose function
 
     //function to adjust for ad times
     function trueTime() {
-        return (badAds.indexOf(serviceName) != -1) ? myVideo.currentTime - adSeconds : myVideo.currentTime;
+        if (!myVideo) return 0;
+
+        // Use probedMovieTime if received within the last 2 seconds
+        if (probedMovieTime !== null && (Date.now() - lastProbeTimestamp < 2000)) {
+            return probedMovieTime;
+        }
+
+        // Fallback for non-probed services or before probe initializes
+        return (badAds.indexOf(serviceName) !== -1) ? myVideo.currentTime - adSeconds : myVideo.currentTime;
     }
 
     //apply skips to video when it gets to them. THIS IS THE HEART OF THE EXTENSION
@@ -73,6 +96,7 @@ if (!!myVideo) {													//add overlay image for superimpose function
         if (typeof (cuts) == "undefined" || !cuts || cuts.length === 0) return;
 
         let action = '', tempAction = '';
+        let targetEndTime = 0;
         const currentTime = trueTime();
 
         // Evaluate all cuts to properly handle nesting and overlaps
@@ -88,6 +112,7 @@ if (!!myVideo) {													//add overlay image for superimpose function
 
             if (tempAction == 'skip') {
                 action = 'skip';
+                targetEndTime = endTime;
                 break; // 'skip' takes absolute priority over everything else, so we can stop here
             } else if (tempAction == 'fast') {
                 action = (action == 'skip') ? 'skip' : 'fast';
@@ -110,7 +135,7 @@ if (!!myVideo) {													//add overlay image for superimpose function
         // Apply visual and playback state changes ONLY when the action state changes
         if (action != prevAction) {
             if (action == 'skip' || action == 'skipmute') {
-                goToTime(endTime);
+                goToTime(targetEndTime + 0.1);
             } else if (action == 'blank' || action == 'blankmute') {
                 myVideo.style.opacity = 0;
             } else if (action.includes('blank')) {

@@ -3,7 +3,7 @@
   "short_name": "VideoSkip",
   "description": "__MSG_manifest_descr__",
   "default_locale": "en",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "manifest_version": 3,
   "icons": {
     "16": "img/icon24.png",
@@ -19,7 +19,8 @@
     "resources": [
       "_locales/*",
 	    "img/icon64.png",
-      "go2netflix.js"
+      "go2netflix.js",
+      "amazonProbe.js"
     ],
     "matches": ["<all_urls>"],
     "extension_ids": []
